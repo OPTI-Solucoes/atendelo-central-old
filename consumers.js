@@ -1,127 +1,230 @@
-function get_senha(incoming_json, sockets) {
+var ObjectId = require('mongodb').ObjectID;
+
+exports.get_senha = function(incoming_json_, sockets, db) {
 	// body...
 	today_date = new Date(); today_date.setHours(0,0,0,0);
-	verify_today_historico();
-	verify_today_filas();
+	verify_today_historico(db);
+	verify_today_filas(db);
+
+	incoming_json = JSON.parse(incoming_json_);
 
 	filas_list = ['MED', 'PRE', 'NOR'];
 
 	ws_response_to_monitores = new WsResponse("get_senha");
 	ws_response_to_box = new WsResponse("proxima_senha");
 
-	senha_enviada_pk = incoming_json.body.senha.pk;
+	console.log(incoming_json);
+
 	senha_enviada_tempo_decorrido = incoming_json.body.senha.tempo_decorrido;
 	ultima_fila_usada = incoming_json.body.fila.iniciais;
 	fila_manual = incoming_json.body.fila_manual.iniciais;
 
-	// Para os monitores
-	if (senha_enviada_pk) {
-		db.collection("senha").findOne({id: senha_enviada_pk} function(err, result) {
-			if (err) {throw err;}
+	db.collection("senha").findOne({_id: new ObjectId(incoming_json.body.senha._id)}, function(err, result) {
+		if (err) {throw err;}
+		console.log(result);
+		if (result) {
 			senha_enviada = result;
 			senha_enviada.atendida = true;
-			db.collection("senha").updateOne({id: result.id}, senha_enviada, function(err, res) {
+			db.collection("senha").updateOne({_id: new ObjectId(senha_enviada._id)}, senha_enviada, function(err, res) {
 				if (err) {throw err;}
 				console.log("Senha updated");
-				console.log(res);
-				ws_response_to_monitores.body['senha'] = res;
-			});
-		});
-	} else {
-		ws_response_to_monitores.body['senha'] = null;
-	}
+				ws_response_to_monitores.body['senha'] = senha_enviada;
 
-	if (fila_manual) {
-		db.collection("senha").findOne({fila: fila_manual} function(err, result) {
-			if (err) {throw err;}
-			if (result) {
-				proxima_senha = result;
-				ws_response_to_box.body['senha'] = proxima_senha;
-			} else {
-				ws_response_to_box.header.action = "nenhuma_senha";
-			}
-		});
+				if (fila_manual) {
+					db.collection("senha").findOne({fila: fila_manual, atendida: false}, function(err, result) {
+						if (err) {throw err;}
+						if (result) {
+							proxima_senha = result;
+							ws_response_to_box.body['senha'] = proxima_senha;
+						} else {
+							ws_response_to_box.header.action = "nenhuma_senha";
+						}
 
-	} else {
-		if (ultima_fila_usada) {
-			switch(ultima_fila_usada) {
-				case "MED":
-					fila = "PRE";
-					break;
-				case "PRE":
-					fila = "NOR";
-					break;
-				case "NOR":
-					fila = "MED";
-					break;
-				default:
-					fila = "MED";
-			}
-		} else {
-			fila = "MED";
-		}
+						sockets.monitor.emit(ws_response_to_monitores.header.action, ws_response_to_monitores);
+						sockets.box.emit(ws_response_to_box.header.action, ws_response_to_box);
+					});
 
-		db.collection("senha").find({fila: fila, atendida: false}).toArray(function(err, res) {
-			if (err) {throw err};
-			if (res.length > 0){
-				ws_response_to_box.header.action = "proxima_senha";
-				for (var i = 0; i < res.length; i++) {
-					proxima_senha = res[i];
-					if (res[i].fila == fila) {
-						break;
+				} else {
+					if (ultima_fila_usada) {
+						switch(ultima_fila_usada) {
+							case "MED":
+								fila = "PRE";
+								break;
+							case "PRE":
+								fila = "NOR";
+								break;
+							case "NOR":
+								fila = "MED";
+								break;
+							default:
+								fila = "NOR";
+						}
+					} else {
+						fila = "NOR";
 					}
-				}
-			} else {
-				ws_response_to_box.header.action = "nenhuma_senha";
-			}
-		});
-	}
 
-	sockets.monitor.emit(ws_response_to_monitores.header.action, ws_response_to_monitores);
-	sockets.box.emit(ws_response_to_box.header.action, ws_response_to_box);
+					db.collection("senha").find({atendida: false}).toArray(function(err, res) {
+						if (err) {throw err};
+						console.log(res.length);
+						if (res.length > 0){
+							ws_response_to_box.header.action = "proxima_senha";
+							for (var i = 0; i < res.length; i++) {
+								proxima_senha = res[i];
+								if (res[i].fila == fila) {
+									break;
+								}
+							}
+							ws_response_to_box.body['senha'] = proxima_senha;
+						} else {
+							ws_response_to_box.header.action = "nenhuma_senha";
+						}
+						sockets.monitor.emit(ws_response_to_monitores.header.action, ws_response_to_monitores);
+						sockets.box.emit(ws_response_to_box.header.action, ws_response_to_box);
+					});
+				}
+			});
+		} else {
+			console.log("NENHUMA SENHA ENVIADA");
+
+			if (fila_manual) {
+				console.log("FILA_MANUAL");
+				console.log(fila_manual);
+				db.collection("senha").findOne({fila: fila_manual, atendida: false}, function(err, result) {
+					if (err) {throw err;}
+					if (result) {
+						proxima_senha = result;
+						ws_response_to_box.body['senha'] = proxima_senha;
+					} else {
+						ws_response_to_box.header.action = "nenhuma_senha";
+					}
+					sockets.box.emit(ws_response_to_box.header.action, ws_response_to_box);
+				});
+
+			} else {
+				console.log("FILA_AUTOMATICA");
+				if (ultima_fila_usada) {
+					switch(ultima_fila_usada) {
+						case "MED":
+							fila = "PRE";
+							break;
+						case "PRE":
+							fila = "NOR";
+							break;
+						case "NOR":
+							fila = "MED";
+							break;
+						default:
+							fila = "NOR";
+					}
+				} else {
+					fila = "NOR";
+				}
+
+				db.collection("senha").find({atendida: false}).toArray(function(err, res) {
+					if (err) {throw err};
+					console.log(res.length);
+					if (res.length > 0){
+						ws_response_to_box.header.action = "proxima_senha";
+						for (var i = 0; i < res.length; i++) {
+							proxima_senha = res[i];
+							if (res[i].fila == fila) {
+								break;
+							}
+						}
+						ws_response_to_box.body['senha'] = proxima_senha;
+					} else {
+						ws_response_to_box.header.action = "nenhuma_senha";
+					}
+					sockets.box.emit(ws_response_to_box.header.action, ws_response_to_box);
+				});
+			}
+		}
+	});
 }
 
-function get_view() {
+exports.get_view = function(incoming_json_, sockets, db) {
 	today_date = new Date(); today_date.setHours(0,0,0,0);
-	verify_today_historico();
-	verify_today_filas();
+	verify_today_historico(db);
+	verify_today_filas(db);
+
+	incoming_json = JSON.parse(incoming_json_);
 
 	ws_response_to_monitores = new WsResponse("get_view");
 
 	senhas = [];
 
 	db.collection("senha").find({fila: 'MED', atendida: true}).toArray(function(err, res) {
+		if (err) {throw err};
+		if (res.length > 0) {
+			senhas.push(res[res.length-1]);
+		}
+
+		db.collection("senha").find({fila: 'PRE', atendida: true}).toArray(function(err, res) {
 			if (err) {throw err};
 			if (res.length > 0) {
 				senhas.push(res[res.length-1]);
 			}
+
+			db.collection("senha").find({fila: 'NOR', atendida: true}).toArray(function(err, res) {
+				if (err) {throw err};
+				if (res.length > 0) {
+					senhas.push(res[res.length-1]);
+				}
+
+				if (senhas.length > 0) {
+					ws_response_to_monitores.header.action = "get_view";
+					ws_response_to_monitores.body["senhas"] = senhas;
+				} else {
+					ws_response_to_monitores.header.action = "nenhuma_senha";
+				}
+
+				sockets.monitor.emit(ws_response_to_monitores.header.action, ws_response_to_monitores);
+			});
 		});
-
-	db.collection("senha").find({fila: 'PRE', atendida: true}).toArray(function(err, res) {
-			if (err) {throw err};
-			if (res.length > 0) {
-				senhas.push(res[res.length-1]);
-			}
-		});
-
-	db.collection("senha").find({fila: 'NOR', atendida: true}).toArray(function(err, res) {
-			if (err) {throw err};
-			if (res.length > 0) {
-				senhas.push(res[res.length-1]);
-			}
-		});
-
-	if (senhas.length > 0) {
-		ws_response_to_monitores.header.action = "get_view";
-		ws_response_to_monitores.body["senhas"] = senhas;
-	} else {
-		ws_response_to_monitores.header.action = "nenhuma_senha";
-	}
-
-	sockets.monitor.emit(ws_response_to_monitores.header.action, ws_response_to_monitores);
+	});	
 }
 
-function verify_today_historico() {
+exports.insert_senha = function(incoming_json_, sockets, db) {
+	today_date = new Date(); today_date.setHours(0,0,0,0);
+	verify_today_historico(db);
+	verify_today_filas(db);
+
+	incoming_json = JSON.parse(incoming_json_);
+
+	ws_response_to_boxes = new WsResponse("nova_senha_em_espera");
+	ws_response_to_totens = new WsResponse("solicitar_nova_senha");
+
+	db.collection("senha").find({}).toArray(function(err, res) {
+		if (err) {throw err};
+		var prox_num;
+
+		if (res.length > 0) {
+			console.log(res);
+			prox_num = res[res.length-1].numero+1;
+		}
+
+		senha = {
+			numero: prox_num,
+			paciente: incoming_json.body.paciente,
+			especialidade: incoming_json.body.especialidade,
+			fila: incoming_json.body.fila,
+			atendida: false,
+		};
+
+		db.collection("senha").insertOne(senha, function(err, res) {
+			if (err) {throw err};
+			console.log("Senha inserted: ");
+			senha = res.ops[0];
+
+			ws_response_to_totens.body['senha'] = senha;
+
+			sockets.box.emit(ws_response_to_boxes.header.action, ws_response_to_boxes);
+			sockets.totem.emit(ws_response_to_totens.header.action, ws_response_to_totens);
+		});
+	});
+}
+
+function verify_today_historico(db) {
 	db.collection("historico").find({data: today_date}).toArray(function(err, result) {
 		if (err) {throw err;}
 		if (result.length == 0) {
@@ -134,7 +237,7 @@ function verify_today_historico() {
 	});
 }
 
-function verify_today_filas() {
+function verify_today_filas(db) {
 	db.collection("fila").find({data: today_date}).toArray(function(err, result) {
 		if (err) {throw err;}
 		if (result.length == 0) {
