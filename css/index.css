@@ -1,0 +1,72 @@
+html, body {
+	width: 100%;
+	height: 100%;
+	max-width: 100%;
+	max-height: 100%;
+	margin: 0;
+	padding: 0;
+
+	/*overflow: hidden;*/
+
+	background-color: #fafafa;
+	/*background: linear-gradient(to bottom right, white, #03d1ab);*/
+
+	background-repeat: no-repeat;
+	background-attachment: fixed;
+	background-position: center center;
+}
+
+.main-content {
+	/*display: flex;
+	flex-direction: row;*/
+	width: 100%;
+	height: 100%;
+	margin: auto 0 0 0;
+	padding: 0;
+}
+
+.mdc-card {
+	background-color: white;
+}
+
+.demo-body {
+	padding: 0;
+	margin: 0;
+	box-sizing: border-box;
+	display: flex;
+	flex-direction: column;
+}
+
+#app {
+	width: 100%;
+	height: 100%;
+	margin: 0;
+	padding: 0;
+}
+
+/* A simple menu button. */
+.demo-menu {
+	background: none;
+	border: none;
+	width: 24px;
+	height: 24px;
+	padding: 0;
+	color: white;
+	margin: 0;
+	margin-right: 24px;
+	box-sizing: border-box;
+}
+
+.demo-main {
+	padding-left: 16px;
+	overflow: auto;
+}
+
+.mdc-toolbar-fixed-adjust {
+	width: 100%;
+}
+
+.mdc-snackbar {
+	z-index: 9999;
+}
+

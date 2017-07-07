@@ -1,0 +1,78 @@
+<div class="background-image">
+  <!-- <div class="logo-reability"><img src="img/logo-reability.png"></div> -->
+
+  <div class="mdc-layout-grid">
+    <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-8">
+      <div class="mdc-card">
+        <section class="mdc-card__media multimidias_container" style="padding: 0px;">
+
+          <iframe v-if="youtube_show" id="multimidia" class="multimidia" type="text/html" src="https://www.youtube.com/embed/mocGR7g633w" frameborder="0" allowfullscreen></iframe>
+
+          <video v-else-if="tv_show" id="tv" class="multimidia" autoplay controls>
+            <!-- <source src="http://172.30.3.106:8081/tv" type="video/ogg" /> -->
+            Seu navegador não suporta a tag video do HTML5
+          </video>
+
+        </section>
+      </div>
+    </div>
+
+    <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-4" style="z-index: 2147483647;">
+      <div class="mdc-layout-grid" style="padding: 0px;">
+
+        <div v-for="senha in senhas" v-bind:id="'senha_'+senha.numero" class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
+          <div class="mdc-card mdc-card-senhas">
+            <section class="mdc-card__primary">
+              <h1 class="mdc-card__title mdc-card__title--large">Senha</h1>
+              <h2 class="mdc-card__subtitle">Senha: {{ senha.fila.iniciais }}{{ senha.numero }}</h2>
+            </section>
+            <section class="mdc-card__supporting-text">
+              {{ senha.paciente }}<br>
+              {{ senha.especialidade }}
+            </section>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- <div id="senhas_container" class="mdc-layout-grid__cell mdc-layout-grid__cell--span-4">
+      <div class="mdc-card" v-for="senha in senhas" v-bind:id="'senha_'+senha.numero">
+        <section class="mdc-card__media card_media_icon_senha"></section>
+        <section class="mdc-card__primary">
+          <h1 class="mdc-card__title mdc-card__title--large">Senha</h1>
+          <h2 class="mdc-card__subtitle">Senha: {{ senha.fila.iniciais }}{{ senha.numero }}</h2>
+        </section>
+        <section class="mdc-card__supporting-text">
+          {{ senha.paciente }}<br>
+          {{ senha.especialidade }}
+        </section>
+        <section class="mdc-card__actions" dir="rtl">
+          <a class="mdc-button mdc-button--compact mdc-card__action" v-on:click="abrirBox()">Ir para o Box</a>
+        </section>
+      </div>
+    </div> -->
+
+  </div>
+
+  <div class="mdc-layout-grid">
+    <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12 controls-list-container">
+      <ul class="list">
+        <li id="youtube">
+          <img v-on:click="ativar_youtube()" src="img/youtube.png">
+        </li>
+        <li id="tv">
+          <img v-on:click="ativar_tv()" src="img/tv.png">
+        </li>
+        <!-- <li id="netflix">
+          <img src="img/netflix.png" width="10%">
+          </li> -->
+      </ul>
+    </div>
+  </div>
+
+  
+
+  <div class="select"><label for="audioSource">Audio source: </label><select id="audioSource"></select></div>
+  <div class="select"><label for="videoSource">Video source: </label><select id="videoSource"></select></div>
+</div>

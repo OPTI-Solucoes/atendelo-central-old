@@ -1,16 +1,55 @@
 {
-  "name": "inovefila_localserver",
+  "name": "inovefila_server",
   "version": "1.0.0",
-  "description": "Servidor que irá rodar localmente nas clínicas para servir as senhas",
+  "description": "Projeto do inovefila_server",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "postinstall": "install-app-deps",
+    "start": "electron . --enable-logging",
+    "clean": "rm -rf ./dist",
+    "pack": "build --dir",
+    "dist": "build --win --ia32 --x64 && build --linux --ia32 --x64"
   },
-  "author": "OptiApps",
+  "repository": {
+    "type": "git",
+    "url": "https://bitbucket.org/optiapps/inovefila_central"
+  },
+  "author": {
+    "name": "OptiApps",
+    "email": "optiappsbrasil@gmail.com"
+  },
   "license": "ISC",
+  "homepage": "https://bitbucket.org/optiapps/inovefila_central#readme",
   "dependencies": {
+    "easytimer": "^1.1.1",
     "express": "^4.15.3",
+    "firebase": "^4.1.2",
+    "jquery": "^3.2.1",
+    "material-components-web": "^0.12.1",
     "mongodb": "^2.2.29",
-    "socket.io": "^2.0.3"
+    "socket.io": "^2.0.3",
+    "socket.io-client": "^2.0.3",
+    "vue": "^2.3.4",
+    "vue-router": "^2.5.3"
+  },
+  "devDependencies": {
+    "electron": "^1.6.11",
+    "electron-builder": "^19.13.0",
+    "electron-packager": "^8.7.2"
+  },
+  "build": {
+    "appId": "br.com.optiapps.inovefila",
+    "productName": "I9Fila",
+    "linux": {
+      "target": [
+        "AppImage",
+        "deb"
+      ]
+    },
+    "win": {
+      "target": "NSIS",
+      "icon": "examples.ico"
+    }
   }
 }

@@ -1,0 +1,142 @@
+<div class="">
+	<div v-if="!logado" class="mdc-layout-grid">
+		<div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-2"></div>
+		<div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-8">
+			<div class="mdc-card">
+				<section class="mdc-card__media card_media_medica"></section>
+				<section class="mdc-card__primary">
+					<h1 class="mdc-card__title mdc-card__title--large">Seja bem vindo ao i9fila!</h1>
+					<h2 class="mdc-card__subtitle">Sistema de gerenciamento de senhas</h2>
+				</section>
+				<section class="mdc-card__supporting-text">
+					Para começar, você primeiro tem que logar ou criar um cadastro no nosso sistema. Clique no botão "Logar" abaixo para poder continuar.
+				</section>
+				<section class="mdc-card__actions" dir="rtl">
+					<a class="mdc-button mdc-button--compact mdc-card__action" @click="$root.$router.push('login')">Logar</a>
+				</section>
+			</div>
+		</div>
+	</div>
+
+	<div v-else-if="!testando && !comprou" class="mdc-layout-grid">
+		<div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-2"></div>
+		<div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-8">
+			<div class="mdc-card">
+				<section class="mdc-card__media card_media_medica"></section>
+				<section class="mdc-card__primary">
+					<h1 class="mdc-card__title mdc-card__title--large">Seja bem vindo ao i9fila!</h1>
+					<h2 class="mdc-card__subtitle">Sistema de gerenciamento de senhas</h2>
+				</section>
+				<section class="mdc-card__supporting-text">
+					No período de teste, você tem 15 dias para testar o sistema. Você realmente deseja iniciar o periodo de testes?
+				</section>
+				<section class="mdc-card__actions" dir="rtl">
+					<a class="mdc-button mdc-button--compact mdc-card__action" @click="iniciar_periodo_teste()">Iniciar</a>
+				</section>
+			</div>
+		</div>
+	</div>
+
+	<div v-else>
+		<div v-if="etapa_0" class="mdc-layout-grid">
+			<div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-2"></div>
+			<div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-8">
+				<div class="mdc-card">
+					<section class="mdc-card__media card_media_medica"></section>
+					<section class="mdc-card__primary">
+						<h1 class="mdc-card__title mdc-card__title--large">Seja bem vindo ao i9fila!</h1>
+						<h2 class="mdc-card__subtitle">Sistema de gerenciamento de senhas</h2>
+					</section>
+					<section class="mdc-card__supporting-text">
+						Para começar a configuração do seu ambiente, clique no botão "próximo" siga o tutorial!
+					</section>
+					<section class="mdc-card__actions" dir="rtl">
+						<a class="mdc-button mdc-button--compact mdc-card__action" href="" @click="proxima_etapa($event, 1)">Próximo</a>
+					</section>
+				</div>
+			</div>
+		</div>
+
+		<div v-else-if="etapa_1" class="mdc-layout-grid">
+			<div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-2"></div>
+			<div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-8">
+				<div class="mdc-card">
+					<section class="mdc-card__media card_media_medica"></section>
+					<section class="mdc-card__primary">
+						<h1 class="mdc-card__title mdc-card__title--large">Configurações iniciais - Página 1</h1>
+						<h2 class="mdc-card__subtitle">Sistema de gerenciamento de senhas</h2>
+					</section>
+					<section class="mdc-card__supporting-text">
+						Primeiramente, registre o IP do computador que será sua Central.
+						<form v-show="!registrando" action="#">
+							<div class="mdc-form-field">
+								<div class="mdc-textfield" data-mdc-auto-init="MDCTextfield">
+									<input id="ip" type="text" class="mdc-textfield__input" v-model="ip_central">
+									<label for="ip" class="mdc-textfield__label">
+										IP
+									</label>
+								</div>
+							</div>
+							<br>
+
+							<button type="submit"
+							class="mdc-button 
+							mdc-button--raised 
+							mdc-button--primary 
+							mdc-ripple-surface" v-on:click="registrar_central($event)">
+								Registrar
+							</button>
+						</form>
+						<div v-if="registrando"><b color="yellow">Registrando...</b></div>
+						<div v-else-if="registro_ok"><b color="green">Central registrada!</b></div>
+						<div v-else-if="registro_erro"><b color="red">Não foi possível registrar a Central.</b></div>
+					</section>
+					<section class="mdc-card__actions" dir="rtl">
+						<a v-show="!registrando && registro_ok" class="mdc-button mdc-button--compact mdc-card__action" href="" @click="proxima_etapa($event, 2)">Próximo</a>
+					</section>
+				</div>
+			</div>
+		</div>
+
+		<div v-else-if="etapa_2" class="mdc-layout-grid">
+			<div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-2"></div>
+			<div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-8">
+				<div class="mdc-card">
+					<section class="mdc-card__media card_media_medica"></section>
+					<section class="mdc-card__primary">
+						<h1 class="mdc-card__title mdc-card__title--large">Configurações iniciais - Página 2</h1>
+						<h2 class="mdc-card__subtitle">Sistema de gerenciamento de senhas</h2>
+					</section>
+					<section class="mdc-card__supporting-text">
+						Baixe nosso software para fazer o gerenciamento de Totens, Boxes e Monitores.<br>
+						<a href="">Clique aqui para baixar</a>
+					</section>
+					<section class="mdc-card__actions" dir="rtl">
+						<a class="mdc-button mdc-button--compact mdc-card__action" href="" @click="proxima_etapa($event, 3)">Próximo</a>
+					</section>
+				</div>
+			</div>
+		</div>
+
+		<div v-else-if="etapa_3" class="mdc-layout-grid">
+			<div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-2"></div>
+			<div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-8">
+				<div class="mdc-card">
+					<section class="mdc-card__media card_media_medica"></section>
+					<section class="mdc-card__primary">
+						<h1 class="mdc-card__title mdc-card__title--large">Configurações iniciais - Página 3</h1>
+						<h2 class="mdc-card__subtitle">Sistema de gerenciamento de senhas</h2>
+					</section>
+					<section class="mdc-card__supporting-text">
+						Agora, acesse o Painel da sua clínica para receber mais passos a passos e terminar a configuração do software na sua Central.
+					</section>
+					<section class="mdc-card__actions" dir="rtl">
+						<a class="mdc-button mdc-button--compact mdc-card__action" href="" @click="proxima_etapa($event, 4)">Acessar Painel</a>
+					</section>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	
+</div>

@@ -1,0 +1,23 @@
+.card_media_medica {
+	background-image: url('../../img/medica.jpg');
+	background-repeat: no-repeat;
+	background-size: cover;
+	background-position: center center;
+	height: 100px;
+}
+
+.card_media_tablet {
+	background-image: url('../../img/tablet1.jpg');
+	background-repeat: no-repeat;
+	background-size: cover;
+	background-position: center center;
+	height: 100px;
+}
+
+.banner_home {
+	background-image: url('../../img/banner.jpg');
+	background-repeat: no-repeat;
+	background-size: cover;
+	background-position: top center;
+	height: 200px;
+}

@@ -1,0 +1,15 @@
+.banner_saiba_mais {
+	background-image: url('../../img/banner.jpg');
+	background-repeat: no-repeat;
+	background-size: cover;
+	background-position: top center;
+	height: 200px;
+}
+
+.card_media_saiba {
+	background-image: url('../../img/saibamais.jpg');
+	background-repeat: no-repeat;
+	background-size: cover;
+	background-position: center center;
+	height: 100px;
+}

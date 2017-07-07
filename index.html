@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html class="mdc-typography">
+<head>
+  <meta charset="utf-8">
+  <title>i9fila</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <script type="text/javascript" src="node_modules/firebase/firebase.js"></script>
+
+  <script>
+    // Initialize Firebase
+    firebase.initializeApp({
+      apiKey: "AIzaSyB2d1A6gltoLcpo20D-y4ZnhuUdMRYE4Nc",
+      authDomain: "i9fila.firebaseapp.com",
+      databaseURL: "https://i9fila.firebaseio.com",
+      projectId: "i9fila",
+      storageBucket: "i9fila.appspot.com",
+      messagingSenderId: "957753652684"
+    });
+  </script>
+</head>
+
+<body class="mdc-typography demo-body">
+  <div id="app">
+    <!-- Loading -->
+    <div v-if="loading.page || loading.user" style="margin: 50px 50px 50px 50px">
+      <h1>i9fila</h1>
+      <figure class="linear-progress-demo">
+        <div role="progressbar" class="mdc-linear-progress mdc-linear-progress--indeterminate">
+          <div class="mdc-linear-progress__buffering-dots"></div>
+          <div class="mdc-linear-progress__buffer"></div>
+          <div class="mdc-linear-progress__bar mdc-linear-progress__primary-bar">
+            <span class="mdc-linear-progress__bar-inner"></span>
+          </div>
+          <div class="mdc-linear-progress__bar mdc-linear-progress__secondary-bar">
+            <span class="mdc-linear-progress__bar-inner"></span>
+          </div>
+        </div>
+      </figure>
+    </div>
+    <!-- end -->
+
+    <div class="main-content" v-else>
+      <menu-vertical id="menu_vertical" ref="menu-vertical"></menu-vertical>
+      <router-view ref="routerView"></router-view>
+    </div>
+
+    <!-- Snackbar -->
+    <div class="mdc-snackbar snackbar-msg" aria-live="assertive" aria-atomic="true" aria-hidden="true">
+      <div class="mdc-snackbar__text"></div>
+      <div class="mdc-snackbar__action-wrapper">
+        <button type="button" class="mdc-button mdc-snackbar__action-button"></button>
+      </div>
+    </div>
+    <!-- end -->
+  </div>
+
+  <link rel="stylesheet" href="node_modules/material-components-web/dist/material-components-web.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+
+  <style type="text/css">
+    :root {
+      --mdc-theme-primary: black;
+      --mdc-theme-accent: #2fc5f7;
+      --mdc-theme-background: white;
+      --mdc-theme-text-primary-on-primary: white;
+      --mdc-theme-text-icon-on-primary: white;
+      --mdc-theme-text-secondary-on-primary: white;
+      --mdc-theme-text-hint-on-primary: white;
+    }
+  </style>
+
+  <script src="node_modules/vue/dist/vue.js"></script>
+  <script src="node_modules/vue-router/dist/vue-router.js"></script>
+  <!-- <script src="node_modules/jquery/dist/jquery.js"></script> -->
+  <script>window.$ = window.jQuery = require('./node_modules/jquery/dist/jquery.js');</script>
+  <script src="node_modules/material-components-web/dist/material-components-web.js"></script>
+  <script src="node_modules/easytimer/dist/easytimer.min.js"></script>
+  <script src="node_modules/socket.io/node_modules/socket.io-client/dist/socket.io.js"></script>
+
+  <!-- Settings para o Dao e outras confs -->
+  <script type="text/javascript" src="js/settings/settings.js"></script>
+
+  <!-- CSS's -->
+  <link rel="stylesheet" href="css/index.css">
+  <link rel="stylesheet" href="templates/home/home.css">
+  <link rel="stylesheet" href="templates/system/config/system-config.css">
+  <link rel="stylesheet" href="templates/system/painel/system-painel.css">
+
+  <link rel="stylesheet" href="templates/system/subsystem/home/home.css">
+  <link rel="stylesheet" href="templates/system/subsystem/totem/totem.css">
+  <link rel="stylesheet" href="templates/system/subsystem/box/box.css">
+  <link rel="stylesheet" href="templates/system/subsystem/monitor/monitor.css">
+  
+  <link rel="stylesheet" href="templates/saiba_mais/saiba_mais.css"></link>
+  <link rel="stylesheet" href="templates/cartao/imprimir/imprimir_cartao_print.css" media="print">
+  <link rel="stylesheet" href="templates/cartao/imprimir/imprimir_cartao_screen.css">
+  <link rel="stylesheet" href="templates/menu/menu.css">
+  <link rel="stylesheet" href="templates/login/login.css">
+
+  <!-- JS + Componentes (HTML) -->
+  <script type="text/javascript" src="templates/home/home.js"></script>
+  <script type="text/javascript" src="templates/system/config/system-config.js"></script>
+  <script type="text/javascript" src="templates/system/painel/system-painel.js"></script>
+
+  <script type="text/javascript" src="templates/system/insert/totem/add_totem.js"></script>
+  <script type="text/javascript" src="templates/system/insert/box/add_box.js"></script>
+  <script type="text/javascript" src="templates/system/insert/monitor/add_monitor.js"></script>
+
+  <script type="text/javascript" src="templates/system/activate/totem/activate_totem.js"></script>
+  <script type="text/javascript" src="templates/system/activate/box/activate_box.js"></script>
+  <script type="text/javascript" src="templates/system/activate/monitor/activate_monitor.js"></script>
+
+  <script type="text/javascript" src="templates/system/subsystem/home/home.js"></script>
+  <script type="text/javascript" src="templates/system/subsystem/totem/totem.js"></script>
+  <script type="text/javascript" src="templates/system/subsystem/box/box.js"></script>
+  <script type="text/javascript" src="templates/system/subsystem/monitor/monitor.js"></script>
+
+  <script type="text/javascript" src="templates/saiba_mais/saiba_mais.js"></script>
+  <script type="text/javascript" src="templates/menu/menu.js"></script>
+  <script type="text/javascript" src="templates/login/login.js"></script>
+  <script type="text/javascript" src="templates/usuario/inserir/inserir_usuario.js"></script>
+  <script type="text/javascript" src="templates/cartao/cartao.js"></script>
+  <script type="text/javascript" src="templates/cartao/imprimir/imprimir_cartao.js"></script>
+
+  <!-- Dao's -->
+  <script type="text/javascript" src="js/daoclient/dao_clinica.js"></script>
+  <script type="text/javascript" src="js/daoclient/dao_totem.js"></script>
+  <script type="text/javascript" src="js/daoclient/dao_box.js"></script>
+  <script type="text/javascript" src="js/daoclient/dao_monitor.js"></script>
+  <!-- Configurar para pegar dados do servidor local -->
+  <script type="text/javascript" src="js/daoclient/dao_especialidade.js"></script>
+  <script type="text/javascript" src="js/daoclient/dao_paciente.js"></script>
+
+  <!-- Roteador do vuejs -->
+  <script type="text/javascript" src="js/settings/router.js"></script>
+
+  <script>window.mdc.autoInit(/* root */ document, () => {});</script>
+</body>
+</html>

@@ -1,0 +1,66 @@
+<div class="">
+	<div class="mdc-layout-grid">
+		<div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-2">
+		</div>
+		<div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-8">
+			<div class="mdc-card">
+				<section class="mdc-card__primary">
+					<h1 class="mdc-card__title mdc-card__title--large">i9fila</h1>
+					<h2 class="mdc-card__subtitle">Cadastrar novo usuário</h2>
+				</section>
+				<section class="mdc-card__supporting-text">
+					<form action="#" id="greeting-form">
+						<div>
+							<div class="mdc-textfield mdc-textfield--fullwidth" data-mdc-auto-init="MDCTextfield">
+								<input id="nome" type="text" class="mdc-textfield__input" v-model="nome">
+								<p id="convenio-helptext" class="mdc-textfield-helptext mdc-textfield-helptext--persistent" aria-hidden="true">
+									Nome
+								</p>
+							</div>
+							<br>
+							<div class="mdc-form-field">
+								<div class="mdc-textfield" data-mdc-auto-init="MDCTextfield">
+									<input id="cpf" type="text" class="mdc-textfield__input" v-model="cnpj">
+									<label for="cpf" class="mdc-textfield__label">
+										CNPJ
+									</label>
+								</div>
+							</div>
+							<br>
+
+							<div class="mdc-textfield mdc-textfield--fullwidth" data-mdc-auto-init="MDCTextfield">
+								<input id="endereco" type="text" class="mdc-textfield__input" v-model="endereco">
+								<p id="convenio-helptext" class="mdc-textfield-helptext mdc-textfield-helptext--persistent" aria-hidden="true">
+									Endereço
+								</p>
+							</div>
+							<br>
+
+							<div class="mdc-form-field">
+								<div class="mdc-textfield" data-mdc-auto-init="MDCTextfield">
+									<input id="telefone" type="text" class="mdc-textfield__input" v-model="telefone">
+									<label for="telefone" class="mdc-textfield__label">
+										Telefone
+									</label>
+								</div>
+							</div>
+							<br>
+						</div>
+						<br>
+
+						<button type="submit"
+						class="mdc-button 
+						mdc-button--raised 
+						mdc-button--primary 
+						mdc-ripple-surface" v-on:click="inserir_usuario($event)">
+							Registre-se
+						</button>
+					</form>
+				</section>
+				<section class="mdc-card__actions" dir="rtl"></section>
+			</div>
+		</div>
+		<div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-2">
+		</div>
+	</div>
+</div>

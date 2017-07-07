@@ -1,6 +1,55 @@
+const {app, BrowserWindow} = require('electron')
+
+// Keep a global reference of the window object, if you don't, the window will
+// be closed automatically when the JavaScript object is garbage collected.
+let win
+
+function createWindow () {
+  // Create the browser window.
+  win = new BrowserWindow({width: 800, height: 600})
+
+  // and load the index.html of the app.
+  win.loadURL(`file://${__dirname}/index.html`)
+
+  // Open the DevTools.
+  // win.webContents.openDevTools()
+
+  // Emitted when the window is closed.
+  win.on('closed', () => {
+    // Dereference the window object, usually you would store windows
+    // in an array if your app supports multi windows, this is the time
+    // when you should delete the corresponding element.
+    win = null
+  })
+}
+
+// This method will be called when Electron has finished
+// initialization and is ready to create browser windows.
+// Some APIs can only be used after this event occurs.
+app.on('ready', createWindow)
+
+// Quit when all windows are closed.
+app.on('window-all-closed', () => {
+  // On macOS it is common for applications and their menu bar
+  // to stay active until the user quits explicitly with Cmd + Q
+  if (process.platform !== 'darwin') {
+    app.quit()
+  }
+})
+
+app.on('activate', () => {
+  // On macOS it's common to re-create a window in the app when the
+  // dock icon is clicked and there are no other windows open.
+  if (win === null) {
+    createWindow()
+  }
+})
+
+// In this file you can include the rest of your app's specific main process
+// code. You can also put them in separate files and require them here.
+
 var mongo = require('mongodb').MongoClient;
-var app = require('express')();
-var server = require('http').createServer(app);
+var server = require('http').createServer();
 var io = require('socket.io')(server);
 var consumers = require("./consumers.js");
 
@@ -11,100 +60,93 @@ var totem = io.of('/totem');
 var db;
 
 var sockets = {
-	box: box,
-	monitor: monitor,
-	totem: totem
+  box: box,
+  monitor: monitor,
+  totem: totem
 };
 
 var url_db = "mongodb://localhost:3001/localdb";
 
-var boxes = [];
-var monitores = [];
-var totens = [];
-
 mongo.connect(url_db, function(err, db_){
-	if (err) {throw err;}
-	console.log("Connected to the Database...");
+  if (err) {throw err;}
+  console.log("Connected to the Database...");
 
-	db = db_;
+  db = db_;
 
-	db.createCollection("historico", function(err, res){
-		if (err) {console.log(err);}
-		else {console.log("Table can be writted...");}
-	});
+  db.createCollection("historico", function(err, res){
+    if (err) {console.log(err);}
+    else {console.log("Table can be writted...");}
+  });
 
-	db.createCollection("fila", function(err, res){
-		if (err) {console.log(err);}
-		else {console.log("Table can be writted...");}
-	});
+  db.createCollection("fila", function(err, res){
+    if (err) {console.log(err);}
+    else {console.log("Table can be writted...");}
+  });
 
-	db.collection("senha").updateMany({}, {'$set' : {'atendida': false }}, function(err, res) {
-		if (err) {throw err};
-		console.log(res.matchedCount);
-	});
+  db.collection("senha").updateMany({}, {'$set' : {'atendida': false }}, function(err, res) {
+    if (err) {throw err};
+    console.log(res.matchedCount);
+  });
 
-	// db.close();
-});
-
-app.get('/', function(req, res){
-	res.send('server is running');
+  // db.close();
 });
 
 io.on('connection', function(client){
-	console.log('user connected');
+  console.log('user connected');
 
-	client.on("disconnect", function(){
-		console.log("Disconnect");
-		// io.emit("update", clients[client.id] + " has left the server.");
-		// delete clients[client.id];
-	});
+  client.on("disconnect", function(){
+    console.log("Disconnect");
+    // io.emit("update", clients[client.id] + " has left the server.");
+    // delete clients[client.id];
+  });
 });
 
 box.on('connection', function(client){
-	console.log('user connected to Box');
+  console.log('user connected to Box');
 
-	client.on("disconnect", function(){
-		console.log("Disconnect from Box");
-		// io.emit("update", clients[client.id] + " has left the server.");
-		// delete clients[client.id];
-	});
+  client.on("disconnect", function(){
+    console.log("Disconnect from Box");
+    // io.emit("update", clients[client.id] + " has left the server.");
+    // delete clients[client.id];
+  });
 
-	client.on("proxima_senha", function(incoming_json) {
-		console.log("proxima_senha event");
-		consumers.get_senha(incoming_json, sockets, db);
-	});
+  client.on("proxima_senha", function(incoming_json) {
+    console.log("proxima_senha event");
+    consumers.get_senha(incoming_json, sockets, db);
+  });
 });
 
 monitor.on('connection', function(client){
-	console.log('user connected to Monitor');
+  console.log('user connected to Monitor');
 
-	client.on("disconnect", function(){
-		console.log("Disconnect from Monitor");
-		// io.emit("update", clients[client.id] + " has left the server.");
-		// delete clients[client.id];
-	});
+  client.on("disconnect", function(){
+    console.log("Disconnect from Monitor");
+    // io.emit("update", clients[client.id] + " has left the server.");
+    // delete clients[client.id];
+  });
 
-	client.on("get_view", function(incoming_json) {
-		console.log("get_view event");
-		consumers.get_view(incoming_json, sockets, db);
-	});
+  client.on("get_view", function(incoming_json) {
+    console.log("get_view event");
+    consumers.get_view(incoming_json, sockets, db);
+  });
 });
 
 totem.on('connection', function(client){
-	console.log('user connected to Totem');
+  console.log('user connected to Totem');
 
-	client.on("disconnect", function(){
-		console.log("Disconnect from Totem");
-		// io.emit("update", clients[client.id] + " has left the server.");
-		// delete clients[client.id];
-	});
+  client.on("disconnect", function(){
+    console.log("Disconnect from Totem");
+    // io.emit("update", clients[client.id] + " has left the server.");
+    // delete clients[client.id];
+  });
 
-	client.on("socilitar_nova_senha", function(incoming_json) {
-		console.log("socilitar_nova_senha event");
-		consumers.insert_senha(incoming_json, sockets, db);
-	});
+  client.on("socilitar_nova_senha", function(incoming_json) {
+    console.log("socilitar_nova_senha event");
+    consumers.insert_senha(incoming_json, sockets, db);
+  });
 });
 
-server.listen(3000, "localhost", function() {
-	console.log('listening on port 3000');
+var porta = 3000;
+server.listen(porta, "0.0.0.0", function() {
+  console.log('Socket IO listening on port ' + porta);
 });

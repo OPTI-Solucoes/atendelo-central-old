@@ -1,0 +1,45 @@
+<div class="">
+	<div class="mdc-layout-grid">
+		<div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-2"></div>
+		<div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-8">
+			<div class="mdc-card mdc-card--login">
+
+				<section class="mdc-card__primary">
+					<h1 class="mdc-card__title mdc-card__title--large">Entre ou Cadastre-se</h1>
+					<!-- <h2 class="mdc-card__subtitle">Cadastrar novo usuário</h2> -->
+				</section>
+				<section class="mdc-card__supporting-text">
+					<form action="#" id="greeting-form">
+						<div>
+							<div class="mdc-textfield mdc-textfield--fullwidth" data-mdc-auto-init="MDCTextfield">
+								<input id="email" type="text" class="mdc-textfield__input" v-model="user.email">
+								<p id="convenio-helptext" class="mdc-textfield-helptext mdc-textfield-helptext--persistent" aria-hidden="true">
+									Email
+								</p>
+							</div>
+							<br>
+
+							<div class="mdc-textfield mdc-textfield--fullwidth" data-mdc-auto-init="MDCTextfield">
+								<input id="password" type="password" class="mdc-textfield__input" v-model="user.password">
+								<p id="convenio-helptext" class="mdc-textfield-helptext mdc-textfield-helptext--persistent" aria-hidden="true">
+									Senha
+								</p>
+							</div>
+							<br>
+						</div>
+						<br>
+					</form>
+				</section>
+				<section class="mdc-card__actions mdc-card__actions--vertical" dir="rtl">
+					<button type="submit" class="mdc-button mdc-button--compact mdc-card__action dark-theme" v-on:click="toggleSignIn($event)">
+						Login
+					</button>
+					<button type="submit" class="mdc-button mdc-button--compact mdc-card__action dark-theme" v-on:click="handleSignUp($event)">
+						Cadastrar
+					</button>
+				</section>
+			</div>
+		</div>
+		<div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-2"></div>
+	</div>
+</div>
