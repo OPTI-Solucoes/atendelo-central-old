@@ -49,6 +49,60 @@ Vue.component('system-config', {
     },
 
 	methods: {
+        fazer_download: function(event) {
+            if (event) event.preventDefault();
+            if (navigator.platform.indexOf("Win") != -1) {
+                var win = window.open(settings.contextPath+"api/binarios/get_windows/", '_blank');
+                win.focus();
+                // new daoclient.DaoBinarios().get_windows(this.$root.user.token)
+                //     .done(function(data) {
+                //         console.log("done");
+                //         self.$root.mostrar_msg("Baixando arquivo...");
+                //     })
+                //     .fail(function(data) {
+                //         console.log(data.responseText);
+                //         self.$root.mostrar_msg(data.responseText);
+                //     });
+            } else if(navigator.platform.indexOf("i686") != -1) {
+                var win = window.open(settings.contextPath+"api/binarios/get_linux_32/", '_blank');
+                win.focus();
+                // new daoclient.DaoBinarios().get_linux_32(this.$root.user.token)
+                //     .done(function(data) {
+                //         console.log("done");
+                //         self.$root.mostrar_msg("Baixando arquivo...");
+                //     })
+                //     .fail(function(data) {
+                //         console.log(data.responseText);
+                //         self.$root.mostrar_msg(data.responseText);
+                //     });
+            } else if (navigator.platform.indexOf("Linux x86_64") != -1) {
+                var win = window.open(settings.contextPath+"api/binarios/get_linux_64/", '_blank');
+                win.focus();
+                // new daoclient.DaoBinarios().get_linux_64(this.$root.user.token)
+                //     .done(function(data) {
+                //         console.log("done");
+                //         self.$root.mostrar_msg("Baixando arquivo...");
+                //     })
+                //     .fail(function(data) {
+                //         console.log(data.responseText);
+                //         self.$root.mostrar_msg(data.responseText);
+                //     });
+            } else {
+                self.$root.mostrar_msg("Plataforma não identficada, baixando para Windows...");
+                var win = window.open(settings.contextPath+"api/binarios/get_windows/", '_blank');
+                win.focus();
+                // new daoclient.DaoBinarios().get_windows(this.$root.user.token)
+                //     .done(function(data) {
+                //         console.log("done");
+                //         self.$root.mostrar_msg("Baixando arquivo...");
+                //     })
+                //     .fail(function(data) {
+                //         console.log(data.responseText);
+                //         self.$root.mostrar_msg(data.responseText);
+                //     });
+            }
+        },
+
         registrar_central: function(event) {
             if (event) event.preventDefault();
 
@@ -93,7 +147,6 @@ Vue.component('system-config', {
                 this.etapa_0 = true;
             } else if (num == 1) {
                 this.etapa_1 = true;
-                window.mdc.autoInit(/* root */ document, () => {});
             }  else if (num == 2) {
                 this.etapa_2 = true;
             }  else if (num == 3) {
@@ -101,6 +154,10 @@ Vue.component('system-config', {
             } else if (num == 4) {
                 this.$root.$router.push({name: "system-painel"});
             }
+
+            setTimeout(function() {
+                window.mdc.autoInit(/* root */ document, () => {});
+            }, 100);
         }
 	},
 

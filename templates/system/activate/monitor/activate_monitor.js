@@ -21,16 +21,48 @@ Vue.component('activate-monitor', {
 
     data: function() {
         var self = this;
-    	var data = {
-            email: self.$root.user.firebase.email,
-            chave: null,
-            ip: self.$root.user.local_ip,
-		};
+        var data = {};
+        data['chave'] = null;
+        data['ip'] = self.$root.user.local_ip;
+        data['tem_acesso'] = true;
 
-    	return data;
+        if (self.$root.user.firebase) data['email'] = self.$root.user.firebase.email;
+        else data['email'] = null;
+
+        return data;
     },
 
 	methods: {
+        check: function(event) {
+            if (event) event.preventDefault();
+
+            var self = this;
+            new daoclient.DaoMonitor().check({ip:self.$root.user.local_ip, email:self.email}, this.$root.user.token)
+                .done(function(data) {
+                    console.log(data);
+                    var ip_central = data[0].fields.ip;
+                    console.log(ip_central);
+                    var win = window.open("http://" + ip_central + ":8080/inovefila/#/monitor", '_blank');
+                    console.log(win);
+                    win.focus();
+
+                    console.log("done");
+                })
+                .fail(function(data) {
+                    console.log(data.responseText);
+
+                    if (data.responseText.indexOf("Monitor") !== -1) {
+                        self.$root.mostrar_msg("Esta máquina ainda não tem acesso ao Monitor");
+                        self.tem_acesso = false;
+                        setTimeout(function() {
+                            window.mdc.autoInit(/* root */ document, () => {});
+                        }, 100);
+                    } else {
+                        self.$root.mostrar_msg(data.responseText);
+                    }
+                });
+        },
+
         activate: function(event) {
             if (event) event.preventDefault();
 
@@ -38,10 +70,12 @@ Vue.component('activate-monitor', {
             new daoclient.DaoMonitor().activate({ip:self.ip, email:self.email, chave:self.chave}, this.$root.user.token)
                 .done(function(data) {
                     console.log("done");
-                    self.$root.$router.push({name: "system-painel"});
+                    self.$root.mostrar_msg("Monitor ativado com sucesso!");
+                    self.$root.$router.push({name: "activate-monitor"});
                 })
                 .fail(function(data) {
-                    console.log("Erro no activate monitor");
+                    console.log(data.responseText);
+                    self.$root.mostrar_msg(data.responseText);
                 });
         },
 	},

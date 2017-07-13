@@ -1,6 +1,6 @@
 daoclient.Paciente = function () {
     
-    this.url = settings.localContextPath + "api/paciente/";
+    this.url = settings.contextPath + "api/paciente/";
 
     this.insert_or_update = function (paciente) {
         return $.post({

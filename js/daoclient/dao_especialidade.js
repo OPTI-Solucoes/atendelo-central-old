@@ -1,6 +1,6 @@
 daoclient.Especialidade = function () {
     
-    this.url = settings.localContextPath + "api/especialidade/";
+    this.url = settings.contextPath + "api/especialidade/";
 
     this.select_all = function () {
         return $.post({
