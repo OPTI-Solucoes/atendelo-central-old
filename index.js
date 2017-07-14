@@ -155,7 +155,7 @@ server.listen(porta, "0.0.0.0", function() {
   console.log('Socket IO listening on port ' + porta);
 });
 
-verificar(db, today_date
+verificar(db, today_date);
 setInterval(function() {
   verificar(db, today_date);
 }, 10000);
