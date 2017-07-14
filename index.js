@@ -160,7 +160,7 @@ setInterval(function() {
   verificar(db);
 }, 10000);
 
-var verificar = function(db) {
+function verificar(db) {
   console.log("Verificando...");
   today_date = new Date(); today_date.setHours(0,0,0,0);
   consumers.verify_today_historico(db, today_date);
