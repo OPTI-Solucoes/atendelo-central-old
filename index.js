@@ -77,6 +77,11 @@ mongo.connect(url_db, function(err, db_){
 
   db = db_;
 
+  verificar(db);
+  setInterval(function() {
+    verificar(db);
+  }, 10000);
+
   db.createCollection("historico", function(err, res){
     if (err) {console.log(err);}
     else {console.log("Table can be writted...");}
@@ -154,11 +159,6 @@ var porta = 3000;
 server.listen(porta, "0.0.0.0", function() {
   console.log('Socket IO listening on port ' + porta);
 });
-
-verificar(db);
-setInterval(function() {
-  verificar(db);
-}, 10000);
 
 function verificar(db) {
   console.log("Verificando...");
