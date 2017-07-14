@@ -69,7 +69,7 @@ var sockets = {
   totem: totem
 };
 
-var url_db = "mongodb://localhost:3001/localdb";
+var url_db = "mongodb://localhost:27017/localdb";
 
 mongo.connect(url_db, function(err, db_){
   if (err) {throw err;}
