@@ -155,12 +155,12 @@ server.listen(porta, "0.0.0.0", function() {
   console.log('Socket IO listening on port ' + porta);
 });
 
-verificar(db, today_date);
+verificar(db);
 setInterval(function() {
-  verificar(db, today_date);
+  verificar(db);
 }, 10000);
 
-var verificar = function(db, today_date) {
+var verificar = function(db) {
   console.log("Verificando...");
   today_date = new Date(); today_date.setHours(0,0,0,0);
   consumers.verify_today_historico(db, today_date);
