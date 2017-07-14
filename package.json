@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "postinstall": "install-app-deps",
-    "start": "electron . --enable-logging",
+    "start": "electron .",
     "clean": "rm -rf ./dist",
     "pack": "build --dir",
     "dist": "build --win --ia32 --x64 && build --linux --ia32 --x64"

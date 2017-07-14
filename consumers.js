@@ -1,6 +1,7 @@
 var ObjectId = require('mongodb').ObjectID;
 
 exports.get_senha = function(incoming_json_, sockets, db) {
+	console.log("get_senha");
 	// body...
 	today_date = new Date(); today_date.setHours(0,0,0,0);
 	verify_today_historico(db);
@@ -143,6 +144,7 @@ exports.get_senha = function(incoming_json_, sockets, db) {
 }
 
 exports.get_view = function(incoming_json_, sockets, db) {
+	console.log("get_view");
 	today_date = new Date(); today_date.setHours(0,0,0,0);
 	verify_today_historico(db);
 	verify_today_filas(db);
@@ -185,6 +187,7 @@ exports.get_view = function(incoming_json_, sockets, db) {
 }
 
 exports.insert_senha = function(incoming_json_, sockets, db) {
+	console.log("insert_senha");
 	today_date = new Date(); today_date.setHours(0,0,0,0);
 	verify_today_historico(db);
 	verify_today_filas(db);
@@ -196,7 +199,7 @@ exports.insert_senha = function(incoming_json_, sockets, db) {
 
 	db.collection("senha").find({}).toArray(function(err, res) {
 		if (err) {throw err};
-		var prox_num;
+		var prox_num = 0;
 
 		if (res.length > 0) {
 			console.log(res);

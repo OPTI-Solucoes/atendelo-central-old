@@ -1,5 +1,5 @@
 var settings = {
-    DEBUG: true,
+    DEBUG: false,
 };
 
 var daoclient = {};
@@ -17,7 +17,7 @@ $.readFile = function(url) {
 };
 
 if (settings.DEBUG) {
-    settings.contextPath = "http://192.168.0.11:8080/inovefila/"
+    settings.contextPath = "http://172.30.3.102:8080/inovefila/"
 
     settings.websocketPath = null;
     // settings.localContextPath = null;

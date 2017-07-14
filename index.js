@@ -49,6 +49,10 @@ app.on('activate', () => {
 // code. You can also put them in separate files and require them here.
 
 var mongo = require('mongodb').MongoClient;
+// var path = require('path');
+// var express = require('express');
+// var express_app = express();
+// var server = require('http').createServer(express_app);
 var server = require('http').createServer();
 var io = require('socket.io')(server);
 var consumers = require("./consumers.js");
@@ -83,10 +87,10 @@ mongo.connect(url_db, function(err, db_){
     else {console.log("Table can be writted...");}
   });
 
-  db.collection("senha").updateMany({}, {'$set' : {'atendida': false }}, function(err, res) {
-    if (err) {throw err};
-    console.log(res.matchedCount);
-  });
+  // db.collection("senha").updateMany({}, {'$set' : {'atendida': false }}, function(err, res) {
+  //   if (err) {throw err};
+  //   console.log(res.matchedCount);
+  // });
 
   // db.close();
 });
@@ -150,3 +154,16 @@ var porta = 3000;
 server.listen(porta, "0.0.0.0", function() {
   console.log('Socket IO listening on port ' + porta);
 });
+
+// express_app.use('/css', express.static(__dirname + '/css'));
+// express_app.use('/img', express.static(__dirname + '/img'));
+// express_app.use('/js', express.static(__dirname + '/js'));
+// express_app.use('/templates', express.static(__dirname + '/templates'));
+// express_app.use('/node_modules', express.static(__dirname + '/node_modules'));
+// express_app.use('/', express.static(__dirname + '/'));
+
+// express_app.get('/', function(req, res) {
+//     res.sendFile(path.join(__dirname + '/index.html'));
+// });
+// express_app.listen(8081);
+// console.log("Express listening on port 8081");
