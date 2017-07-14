@@ -155,11 +155,16 @@ server.listen(porta, "0.0.0.0", function() {
   console.log('Socket IO listening on port ' + porta);
 });
 
+verificar(db, today_date
 setInterval(function() {
+  verificar(db, today_date);
+}, 10000);
+
+var verificar = function(db, today_date) {
   console.log("Verificando...");
   today_date = new Date(); today_date.setHours(0,0,0,0);
   consumers.verify_today_historico(db, today_date);
-}, 10000);
+}
 
 // express_app.use('/css', express.static(__dirname + '/css'));
 // express_app.use('/img', express.static(__dirname + '/img'));
