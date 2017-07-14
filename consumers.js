@@ -3,10 +3,6 @@ var ObjectId = require('mongodb').ObjectID;
 exports.get_senha = function(incoming_json_, sockets, db) {
 	console.log("get_senha");
 	// body...
-	today_date = new Date(); today_date.setHours(0,0,0,0);
-	verify_today_historico(db);
-	verify_today_filas(db);
-
 	incoming_json = JSON.parse(incoming_json_);
 
 	filas_list = ['MED', 'PRE', 'NOR'];
@@ -145,10 +141,6 @@ exports.get_senha = function(incoming_json_, sockets, db) {
 
 exports.get_view = function(incoming_json_, sockets, db) {
 	console.log("get_view");
-	today_date = new Date(); today_date.setHours(0,0,0,0);
-	verify_today_historico(db);
-	verify_today_filas(db);
-
 	incoming_json = JSON.parse(incoming_json_);
 
 	ws_response_to_monitores = new WsResponse("get_view");
@@ -183,15 +175,11 @@ exports.get_view = function(incoming_json_, sockets, db) {
 				sockets.monitor.emit(ws_response_to_monitores.header.action, ws_response_to_monitores);
 			});
 		});
-	});	
+	});
 }
 
 exports.insert_senha = function(incoming_json_, sockets, db) {
 	console.log("insert_senha");
-	today_date = new Date(); today_date.setHours(0,0,0,0);
-	verify_today_historico(db);
-	verify_today_filas(db);
-
 	incoming_json = JSON.parse(incoming_json_);
 
 	ws_response_to_boxes = new WsResponse("nova_senha_em_espera");
@@ -227,7 +215,7 @@ exports.insert_senha = function(incoming_json_, sockets, db) {
 	});
 }
 
-function verify_today_historico(db) {
+exports.verify_today_historico = function (db, today_date) {
 	db.collection("historico").find({data: today_date}).toArray(function(err, result) {
 		if (err) {throw err;}
 		if (result.length == 0) {
@@ -235,12 +223,15 @@ function verify_today_historico(db) {
 			db.collection("historico").insertOne(historico, function(err, res) {
 				if (err) {throw err;}
 				console.log("1 Record Inserted, HISTORICO");
+				verify_today_filas(db, today_date);
 			});
+		} else {
+			verify_today_filas(db, today_date);
 		}
 	});
 }
 
-function verify_today_filas(db) {
+function verify_today_filas(db, today_date) {
 	db.collection("fila").find({data: today_date}).toArray(function(err, result) {
 		if (err) {throw err;}
 		if (result.length == 0) {
