@@ -92,10 +92,10 @@ mongo.connect(url_db, function(err, db_){
     else {console.log("Table can be writted...");}
   });
 
-  // db.collection("senha").updateMany({}, {'$set' : {'atendida': false }}, function(err, res) {
-  //   if (err) {throw err};
-  //   console.log(res.matchedCount);
-  // });
+  db.collection("senha").updateMany({}, {'$set' : {'atendida': false }}, function(err, res) {
+    if (err) {throw err};
+    console.log(res.matchedCount);
+  });
 
   // db.close();
 });

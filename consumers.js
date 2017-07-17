@@ -4,13 +4,10 @@ exports.get_senha = function(incoming_json_, sockets, db) {
 	console.log("get_senha");
 	// body...
 	incoming_json = JSON.parse(incoming_json_);
-
-	filas_list = ['MED', 'PRE', 'NOR'];
+	console.log(incoming_json);
 
 	ws_response_to_monitores = new WsResponse("get_senha");
 	ws_response_to_box = new WsResponse("proxima_senha");
-
-	console.log(incoming_json);
 
 	senha_enviada_tempo_decorrido = incoming_json.body.senha.tempo_decorrido;
 	ultima_fila_usada = incoming_json.body.fila.iniciais;
@@ -42,33 +39,21 @@ exports.get_senha = function(incoming_json_, sockets, db) {
 					});
 
 				} else {
-					if (ultima_fila_usada) {
-						switch(ultima_fila_usada) {
-							case "MED":
-								fila = "PRE";
-								break;
-							case "PRE":
-								fila = "NOR";
-								break;
-							case "NOR":
-								fila = "MED";
-								break;
-							default:
-								fila = "NOR";
-						}
-					} else {
-						fila = "NOR";
-					}
-
 					db.collection("senha").find({atendida: false}).toArray(function(err, res) {
 						if (err) {throw err};
 						console.log(res.length);
 						if (res.length > 0){
 							ws_response_to_box.header.action = "proxima_senha";
+							escolher = true;
 							for (var i = 0; i < res.length; i++) {
-								proxima_senha = res[i];
-								if (res[i].fila == fila) {
+								if (res[i].fila == "PRE") {
+									proxima_senha = res[i];
 									break;
+								} else {
+									if (escolher) {
+										proxima_senha = res[i];
+										escolher = false;
+									}
 								}
 							}
 							ws_response_to_box.body['senha'] = proxima_senha;
@@ -99,33 +84,21 @@ exports.get_senha = function(incoming_json_, sockets, db) {
 
 			} else {
 				console.log("FILA_AUTOMATICA");
-				if (ultima_fila_usada) {
-					switch(ultima_fila_usada) {
-						case "MED":
-							fila = "PRE";
-							break;
-						case "PRE":
-							fila = "NOR";
-							break;
-						case "NOR":
-							fila = "MED";
-							break;
-						default:
-							fila = "NOR";
-					}
-				} else {
-					fila = "NOR";
-				}
-
 				db.collection("senha").find({atendida: false}).toArray(function(err, res) {
 					if (err) {throw err};
 					console.log(res.length);
 					if (res.length > 0){
 						ws_response_to_box.header.action = "proxima_senha";
+						escolher = true;
 						for (var i = 0; i < res.length; i++) {
-							proxima_senha = res[i];
-							if (res[i].fila == fila) {
+							if (res[i].fila == "PRE") {
+								proxima_senha = res[i];
 								break;
+							} else {
+								if (escolher) {
+									proxima_senha = res[i];
+									escolher = false;
+								}
 							}
 						}
 						ws_response_to_box.body['senha'] = proxima_senha;
