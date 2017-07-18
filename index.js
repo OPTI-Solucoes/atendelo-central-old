@@ -58,6 +58,7 @@ var io = require('socket.io')(server);
 var consumers = require("./consumers.js");
 
 var box = io.of('/box');
+var box_sala = io.of('/box_sala');
 var monitor = io.of('/monitor');
 var totem = io.of('/totem');
 
@@ -65,6 +66,7 @@ var db;
 
 var sockets = {
   box: box,
+  box_sala: box_sala,
   monitor: monitor,
   totem: totem
 };
@@ -77,25 +79,31 @@ mongo.connect(url_db, function(err, db_){
 
   db = db_;
 
-  verificar(db);
-  setInterval(function() {
-    verificar(db);
-  }, 10000);
-
   db.createCollection("historico", function(err, res){
     if (err) {console.log(err);}
     else {console.log("Table can be writted...");}
+
+    db.createCollection("fila", function(err, res){
+      if (err) {console.log(err);}
+      else {console.log("Table can be writted...");}
+
+      verificar(db);
+      setInterval(function() {
+        verificar(db);
+      }, 10000);
+
+    });
   });
 
-  db.createCollection("fila", function(err, res){
-    if (err) {console.log(err);}
-    else {console.log("Table can be writted...");}
-  });
-
-  db.collection("senha").updateMany({}, {'$set' : {'atendida': false }}, function(err, res) {
-    if (err) {throw err};
-    console.log(res.matchedCount);
-  });
+  // db.collection("senha").updateMany({},
+  //   {'$set' : {'atendida': false, 'atendida_sala': false }}, function(err, res) {
+  //   if (err) {throw err};
+  //   console.log(res.matchedCount);
+  //   db.collection("senha").find({}).toArray(function(err, result) {
+  //     if (err) {console.log(err);}
+  //     console.log(result);
+  //   });
+  // });
 
   // db.close();
 });
