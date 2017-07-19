@@ -30,6 +30,32 @@ exports.atender_senha = function(incoming_json_, sockets, db) {
 
 }
 
+exports.enviar_nova_senha_sala = function(incoming_json_, sockets, db) {
+	console.log("enviar_nova_senha_sala");
+	incoming_json = JSON.parse(incoming_json_);
+	console.log(incoming_json);
+
+	ws_response_to_box_sala = new WsResponse("nova_senha");
+	ws_response_to_box = new WsResponse("definiu_especialidade");
+	db.collection("senha").findOne({_id: new ObjectId(incoming_json.body.senha._id)}, function(err, result) {
+		if (err) {throw err;}
+		console.log(result);
+		if (result) {
+			var senha_enviada = result;
+			senha_enviada.especialidade = incoming_json.body.senha.especialidade;
+			db.collection("senha").updateOne({_id: new ObjectId(result._id)}, senha_enviada, function(err, res) {
+				if (err) {throw err;}
+				console.log("Senha updated");
+				ws_response_to_box_sala.body['senha'] = senha_enviada;
+				ws_response_to_box.body['success'] = true;
+
+				sockets.box_sala.emit(ws_response_to_box_sala.header.action, ws_response_to_box_sala);
+				sockets.box.emit(ws_response_to_box.header.action, ws_response_to_box_sala);
+			});
+		}
+	});
+}
+
 exports.get_senha = function(incoming_json_, sockets, db) {
 	console.log("get_senha");
 	incoming_json = JSON.parse(incoming_json_);
@@ -37,7 +63,7 @@ exports.get_senha = function(incoming_json_, sockets, db) {
 
 	ws_response_to_monitores = new WsResponse("get_senha");
 	ws_response_to_box = new WsResponse("proxima_senha");
-	ws_response_to_box_sala = new WsResponse("nova_senha");
+	// ws_response_to_box_sala = new WsResponse("nova_senha");
 
 	senha_enviada_tempo_decorrido = incoming_json.body.senha.tempo_decorrido;
 	ultima_fila_usada = incoming_json.body.fila.iniciais;
@@ -53,7 +79,7 @@ exports.get_senha = function(incoming_json_, sockets, db) {
 				if (err) {throw err;}
 				console.log("Senha updated");
 				ws_response_to_monitores.body['senha'] = senha_enviada;
-				ws_response_to_box_sala.body['senha'] = senha_enviada;
+				// ws_response_to_box_sala.body['senha'] = senha_enviada;
 
 				if (fila_manual) {
 					db.collection("senha").findOne({fila: fila_manual, atendida: false}, function(err, result) {
@@ -67,7 +93,7 @@ exports.get_senha = function(incoming_json_, sockets, db) {
 
 						sockets.monitor.emit(ws_response_to_monitores.header.action, ws_response_to_monitores);
 						sockets.box.emit(ws_response_to_box.header.action, ws_response_to_box);
-						sockets.box_sala.emit(ws_response_to_box_sala.header.action, ws_response_to_box_sala);
+						// sockets.box_sala.emit(ws_response_to_box_sala.header.action, ws_response_to_box_sala);
 					});
 
 				} else {
@@ -94,7 +120,7 @@ exports.get_senha = function(incoming_json_, sockets, db) {
 						}
 						sockets.monitor.emit(ws_response_to_monitores.header.action, ws_response_to_monitores);
 						sockets.box.emit(ws_response_to_box.header.action, ws_response_to_box);
-						sockets.box_sala.emit(ws_response_to_box_sala.header.action, ws_response_to_box_sala);
+						// sockets.box_sala.emit(ws_response_to_box_sala.header.action, ws_response_to_box_sala);
 					});
 				}
 			});
@@ -119,7 +145,7 @@ exports.get_senha = function(incoming_json_, sockets, db) {
 				console.log("FILA_AUTOMATICA");
 				db.collection("senha").find({atendida: false}).toArray(function(err, res) {
 					if (err) {throw err};
-					console.log(res.length);
+					console.log("Quant_senhas: "+res.length);
 					if (res.length > 0){
 						ws_response_to_box.header.action = "proxima_senha";
 						escolher = true;
@@ -134,6 +160,7 @@ exports.get_senha = function(incoming_json_, sockets, db) {
 								}
 							}
 						}
+						console.log(proxima_senha);
 						ws_response_to_box.body['senha'] = proxima_senha;
 					} else {
 						ws_response_to_box.header.action = "nenhuma_senha";
@@ -189,15 +216,14 @@ exports.insert_senha = function(incoming_json_, sockets, db) {
 		var prox_num = 0;
 
 		if (res.length > 0) {
-			console.log(res);
 			prox_num = res[res.length-1].numero+1;
 		}
 
 		senha = {
 			numero: prox_num,
 			paciente: incoming_json.body.paciente,
-			especialidade: incoming_json.body.especialidade,
 			fila: incoming_json.body.fila,
+			especialidade: null,
 			atendida: false,
 			atendida_sala: false,
 		};
@@ -205,6 +231,7 @@ exports.insert_senha = function(incoming_json_, sockets, db) {
 		db.collection("senha").insertOne(senha, function(err, res) {
 			if (err) {throw err};
 			console.log("Senha inserted: ");
+			console.log(res.ops[0]);
 			senha = res.ops[0];
 
 			ws_response_to_totens.body['senha'] = senha;

@@ -95,15 +95,15 @@ mongo.connect(url_db, function(err, db_){
     });
   });
 
-  // db.collection("senha").updateMany({},
-  //   {'$set' : {'atendida': false, 'atendida_sala': false }}, function(err, res) {
-  //   if (err) {throw err};
-  //   console.log(res.matchedCount);
-  //   db.collection("senha").find({}).toArray(function(err, result) {
-  //     if (err) {console.log(err);}
-  //     console.log(result);
-  //   });
-  // });
+  db.collection("senha").updateMany({},
+    {'$set' : {'atendida': false, 'atendida_sala': false , 'especialidade': null}}, function(err, res) {
+    if (err) {throw err};
+    console.log(res.matchedCount);
+    db.collection("senha").find({}).toArray(function(err, result) {
+      if (err) {console.log(err);}
+      console.log(result);
+    });
+  });
 
   // db.close();
 });
@@ -130,6 +130,26 @@ box.on('connection', function(client){
   client.on("proxima_senha", function(incoming_json) {
     console.log("proxima_senha event");
     consumers.get_senha(incoming_json, sockets, db);
+  });
+
+  client.on("enviar_nova_senha_sala", function(incoming_json) {
+    console.log("enviar_nova_senha_sala event");
+    consumers.enviar_nova_senha_sala(incoming_json, sockets, db);
+  });
+});
+
+box_sala.on('connection', function(client){
+  console.log('user connected to Box_Sala');
+
+  client.on("disconnect", function(){
+    console.log("Disconnect from Box_Sala");
+    // io.emit("update", clients[client.id] + " has left the server.");
+    // delete clients[client.id];
+  });
+
+  client.on("atender_senha", function(incoming_json) {
+    console.log("atender_senha event");
+    consumers.atender_senha(incoming_json, sockets, db);
   });
 });
 
