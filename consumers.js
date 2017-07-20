@@ -36,13 +36,13 @@ exports.enviar_nova_senha_sala = function(incoming_json_, sockets, db) {
 	console.log(incoming_json);
 
 	ws_response_to_box_sala = new WsResponse("nova_senha");
-	ws_response_to_box = new WsResponse("definiu_especialidade");
+	ws_response_to_box = new WsResponse("definiu_fila_sala");
 	db.collection("senha").findOne({_id: new ObjectId(incoming_json.body.senha._id)}, function(err, result) {
 		if (err) {throw err;}
 		console.log(result);
 		if (result) {
 			var senha_enviada = result;
-			senha_enviada.especialidade = incoming_json.body.senha.especialidade;
+			senha_enviada.fila_sala = incoming_json.body.senha.fila_sala;
 			db.collection("senha").updateOne({_id: new ObjectId(result._id)}, senha_enviada, function(err, res) {
 				if (err) {throw err;}
 				console.log("Senha updated");
@@ -63,7 +63,6 @@ exports.get_senha = function(incoming_json_, sockets, db) {
 
 	ws_response_to_monitores = new WsResponse("get_senha");
 	ws_response_to_box = new WsResponse("proxima_senha");
-	// ws_response_to_box_sala = new WsResponse("nova_senha");
 
 	senha_enviada_tempo_decorrido = incoming_json.body.senha.tempo_decorrido;
 	ultima_fila_usada = incoming_json.body.fila.iniciais;
@@ -79,7 +78,6 @@ exports.get_senha = function(incoming_json_, sockets, db) {
 				if (err) {throw err;}
 				console.log("Senha updated");
 				ws_response_to_monitores.body['senha'] = senha_enviada;
-				// ws_response_to_box_sala.body['senha'] = senha_enviada;
 
 				if (fila_manual) {
 					db.collection("senha").findOne({fila: fila_manual, atendida: false}, function(err, result) {
@@ -204,6 +202,44 @@ exports.get_view = function(incoming_json_, sockets, db) {
 	});
 }
 
+exports.add_fila_sala = function(incoming_json_, sockets, db) {
+	console.log("add_fila_sala");
+	incoming_json = JSON.parse(incoming_json_);
+
+	ws_response_to_geral = new WsResponse("add_fila");
+
+	db.collection("fila_sala").find({apelido: incoming_json.body.fila.apelido})
+	.toArray(function(err, result) {
+		if (err) {throw err;}
+		if (result) {
+			console.log("fila_sala já existe");
+			ws_response_to_geral.body['response'] = "OK";
+			sockets.geral.emit(ws_response_to_geral.header.action, ws_response_to_geral);
+		} else {
+			var fila = incoming_json.body.fila;
+			db.collection("fila_sala").insertOne(fila, function(err, res) {
+				if (err) {throw err};
+				console.log("fila_sala inserted: ");
+				console.log(res.ops[0]);
+				ws_response_to_geral.body['response'] = "OK";
+				sockets.geral.emit(ws_response_to_geral.header.action, ws_response_to_geral);
+			});
+		}
+	});
+}
+
+exports.get_all_fila_sala = function(incoming_json_, sockets, db) {
+	console.log("get_all_fila_sala");
+
+	ws_response_to_geral = new WsResponse("get_all_fila_sala");
+
+	db.collection("fila_sala").find({}).toArray(function(err, result) {
+		if (err) {throw err;}
+		ws_response_to_geral.body['fila_sala_list'] = result;
+		sockets.geral.emit(ws_response_to_geral.header.action, ws_response_to_geral);
+	});
+}
+
 exports.insert_senha = function(incoming_json_, sockets, db) {
 	console.log("insert_senha");
 	incoming_json = JSON.parse(incoming_json_);
@@ -223,7 +259,7 @@ exports.insert_senha = function(incoming_json_, sockets, db) {
 			numero: prox_num,
 			paciente: incoming_json.body.paciente,
 			fila: incoming_json.body.fila,
-			especialidade: null,
+			fila_sala: null,
 			atendida: false,
 			atendida_sala: false,
 		};

@@ -54,17 +54,20 @@ var mongo = require('mongodb').MongoClient;
 // var express_app = express();
 // var server = require('http').createServer(express_app);
 var server = require('http').createServer();
-var io = require('socket.io')(server);
-var consumers = require("./consumers.js");
 
+var io = require('socket.io')(server);
+var geral = io.of('/geral');
 var box = io.of('/box');
 var box_sala = io.of('/box_sala');
 var monitor = io.of('/monitor');
 var totem = io.of('/totem');
 
+var consumers = require("./consumers.js");
+
 var db;
 
 var sockets = {
+  geral: geral,
   box: box,
   box_sala: box_sala,
   monitor: monitor,
@@ -117,6 +120,21 @@ io.on('connection', function(client){
     // delete clients[client.id];
   });
 });
+
+geral.on('connection', function(client) {
+  console.log('user connected to Geral');
+
+  client.on("disconnect", function(){
+    console.log("Disconnect from Geral");
+    // io.emit("update", clients[client.id] + " has left the server.");
+    // delete clients[client.id];
+  });
+
+  client.on("add_fila_sala", function(incoming_json) {
+    console.log("add_fila_sala event");
+    consumers.add_fila_sala(incoming_json, sockets, db);
+  });
+})
 
 box.on('connection', function(client){
   console.log('user connected to Box');
