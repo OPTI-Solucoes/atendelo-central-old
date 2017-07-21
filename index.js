@@ -86,27 +86,26 @@ mongo.connect(url_db, function(err, db_){
     if (err) {console.log(err);}
     else {console.log("Table can be writted...");}
 
-    db.createCollection("fila", function(err, res){
-      if (err) {console.log(err);}
-      else {console.log("Table can be writted...");}
-
+    verificar(db);
+    setInterval(function() {
       verificar(db);
-      setInterval(function() {
-        verificar(db);
-      }, 10000);
+    }, 10000);
 
-    });
+    // db.createCollection("fila", function(err, res){
+    //   if (err) {console.log(err);}
+    //   else {console.log("Table can be writted...");}
+    // });
   });
 
-  db.collection("senha").updateMany({},
-    {'$set' : {'atendida': false, 'atendida_sala': false , 'especialidade': null}}, function(err, res) {
-    if (err) {throw err};
-    console.log(res.matchedCount);
-    db.collection("senha").find({}).toArray(function(err, result) {
-      if (err) {console.log(err);}
-      console.log(result);
-    });
-  });
+  // db.collection("senha").updateMany({},
+  //   {'$set' : {'atendida': false, 'atendida_sala': false , 'especialidade': null}}, function(err, res) {
+  //   if (err) {throw err};
+  //   console.log(res.matchedCount);
+  //   db.collection("senha").find({}).toArray(function(err, result) {
+  //     if (err) {console.log(err);}
+  //     console.log(result);
+  //   });
+  // });
 
   // db.close();
 });
@@ -150,9 +149,14 @@ box.on('connection', function(client){
     consumers.get_senha(incoming_json, sockets, db);
   });
 
-  client.on("enviar_nova_senha_sala", function(incoming_json) {
-    console.log("enviar_nova_senha_sala event");
+  client.on("encaminhar_senha_fila", function(incoming_json) {
+    console.log("encaminhar_senha_fila event");
     consumers.enviar_nova_senha_sala(incoming_json, sockets, db);
+  });
+
+  client.on("select_all_filas_box", function(incoming_json) {
+    console.log("select_all_filas_box event");
+    consumers.select_all_filas_box(incoming_json, sockets, db);
   });
 });
 
@@ -168,6 +172,11 @@ box_sala.on('connection', function(client){
   client.on("atender_senha", function(incoming_json) {
     console.log("atender_senha event");
     consumers.atender_senha(incoming_json, sockets, db);
+  });
+
+  client.on("select_all_filas", function(incoming_json) {
+    console.log("select_all_filas event");
+    consumers.select_all_filas(incoming_json, sockets, db);
   });
 });
 
@@ -208,7 +217,8 @@ server.listen(porta, "0.0.0.0", function() {
 
 function verificar(db) {
   console.log("Verificando...");
-  today_date = new Date(); today_date.setHours(0,0,0,0);
+  today_date = new Date();
+  today_date.setHours(0,0,0,0);
   consumers.verify_today_historico(db, today_date);
 }
 

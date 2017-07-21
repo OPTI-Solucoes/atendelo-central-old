@@ -8,7 +8,7 @@ exports.atender_senha = function(incoming_json_, sockets, db) {
 	ws_response_to_monitores = new WsResponse("get_senha");
 	ws_response_to_box_sala = new WsResponse("atender_senha");
 
-	senha_enviada_tempo_decorrido = incoming_json.body.senha.tempo_decorrido;
+	// incoming_json.body.tempo_decorrido;
 
 	db.collection("senha").findOne({_id: new ObjectId(incoming_json.body.senha._id)}, function(err, result) {
 		if (err) {throw err;}
@@ -206,14 +206,15 @@ exports.add_fila_sala = function(incoming_json_, sockets, db) {
 	console.log("add_fila_sala");
 	incoming_json = JSON.parse(incoming_json_);
 
-	ws_response_to_geral = new WsResponse("add_fila");
+	ws_response_to_geral = new WsResponse("add_fila_sala");
+	ws_response_to_box_sala = new WsResponse("nova_fila");
 
 	db.collection("fila_sala").find({apelido: incoming_json.body.fila.apelido})
 	.toArray(function(err, result) {
 		if (err) {throw err;}
-		if (result) {
+		if (result.length > 0) {
 			console.log("fila_sala já existe");
-			ws_response_to_geral.body['response'] = "OK";
+			ws_response_to_geral.body['response'] = "Fila já existente";
 			sockets.geral.emit(ws_response_to_geral.header.action, ws_response_to_geral);
 		} else {
 			var fila = incoming_json.body.fila;
@@ -221,22 +222,40 @@ exports.add_fila_sala = function(incoming_json_, sockets, db) {
 				if (err) {throw err};
 				console.log("fila_sala inserted: ");
 				console.log(res.ops[0]);
-				ws_response_to_geral.body['response'] = "OK";
+				ws_response_to_geral.body['response'] = "Fila adicionada";
+				ws_response_to_box_sala.body['fila'] = res.ops[0];
 				sockets.geral.emit(ws_response_to_geral.header.action, ws_response_to_geral);
+				sockets.geral.emit(ws_response_to_box_sala.header.action, ws_response_to_box_sala);
 			});
 		}
 	});
 }
 
-exports.get_all_fila_sala = function(incoming_json_, sockets, db) {
-	console.log("get_all_fila_sala");
-
-	ws_response_to_geral = new WsResponse("get_all_fila_sala");
-
+exports.select_all_filas = function(incoming_json_, sockets, db) {
+	console.log("select_all_filas");
+	ws_response_to_box_sala = new WsResponse("select_all_filas");
 	db.collection("fila_sala").find({}).toArray(function(err, result) {
 		if (err) {throw err;}
-		ws_response_to_geral.body['fila_sala_list'] = result;
-		sockets.geral.emit(ws_response_to_geral.header.action, ws_response_to_geral);
+		ws_response_to_box_sala.body['fila_sala_list'] = result;
+		db.collection("senha").find({atendida: true, atendida_sala: false})
+		.toArray(function(err, result_2) {
+			ws_response_to_box_sala.body['senhas_list'] = result_2;
+			sockets.box_sala.emit(ws_response_to_box_sala.header.action, ws_response_to_box_sala);
+		});
+	});
+}
+
+exports.select_all_filas_box = function(incoming_json_, sockets, db) {
+	console.log("select_all_filas_box");
+	ws_response_to_box = new WsResponse("select_all_filas_box");
+	db.collection("fila_sala").find({}).toArray(function(err, result) {
+		if (err) {throw err;}
+		ws_response_to_box.body['fila_sala_list'] = result;
+		db.collection("senha").find({atendida: true, atendida_sala: false})
+		.toArray(function(err, result_2) {
+			ws_response_to_box.body['senhas_list'] = result_2;
+			sockets.box.emit(ws_response_to_box.header.action, ws_response_to_box);
+		});
 	});
 }
 
@@ -249,7 +268,7 @@ exports.insert_senha = function(incoming_json_, sockets, db) {
 
 	db.collection("senha").find({}).toArray(function(err, res) {
 		if (err) {throw err};
-		var prox_num = 0;
+		var prox_num = 1;
 
 		if (res.length > 0) {
 			prox_num = res[res.length-1].numero+1;
@@ -282,35 +301,60 @@ exports.verify_today_historico = function (db, today_date) {
 	db.collection("historico").find({data: today_date}).toArray(function(err, result) {
 		if (err) {throw err;}
 		if (result.length == 0) {
-			historico = {data: today_date, quant_atendimentos: 0, tempo_medio_atendimento: null};
-			db.collection("historico").insertOne(historico, function(err, res) {
-				if (err) {throw err;}
-				console.log("1 Record Inserted, HISTORICO");
-				verify_today_filas(db, today_date);
+			db.collection("historico").find({}).toArray(function(err, result_2) {
+				if (result_2.length > 0) {
+					historicos = result_2;
+					db.collection("senha").find({}).toArray(function(err, result_3) {
+						if (err) {throw err;}
+						var last_date = new Date();
+						last_date.setDate(historicos[historicos.length-1].data.getDate() - 1);
+						historico = {data: last_date, quant_atendimentos: result_3.length,
+							tempo_medio_atendimento: null, senhas: result_3};
+						db.collection("historico").updateOne({data: last_date}, historico, function(err, result_4) {
+							if (err) {throw err;}
+							console.log("1 Record Updated, HISTORICO");
+							db.collection("senha").deleteMany({}, function(err, result_delete) {
+								if (err) {throw err;}
+								console.log(result_delete.result.n + " senha(s) deletada(s)");
+								historico = {data: today_date, quant_atendimentos: 0,
+									tempo_medio_atendimento: null, senhas: []};
+								db.collection("historico").insertOne(historico, function(err, res) {
+									if (err) {throw err;}
+									console.log("1 Record Inserted, HISTORICO");
+								});
+							});
+						});
+					});
+				} else {
+					historico = {data: today_date, quant_atendimentos: 0,
+						tempo_medio_atendimento: null, senhas: []};
+					db.collection("historico").insertOne(historico, function(err, res) {
+						if (err) {throw err;}
+						console.log("1 Record Inserted, HISTORICO");
+					});
+				}
 			});
-		} else {
-			verify_today_filas(db, today_date);
 		}
 	});
 }
 
-function verify_today_filas(db, today_date) {
-	db.collection("fila").find({data: today_date}).toArray(function(err, result) {
-		if (err) {throw err;}
-		if (result.length == 0) {
-			filas = [
-				// {classificacao: "Medico", iniciais: "MED", data: today_date},
-				{classificacao: "Preferencial", iniciais: "PRE", data: today_date},
-				{classificacao: "Normal", iniciais: "NOR", data: today_date},
-			];
-
-			db.collection("fila").insertMany(filas, function(err, res) {
-				if (err) {throw err;}
-				console.log(res.insertedCount+ " Record(s) Inserted(s), FILA");
-			});
-		}
-	});
-}
+// function verify_today_filas(db, today_date) {
+// 	db.collection("fila").find({data: today_date}).toArray(function(err, result) {
+// 		if (err) {throw err;}
+// 		if (result.length == 0) {
+// 			filas = [
+// 				// {classificacao: "Medico", iniciais: "MED", data: today_date},
+// 				{classificacao: "Preferencial", iniciais: "PRE", data: today_date},
+// 				{classificacao: "Normal", iniciais: "NOR", data: today_date},
+// 			];
+//
+// 			db.collection("fila").insertMany(filas, function(err, res) {
+// 				if (err) {throw err;}
+// 				console.log(res.insertedCount+ " Record(s) Inserted(s), FILA");
+// 			});
+// 		}
+// 	});
+// }
 
 function WsResponse(action) {
 	this.header = {action: action};
