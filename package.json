@@ -39,11 +39,10 @@
     "electron-packager": "^8.7.2"
   },
   "build": {
-    "appId": "br.com.optiapps.inovefila",
-    "productName": "I9Fila",
+    "appId": "br.com.optiapps.inovefila_server",
+    "productName": "I9Fila - Server",
     "linux": {
       "target": [
-        "AppImage",
         "deb"
       ]
     },
