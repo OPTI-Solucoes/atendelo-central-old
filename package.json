@@ -43,7 +43,7 @@
     "productName": "I9Fila - Server",
     "linux": {
       "target": "deb",
-      "icon": "inovefilaserver.ico",
+      "icon": "./icons",
       "depends": ["mongodb"],
       "category": "Utility",
       "desktop": "I9Fila - Server"
