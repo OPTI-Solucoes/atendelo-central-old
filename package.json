@@ -42,13 +42,15 @@
     "appId": "br.com.optiapps.inovefila_server",
     "productName": "I9Fila - Server",
     "linux": {
-      "target": [
-        "deb"
-      ]
+      "target": "deb",
+      "icon": "inovefilaserver.ico",
+      "depends": ["mongodb"],
+      "category": "Utility",
+      "desktop": "I9Fila - Server"
     },
     "win": {
       "target": "NSIS",
-      "icon": "examples.ico"
+      "icon": "inovefilaserver.ico"
     }
   }
 }
