@@ -1,6 +1,6 @@
 {
   "name": "inovefila_server",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "description": "Projeto do inovefila_server",
   "main": "index.js",
   "scripts": {
@@ -41,6 +41,7 @@
   "build": {
     "appId": "br.com.optiapps.inovefila_server",
     "productName": "I9Fila - Server",
+    "compression": "maximum",
     "linux": {
       "target": "deb",
       "icon": "./icons",
