@@ -23,8 +23,9 @@
 }
 
 .div-header-imagem {
-    background-image: url('../../img/hospital.svg');
+    background-image: url('../../img/bannerinovefila.png');
     background-repeat: no-repeat;
-    background-size: cover;
+    background-size: contain;
     background-position: center center;
+    background-color: #fff;
 }

@@ -64,6 +64,8 @@ exports.get_senha = function(incoming_json_, sockets, db) {
 	ws_response_to_monitores = new WsResponse("get_senha");
 	ws_response_to_box = new WsResponse("proxima_senha");
 
+	chamar_proxima = incoming_json.body.chamar_proxima;
+
 	senha_enviada_tempo_decorrido = incoming_json.body.senha.tempo_decorrido;
 	ultima_fila_usada = incoming_json.body.fila.iniciais;
 	fila_manual = incoming_json.body.fila_manual.iniciais;
@@ -77,7 +79,7 @@ exports.get_senha = function(incoming_json_, sockets, db) {
 			db.collection("senha").updateOne({_id: new ObjectId(senha_enviada._id)}, senha_enviada, function(err, res) {
 				if (err) {throw err;}
 				console.log("Senha updated");
-				ws_response_to_monitores.body['senha'] = senha_enviada;
+				// ws_response_to_monitores.body['senha'] = senha_enviada;
 
 				if (fila_manual) {
 					db.collection("senha").findOne({fila: fila_manual, atendida: false}, function(err, result) {
@@ -85,13 +87,15 @@ exports.get_senha = function(incoming_json_, sockets, db) {
 						if (result) {
 							proxima_senha = result;
 							ws_response_to_box.body['senha'] = proxima_senha;
+							ws_response_to_monitores.body['senha'] = proxima_senha;
 						} else {
 							ws_response_to_box.header.action = "nenhuma_senha";
 						}
 
-						sockets.monitor.emit(ws_response_to_monitores.header.action, ws_response_to_monitores);
 						sockets.box.emit(ws_response_to_box.header.action, ws_response_to_box);
-						// sockets.box_sala.emit(ws_response_to_box_sala.header.action, ws_response_to_box_sala);
+						if (chamar_proxima && ws_response_to_box.header.action!="nenhuma_senha") {
+							sockets.monitor.emit(ws_response_to_monitores.header.action, ws_response_to_monitores);
+						}
 					});
 
 				} else {
@@ -113,12 +117,15 @@ exports.get_senha = function(incoming_json_, sockets, db) {
 								}
 							}
 							ws_response_to_box.body['senha'] = proxima_senha;
+							ws_response_to_monitores.body['senha'] = proxima_senha;
 						} else {
 							ws_response_to_box.header.action = "nenhuma_senha";
 						}
-						sockets.monitor.emit(ws_response_to_monitores.header.action, ws_response_to_monitores);
+
 						sockets.box.emit(ws_response_to_box.header.action, ws_response_to_box);
-						// sockets.box_sala.emit(ws_response_to_box_sala.header.action, ws_response_to_box_sala);
+						if (chamar_proxima && ws_response_to_box.header.action!="nenhuma_senha") {
+							sockets.monitor.emit(ws_response_to_monitores.header.action, ws_response_to_monitores);
+						}
 					});
 				}
 			});
@@ -133,10 +140,14 @@ exports.get_senha = function(incoming_json_, sockets, db) {
 					if (result) {
 						proxima_senha = result;
 						ws_response_to_box.body['senha'] = proxima_senha;
+						ws_response_to_monitores.body['senha'] = proxima_senha;
 					} else {
 						ws_response_to_box.header.action = "nenhuma_senha";
 					}
 					sockets.box.emit(ws_response_to_box.header.action, ws_response_to_box);
+					if (chamar_proxima && ws_response_to_box.header.action!="nenhuma_senha") {
+						sockets.monitor.emit(ws_response_to_monitores.header.action, ws_response_to_monitores);
+					}
 				});
 
 			} else {
@@ -160,10 +171,14 @@ exports.get_senha = function(incoming_json_, sockets, db) {
 						}
 						console.log(proxima_senha);
 						ws_response_to_box.body['senha'] = proxima_senha;
+						ws_response_to_monitores.body['senha'] = proxima_senha;
 					} else {
 						ws_response_to_box.header.action = "nenhuma_senha";
 					}
 					sockets.box.emit(ws_response_to_box.header.action, ws_response_to_box);
+					if (chamar_proxima && ws_response_to_box.header.action!="nenhuma_senha") {
+						sockets.monitor.emit(ws_response_to_monitores.header.action, ws_response_to_monitores);
+					}
 				});
 			}
 		}
