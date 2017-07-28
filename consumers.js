@@ -274,6 +274,33 @@ exports.select_all_filas_box = function(incoming_json_, sockets, db) {
 	});
 }
 
+exports.edit_fila = function(incoming_json_, sockets, db) {
+	console.log("edit_fila");
+	incoming_json = JSON.parse(incoming_json_);
+
+	ws_response_to_box_sala = new WsResponse("edit_fila");
+
+	db.collection("fila_sala").findOne({_id: new ObjectId(incoming_json.body.sala._id)}, function(err, result) {
+		if (err) {throw err;}
+		if (result) {
+			var sala_ = result;
+			sala_.medico = incoming_json.body.sala.medico;
+			db.collection("fila_sala").updateOne({_id: new ObjectId(incoming_json.body.sala._id)},
+			sala_, function(err, result_2) {
+				if (err) {throw err;}
+				console.log(result_2);
+				if (result_2) {
+					ws_response_to_box_sala.body["sucesso"] = true;
+				} else {
+					ws_response_to_box_sala.body["sucesso"] = false;
+				}
+
+				sockets.box_sala.emit(ws_response_to_box_sala.header.action, ws_response_to_box_sala);
+			});
+		}
+	});
+}
+
 exports.insert_senha = function(incoming_json_, sockets, db) {
 	console.log("insert_senha");
 	incoming_json = JSON.parse(incoming_json_);

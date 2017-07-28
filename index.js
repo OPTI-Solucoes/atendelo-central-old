@@ -174,6 +174,11 @@ box_sala.on('connection', function(client){
     consumers.atender_senha(incoming_json, sockets, db);
   });
 
+  client.on("edit_fila", function(incoming_json) {
+    console.log("edit_fila event");
+    consumers.edit_fila(incoming_json, sockets, db);
+  });
+
   client.on("select_all_filas", function(incoming_json) {
     console.log("select_all_filas event");
     consumers.select_all_filas(incoming_json, sockets, db);
