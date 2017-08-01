@@ -198,11 +198,23 @@ exports.get_view = function(incoming_json_, sockets, db) {
 		if (res.length > 0) {
 			senhas.push(res[res.length-1]);
 		}
+		if (res.length > 1) {
+			senhas.push(res[res.length-2]);
+		}
+		if (res.length > 2) {
+			senhas.push(res[res.length-3]);
+		}
 
 		db.collection("senha").find({fila: 'NOR', atendida: true}).toArray(function(err, res) {
 			if (err) {throw err};
-			if (res.length > 0) {
+			if (res.length > 0 && senhas.length < 3) {
 				senhas.push(res[res.length-1]);
+			}
+			if (res.length > 1 && senhas.length < 3) {
+				senhas.push(res[res.length-2]);
+			}
+			if (res.length > 2 && senhas.length < 3) {
+				senhas.push(res[res.length-3]);
 			}
 
 			if (senhas.length > 0) {
@@ -348,23 +360,25 @@ exports.verify_today_historico = function (db, today_date) {
 					historicos = result_2;
 					db.collection("senha").find({}).toArray(function(err, result_3) {
 						if (err) {throw err;}
-						var last_date = new Date();
-						last_date.setDate(historicos[historicos.length-1].data.getDate() - 1);
-						historico = {data: last_date, quant_atendimentos: result_3.length,
-							tempo_medio_atendimento: null, senhas: result_3};
-						db.collection("historico").updateOne({data: last_date}, historico, function(err, result_4) {
+						var historico = historicos[historicos.length-1];
+						historico.quant_atendimentos = result_3.length;
+						historico.senhas = result_3;
+						historico.tempo_medio_atendimento = null;
+						db.collection("historico").updateOne({_id: new ObjectId(historico._id)}, historico, function(err, result_4) {
 							if (err) {throw err;}
-							console.log("1 Record Updated, HISTORICO");
-							db.collection("senha").deleteMany({}, function(err, result_delete) {
-								if (err) {throw err;}
-								console.log(result_delete.result.n + " senha(s) deletada(s)");
-								historico = {data: today_date, quant_atendimentos: 0,
-									tempo_medio_atendimento: null, senhas: []};
-								db.collection("historico").insertOne(historico, function(err, res) {
+							if (result_4.result.ok && result_4.result.n > 0) {
+								console.log("1 Record Updated, HISTORICO");
+								db.collection("senha").deleteMany({}, function(err, result_delete) {
 									if (err) {throw err;}
-									console.log("1 Record Inserted, HISTORICO");
+									console.log(result_delete.result.n + " senha(s) deletada(s)");
+									historico = {data: today_date, quant_atendimentos: 0,
+										tempo_medio_atendimento: null, senhas: []};
+									db.collection("historico").insertOne(historico, function(err, res) {
+										if (err) {throw err;}
+										console.log("1 Record Inserted, HISTORICO");
+									});
 								});
-							});
+							}
 						});
 					});
 				} else {
@@ -379,24 +393,6 @@ exports.verify_today_historico = function (db, today_date) {
 		}
 	});
 }
-
-// function verify_today_filas(db, today_date) {
-// 	db.collection("fila").find({data: today_date}).toArray(function(err, result) {
-// 		if (err) {throw err;}
-// 		if (result.length == 0) {
-// 			filas = [
-// 				// {classificacao: "Medico", iniciais: "MED", data: today_date},
-// 				{classificacao: "Preferencial", iniciais: "PRE", data: today_date},
-// 				{classificacao: "Normal", iniciais: "NOR", data: today_date},
-// 			];
-//
-// 			db.collection("fila").insertMany(filas, function(err, res) {
-// 				if (err) {throw err;}
-// 				console.log(res.insertedCount+ " Record(s) Inserted(s), FILA");
-// 			});
-// 		}
-// 	});
-// }
 
 function WsResponse(action) {
 	this.header = {action: action};
