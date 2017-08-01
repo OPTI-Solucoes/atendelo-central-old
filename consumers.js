@@ -8,14 +8,13 @@ exports.atender_senha = function(incoming_json_, sockets, db) {
 	ws_response_to_monitores = new WsResponse("get_senha");
 	ws_response_to_box_sala = new WsResponse("atender_senha");
 
-	// incoming_json.body.tempo_decorrido;
-
 	db.collection("senha").findOne({_id: new ObjectId(incoming_json.body.senha._id)}, function(err, result) {
 		if (err) {throw err;}
 		console.log(result);
 		if (result) {
 			var senha_enviada = result;
 			senha_enviada.atendida_sala = true;
+			senha_enviada.finalizada = new Date();
 			db.collection("senha").updateOne({_id: new ObjectId(senha_enviada._id)}, senha_enviada, function(err, res) {
 				if (err) {throw err;}
 				console.log("Senha updated");
@@ -335,6 +334,8 @@ exports.insert_senha = function(incoming_json_, sockets, db) {
 			fila_sala: null,
 			atendida: false,
 			atendida_sala: false,
+			criada: new Date(),
+			finalizada: null
 		};
 
 		db.collection("senha").insertOne(senha, function(err, res) {
@@ -392,6 +393,12 @@ exports.verify_today_historico = function (db, today_date) {
 			});
 		}
 	});
+}
+
+function millisToMinutesAndSeconds(millis) {
+  var minutes = Math.floor(millis / 60000);
+  var seconds = ((millis % 60000) / 1000).toFixed(0);
+  return minutes + ":" + (seconds < 10 ? '0' : '') + seconds;
 }
 
 function WsResponse(action) {
