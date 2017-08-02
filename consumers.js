@@ -65,7 +65,6 @@ exports.get_senha = function(incoming_json_, sockets, db) {
 
 	chamar_proxima = incoming_json.body.chamar_proxima;
 
-	senha_enviada_tempo_decorrido = incoming_json.body.senha.tempo_decorrido;
 	ultima_fila_usada = incoming_json.body.fila.iniciais;
 	fila_manual = incoming_json.body.fila_manual.iniciais;
 
@@ -364,7 +363,15 @@ exports.verify_today_historico = function (db, today_date) {
 						var historico = historicos[historicos.length-1];
 						historico.quant_atendimentos = result_3.length;
 						historico.senhas = result_3;
-						historico.tempo_medio_atendimento = null;
+
+						var tempo_total = 0;
+						for (var i = 0; i < historico.senhas.length; i++) {
+							if (historico.senhas[i].criada && historico.senhas[i].finalizada) {
+								tempo_total = tempo_total + historico.senhas[i].finalizada.getTime() - historico.senhas[i].criada.getTime();
+							}
+						}
+
+						historico.tempo_medio_atendimento = millisToMinutesAndSeconds(tempo_total / historico.quant_atendimentos);
 						db.collection("historico").updateOne({_id: new ObjectId(historico._id)}, historico, function(err, result_4) {
 							if (err) {throw err;}
 							if (result_4.result.ok && result_4.result.n > 0) {
