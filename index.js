@@ -6,7 +6,12 @@ let win
 
 function createWindow () {
   // Create the browser window.
-  win = new BrowserWindow({width: 800, height: 600})
+  win = new BrowserWindow(
+    {
+      width: 800,
+      height: 600,
+      title: "I9Fila - Consumer",
+  });
 
   // and load the index.html of the app.
   win.loadURL(`file://${__dirname}/index.html`)
@@ -49,10 +54,6 @@ app.on('activate', () => {
 // code. You can also put them in separate files and require them here.
 
 var mongo = require('mongodb').MongoClient;
-// var path = require('path');
-// var express = require('express');
-// var express_app = express();
-// var server = require('http').createServer(express_app);
 var server = require('http').createServer();
 
 var io = require('socket.io')(server);
@@ -90,24 +91,7 @@ mongo.connect(url_db, function(err, db_){
     setInterval(function() {
       verificar(db);
     }, 10000);
-
-    // db.createCollection("fila", function(err, res){
-    //   if (err) {console.log(err);}
-    //   else {console.log("Table can be writted...");}
-    // });
   });
-
-  // db.collection("senha").updateMany({},
-  //   {'$set' : {'atendida': false, 'atendida_sala': false , 'especialidade': null}}, function(err, res) {
-  //   if (err) {throw err};
-  //   console.log(res.matchedCount);
-  //   db.collection("senha").find({}).toArray(function(err, result) {
-  //     if (err) {console.log(err);}
-  //     console.log(result);
-  //   });
-  // });
-
-  // db.close();
 });
 
 io.on('connection', function(client){
@@ -115,8 +99,6 @@ io.on('connection', function(client){
 
   client.on("disconnect", function(){
     console.log("Disconnect");
-    // io.emit("update", clients[client.id] + " has left the server.");
-    // delete clients[client.id];
   });
 });
 
@@ -125,8 +107,6 @@ geral.on('connection', function(client) {
 
   client.on("disconnect", function(){
     console.log("Disconnect from Geral");
-    // io.emit("update", clients[client.id] + " has left the server.");
-    // delete clients[client.id];
   });
 
   client.on("add_fila_sala", function(incoming_json) {
@@ -140,8 +120,6 @@ box.on('connection', function(client){
 
   client.on("disconnect", function(){
     console.log("Disconnect from Box");
-    // io.emit("update", clients[client.id] + " has left the server.");
-    // delete clients[client.id];
   });
 
   client.on("proxima_senha", function(incoming_json) {
@@ -165,8 +143,6 @@ box_sala.on('connection', function(client){
 
   client.on("disconnect", function(){
     console.log("Disconnect from Box_Sala");
-    // io.emit("update", clients[client.id] + " has left the server.");
-    // delete clients[client.id];
   });
 
   client.on("atender_senha", function(incoming_json) {
@@ -190,8 +166,6 @@ monitor.on('connection', function(client){
 
   client.on("disconnect", function(){
     console.log("Disconnect from Monitor");
-    // io.emit("update", clients[client.id] + " has left the server.");
-    // delete clients[client.id];
   });
 
   client.on("get_view", function(incoming_json) {
@@ -205,8 +179,6 @@ totem.on('connection', function(client){
 
   client.on("disconnect", function(){
     console.log("Disconnect from Totem");
-    // io.emit("update", clients[client.id] + " has left the server.");
-    // delete clients[client.id];
   });
 
   client.on("socilitar_nova_senha", function(incoming_json) {
@@ -227,6 +199,10 @@ function verificar(db) {
   consumers.verify_today_historico(db, today_date);
 }
 
+// var path = require('path');
+// var express = require('express');
+// var express_app = express();
+// var server = require('http').createServer(express_app);
 // express_app.use('/css', express.static(__dirname + '/css'));
 // express_app.use('/img', express.static(__dirname + '/img'));
 // express_app.use('/js', express.static(__dirname + '/js'));

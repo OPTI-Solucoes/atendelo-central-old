@@ -191,39 +191,20 @@ exports.get_view = function(incoming_json_, sockets, db) {
 
 	senhas = [];
 
-	db.collection("senha").find({fila: 'PRE', atendida: true}).toArray(function(err, res) {
+	db.collection("senha").find({atendida: true}).toArray(function(err, res) {
 		if (err) {throw err};
-		if (res.length > 0) {
-			senhas.push(res[res.length-1]);
-		}
-		if (res.length > 1) {
-			senhas.push(res[res.length-2]);
-		}
-		if (res.length > 2) {
-			senhas.push(res[res.length-3]);
+		for (var i = res.length-1; i > res.length-4; i--) {
+			senhas.push(res[i]);
 		}
 
-		db.collection("senha").find({fila: 'NOR', atendida: true}).toArray(function(err, res) {
-			if (err) {throw err};
-			if (res.length > 0 && senhas.length < 3) {
-				senhas.push(res[res.length-1]);
-			}
-			if (res.length > 1 && senhas.length < 3) {
-				senhas.push(res[res.length-2]);
-			}
-			if (res.length > 2 && senhas.length < 3) {
-				senhas.push(res[res.length-3]);
-			}
+		if (senhas.length > 0) {
+			ws_response_to_monitores.header.action = "get_view";
+			ws_response_to_monitores.body["senhas"] = senhas;
+		} else {
+			ws_response_to_monitores.header.action = "nenhuma_senha";
+		}
 
-			if (senhas.length > 0) {
-				ws_response_to_monitores.header.action = "get_view";
-				ws_response_to_monitores.body["senhas"] = senhas;
-			} else {
-				ws_response_to_monitores.header.action = "nenhuma_senha";
-			}
-
-			sockets.monitor.emit(ws_response_to_monitores.header.action, ws_response_to_monitores);
-		});
+		sockets.monitor.emit(ws_response_to_monitores.header.action, ws_response_to_monitores);
 	});
 }
 
