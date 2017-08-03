@@ -10,7 +10,7 @@ function createWindow () {
     {
       width: 800,
       height: 600,
-      title: "I9Fila - Consumer",
+      title: "I9Fila - Server",
   });
 
   // and load the index.html of the app.

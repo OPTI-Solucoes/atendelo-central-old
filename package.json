@@ -1,6 +1,6 @@
 {
   "name": "inovefila_server",
-  "version": "1.0.2",
+  "version": "1.0.4",
   "description": "Projeto do inovefila_server",
   "main": "index.js",
   "scripts": {
