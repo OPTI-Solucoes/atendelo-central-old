@@ -95,6 +95,7 @@ var app = new Vue({
     },
     registrando_usuario: false,
     snackbar: null,
+    internet_connected: false,
   },
 
   methods: {
@@ -213,3 +214,8 @@ pc.onicecandidate = function(ice){  //listen for candidate events
 if(!app._isMounted) {
   app.$mount('#app');
 }
+
+var interval_mdc = setInterval(function() {
+  window.mdc.autoInit(document, () => {});
+  app.internet_connected = navigator.onLine;
+}, 500);

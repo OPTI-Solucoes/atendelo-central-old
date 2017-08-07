@@ -6,7 +6,11 @@
         <!-- <span class="mdc-toolbar__title catalog-title">i9fila</span> -->
       </section>
       <section class="mdc-toolbar__section mdc-toolbar__section--align-end">
-        <!-- <a class="material-icons mdc-toolbar__icon" href="#">person</a> -->
+        Internet:&nbsp;&nbsp;
+        <i class="mdc-toolbar__icon"
+          :class="{'con-connected': $root.internet_connected,
+          'con-error': !$root.internet_connected}">
+        </i>
       </section>
     </div>
   </div>
