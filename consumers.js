@@ -383,6 +383,12 @@ exports.verify_today_historico = function (db, today_date) {
 	});
 }
 
+// exports.sync_box_with_web = function (db, today_date) {
+// 	db.collection("box").find({}).toArray(function(err, result) {
+//
+// 	});
+// }
+
 function millisToMinutesAndSeconds(millis) {
   var minutes = Math.floor(millis / 60000);
   var seconds = ((millis % 60000) / 1000).toFixed(0);

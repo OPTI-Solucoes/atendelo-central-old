@@ -221,19 +221,25 @@ server_broadcast.on('message', function (message, rinfo) {
 server_broadcast.bind(PORT);
 // END
 
-// var path = require('path');
-// var express = require('express');
-// var express_app = express();
-// var server = require('http').createServer(express_app);
-// express_app.use('/css', express.static(__dirname + '/css'));
-// express_app.use('/img', express.static(__dirname + '/img'));
-// express_app.use('/js', express.static(__dirname + '/js'));
-// express_app.use('/templates', express.static(__dirname + '/templates'));
-// express_app.use('/node_modules', express.static(__dirname + '/node_modules'));
-// express_app.use('/', express.static(__dirname + '/'));
-
-// express_app.get('/', function(req, res) {
-//     res.sendFile(path.join(__dirname + '/index.html'));
-// });
-// express_app.listen(8081);
-// console.log("Express listening on port 8081");
+// Conexão entre o Main e a WebPage
+const {ipcMain} = require('electron');
+ipcMain.on('boxes', (event, arg) => {
+  console.log(arg);
+  var boxes = arg;
+});
+ipcMain.on('monitores', (event, arg) => {
+  console.log(arg);
+  var monitores = arg;
+});
+ipcMain.on('salas', (event, arg) => {
+  console.log(arg);
+  var salas = arg;
+});
+ipcMain.on('totens', (event, arg) => {
+  console.log(arg);
+  var totens = arg;
+});
+ipcMain.on('internet_connected', (event, arg) => {
+  console.log(arg);
+  var internet_connected = arg;
+});
