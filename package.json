@@ -22,7 +22,7 @@
   "license": "ISC",
   "homepage": "https://bitbucket.org/optiapps/inovefila_central#readme",
   "dependencies": {
-    "easytimer": "^1.1.1",
+    "dgram": "^1.0.1",
     "express": "^4.15.3",
     "firebase": "^4.1.2",
     "jquery": "^3.2.1",
@@ -45,7 +45,9 @@
     "linux": {
       "target": "deb",
       "icon": "./icons",
-      "depends": ["mongodb"],
+      "depends": [
+        "mongodb"
+      ],
       "category": "Utility",
       "desktop": "I9Fila - Server"
     },

@@ -199,6 +199,28 @@ function verificar(db) {
   consumers.verify_today_historico(db, today_date);
 }
 
+// START AutoDiscover server
+var PORT = 6025;
+var dgram = require('dgram');
+var server_broadcast = dgram.createSocket('udp4');
+
+server_broadcast.on('listening', function () {
+    var address = server_broadcast.address();
+    console.log('UDP Server listening on ' + address.address + ":" + address.port);
+    server_broadcast.setBroadcast(false);
+});
+
+server_broadcast.on('message', function (message, rinfo) {
+    console.log('Message from: ' + rinfo.address + ':' + rinfo.port +' - '+message.toString());
+    var message_2 = new Buffer("You found me.");
+    server_broadcast.send(message_2, 0, message_2.length, rinfo.port, rinfo.address, function() {
+      console.log('Message sended to client ' + rinfo.address + ':' + rinfo.port +'');
+    });
+});
+
+server_broadcast.bind(PORT);
+// END
+
 // var path = require('path');
 // var express = require('express');
 // var express_app = express();
