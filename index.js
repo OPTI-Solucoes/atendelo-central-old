@@ -200,7 +200,7 @@ function verificar(db) {
 }
 
 // START AutoDiscover server
-var PORT = 6025;
+var PORT = 6024;
 var dgram = require('dgram');
 var server_broadcast = dgram.createSocket('udp4');
 
