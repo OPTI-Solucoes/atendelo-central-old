@@ -13,7 +13,7 @@
 						<div>
 							<div class="mdc-form-field">
 								<div class="mdc-textfield" data-mdc-auto-init="MDCTextfield">
-									<input id="email" type="text" class="mdc-textfield__input" v-model="box.fields.apelido">
+									<input id="email" type="text" class="mdc-textfield__input" @keydown.enter="add_box($event)" v-model="box.fields.apelido">
 									<label for="email" class="mdc-textfield__label">
 										Apelido da máquina
 									</label>
