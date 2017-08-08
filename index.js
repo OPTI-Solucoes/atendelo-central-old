@@ -225,7 +225,7 @@ server_broadcast.on('listening', function () {
 server_broadcast.on('message', function (message, rinfo) {
     console.log('Message from: ' + rinfo.address + ':' + rinfo.port +' - '+message.toString());
     var message_2 = new Buffer("You found me.");
-    server_broadcast.send(message_2, 0, message_2.length, rinfo.port, rinfo.address, function() {
+    server_broadcast.send(message_2, 0, message_2.length, PORT, rinfo.address, function() {
       console.log('Message sended to client ' + rinfo.address + ':' + rinfo.port +'');
     });
 });
