@@ -17,7 +17,7 @@ $.readFile = function(url) {
 };
 
 if (settings.DEBUG) {
-    settings.contextPath = "http://172.30.3.102:8080/inovefila/"
+    settings.contextPath = "http://172.30.3.104:8080/inovefila/"
 
     settings.websocketPath = null;
     // settings.localContextPath = null;

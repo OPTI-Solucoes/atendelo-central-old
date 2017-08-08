@@ -12,7 +12,7 @@ Vue.component('system-painel', {
 		console.log("System-painel: beforeMount");
 		this.$root.has_logged();
 	},
-	
+
 	mounted: function() {
 		var self = this;
 		window.mdc.autoInit(/* root */ document, () => {});
@@ -22,9 +22,20 @@ Vue.component('system-painel', {
 			this.comprou = this.$root.user.model.fields.comprou;
 			this.ja_configurou = this.$root.user.model.fields.ip_central;
 
-			if (this.ja_configurou) {this.carregar_maquinas_conectadas()};
+			if (this.ja_configurou) {
+				this.carregar_maquinas_conectadas();
+				self.carregar_maquinas_interval = setInterval(function() {
+					self.carregar_maquinas_conectadas();
+				}, 10000);
+			};
 		}
 	},
+
+	beforeDestroy: function () {
+		if (this.carregar_maquinas_interval) {
+			clearInterval(this.carregar_maquinas_interval);
+		}
+  },
 
 	data: function() {
 		var self = this;
@@ -37,6 +48,8 @@ Vue.component('system-painel', {
 			totem_list: [],
 			box_list: [],
 			monitor_list: [],
+			carregar_maquinas_interval: null,
+			consumers: require('electron').remote.require("./consumers"),
 		};
 
 		return data;
@@ -112,9 +125,13 @@ Vue.component('system-painel', {
 			var self = this;
 			new daoclient.DaoTotem().list(this.$root.user.token)
 			.done(function(data) {
-				console.log("done");
+				console.log("done list totem");
+				self.totem_list = [];
 				for (var i = 0; i < data.length; i++) {
 					self.totem_list.push(data[i]);
+				}
+				if (self.totem_list.length > 0) {
+					self.consumers.sync_totem_with_web(self.totem_list);
 				}
 			})
 			.fail(function(data) {
@@ -123,9 +140,13 @@ Vue.component('system-painel', {
 
 			new daoclient.DaoBox().list(this.$root.user.token)
 			.done(function(data) {
-				console.log("done");
+				console.log("done list box");
+				self.box_list = [];
 				for (var i = 0; i < data.length; i++) {
 					self.box_list.push(data[i]);
+				}
+				if (self.box_list.length > 0) {
+					self.consumers.sync_box_with_web(self.box_list);
 				}
 			})
 			.fail(function(data) {
@@ -134,9 +155,13 @@ Vue.component('system-painel', {
 
 			new daoclient.DaoMonitor().list(this.$root.user.token)
 			.done(function(data) {
-				console.log("done");
+				console.log("done list monitor");
+				self.monitor_list = [];
 				for (var i = 0; i < data.length; i++) {
 					self.monitor_list.push(data[i]);
+				}
+				if (self.monitor_list.length > 0) {
+					self.consumers.sync_monitor_with_web(self.monitor_list);
 				}
 			})
 			.fail(function(data) {

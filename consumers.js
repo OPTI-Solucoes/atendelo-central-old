@@ -1,6 +1,36 @@
+var mongo = require('mongodb').MongoClient;
 var ObjectId = require('mongodb').ObjectID;
+var db = null;
 
-exports.atender_senha = function(incoming_json_, sockets, db) {
+exports.connect_to_database = function() {
+	var url_db = "mongodb://localhost:27017/localdb";
+
+	mongo.connect(url_db, function(err, db_){
+	  if (err) {throw err;}
+	  console.log("Connected to the Database...");
+
+	  db = db_;
+
+	  db.createCollection("historico", function(err, res){
+	    if (err) {console.log(err);}
+	    else {console.log("Table can be writted...");}
+
+	    verificar(db);
+	    setInterval(function() {
+	      verificar(db);
+	    }, 10000);
+	  });
+	});
+}
+
+function verificar(db) {
+  console.log("Verificando...");
+  today_date = new Date();
+  today_date.setHours(0,0,0,0);
+  verify_today_historico(db, today_date);
+}
+
+exports.atender_senha = function(incoming_json_, sockets) {
 	console.log("atender_senha");
 	incoming_json = JSON.parse(incoming_json_);
 	console.log(incoming_json);
@@ -29,7 +59,7 @@ exports.atender_senha = function(incoming_json_, sockets, db) {
 
 }
 
-exports.enviar_nova_senha_sala = function(incoming_json_, sockets, db) {
+exports.enviar_nova_senha_sala = function(incoming_json_, sockets) {
 	console.log("enviar_nova_senha_sala");
 	incoming_json = JSON.parse(incoming_json_);
 	console.log(incoming_json);
@@ -55,7 +85,7 @@ exports.enviar_nova_senha_sala = function(incoming_json_, sockets, db) {
 	});
 }
 
-exports.get_senha = function(incoming_json_, sockets, db) {
+exports.get_senha = function(incoming_json_, sockets) {
 	console.log("get_senha");
 	incoming_json = JSON.parse(incoming_json_);
 	console.log(incoming_json);
@@ -183,7 +213,7 @@ exports.get_senha = function(incoming_json_, sockets, db) {
 	});
 }
 
-exports.get_view = function(incoming_json_, sockets, db) {
+exports.get_view = function(incoming_json_, sockets) {
 	console.log("get_view");
 	incoming_json = JSON.parse(incoming_json_);
 
@@ -208,7 +238,7 @@ exports.get_view = function(incoming_json_, sockets, db) {
 	});
 }
 
-exports.add_fila_sala = function(incoming_json_, sockets, db) {
+exports.add_fila_sala = function(incoming_json_, sockets) {
 	console.log("add_fila_sala");
 	incoming_json = JSON.parse(incoming_json_);
 
@@ -237,7 +267,7 @@ exports.add_fila_sala = function(incoming_json_, sockets, db) {
 	});
 }
 
-exports.select_all_filas = function(incoming_json_, sockets, db) {
+exports.select_all_filas = function(incoming_json_, sockets) {
 	console.log("select_all_filas");
 	ws_response_to_box_sala = new WsResponse("select_all_filas");
 	db.collection("fila_sala").find({}).toArray(function(err, result) {
@@ -251,7 +281,7 @@ exports.select_all_filas = function(incoming_json_, sockets, db) {
 	});
 }
 
-exports.select_all_filas_box = function(incoming_json_, sockets, db) {
+exports.select_all_filas_box = function(incoming_json_, sockets) {
 	console.log("select_all_filas_box");
 	ws_response_to_box = new WsResponse("select_all_filas_box");
 	db.collection("fila_sala").find({}).toArray(function(err, result) {
@@ -265,7 +295,7 @@ exports.select_all_filas_box = function(incoming_json_, sockets, db) {
 	});
 }
 
-exports.edit_fila = function(incoming_json_, sockets, db) {
+exports.edit_fila = function(incoming_json_, sockets) {
 	console.log("edit_fila");
 	incoming_json = JSON.parse(incoming_json_);
 
@@ -292,7 +322,7 @@ exports.edit_fila = function(incoming_json_, sockets, db) {
 	});
 }
 
-exports.insert_senha = function(incoming_json_, sockets, db) {
+exports.insert_senha = function(incoming_json_, sockets) {
 	console.log("insert_senha");
 	incoming_json = JSON.parse(incoming_json_);
 
@@ -332,7 +362,100 @@ exports.insert_senha = function(incoming_json_, sockets, db) {
 	});
 }
 
-exports.verify_today_historico = function (db, today_date) {
+exports.check_box = function (incoming_json_, client) {
+	incoming_json = JSON.parse(incoming_json_);
+	ws_response_to_box = new WsResponse("check_result");
+
+	db.collection("box").findOne({'fields.ip': incoming_json.body.ip}, function(err, result) {
+		if (err) throw err;
+		if (result) {
+			ws_response_to_box.body["success_check"] = true;
+			ws_response_to_box.body["obj"] = result;
+		} else {
+			ws_response_to_box.body["success_check"] = false;
+		}
+
+		client.emit(ws_response_to_box.header.action, ws_response_to_box);
+	});
+}
+
+// exports.activate_box = function () {
+// 	incoming_json = JSON.parse(incoming_json_);
+// 	ws_response_to_box = new WsResponse("activate_result");
+//
+// 	db.collection("box").findOne({'fields.chave': incoming_json.body.chave}, function(err, result) {
+// 		if (err) throw err;
+// 		if (result) {
+// 			db.collection("box").updateOne({'fields.chave': incoming_json.body.chave},
+// 				{'fields.ip': incoming_json.body.ip}, function(err, result_2) {
+// 					if (err) throw err;
+// 					if (result_2.result.ok && result_2.result.n > 0) {
+// 						ws_response_to_box.body["success_check"] = true;
+// 						ws_response_to_box.body["obj"] = result;
+// 					} else {
+// 						ws_response_to_box.body["success_check"] = false;
+// 					}
+//
+// 					client.emit(ws_response_to_box.header.action, ws_response_to_box);
+// 				});
+// 		} else {
+// 			ws_response_to_box.body["message"] = "Esta chave não existe"
+// 		}
+// 	});
+// }
+
+exports.check_box_sala = function (incoming_json_, client) {
+	incoming_json = JSON.parse(incoming_json_);
+	ws_response_to_box_sala = new WsResponse("check_result");
+
+	db.collection("box").findOne({'fields.ip': incoming_json.body.ip}, function(err, result) {
+		if (err) throw err;
+		if (result) {
+			ws_response_to_box_sala.body["success_check"] = true;
+			ws_response_to_box_sala.body["obj"] = result;
+		} else {
+			ws_response_to_box_sala.body["success_check"] = false;
+		}
+
+		client.emit(ws_response_to_box_sala.header.action, ws_response_to_box_sala);
+	});
+}
+
+exports.check_monitor = function (incoming_json_, client) {
+	incoming_json = JSON.parse(incoming_json_);
+	ws_response_to_monitor = new WsResponse("check_result");
+
+	db.collection("monitor").findOne({'fields.ip': incoming_json.body.ip}, function(err, result) {
+		if (err) throw err;
+		if (result) {
+			ws_response_to_monitor.body["success_check"] = true;
+			ws_response_to_monitor.body["obj"] = result;
+		} else {
+			ws_response_to_monitor.body["success_check"] = false;
+		}
+
+		client.emit(ws_response_to_monitor.header.action, ws_response_to_monitor);
+	});
+}
+
+exports.check_totem = function (incoming_json_, client) {
+	incoming_json = JSON.parse(incoming_json_);
+	ws_response_to_totem = new WsResponse("check_result");
+
+	db.collection("box").findOne({'fields.ip': incoming_json.body.ip}, function(err, result) {
+		if (err) throw err;
+		if (result) {
+			ws_response_to_totem.body["success_check"] = true;
+			ws_response_to_totem.body["obj"] = result;
+		} else {
+			ws_response_to_totem.body["success_check"] = false;
+		}
+
+		client.emit(ws_response_to_totem.header.action, ws_response_to_totem);
+	});
+}
+
+verify_today_historico = function (db, today_date) {
 	db.collection("historico").find({data: today_date}).toArray(function(err, result) {
 		if (err) {throw err;}
 		if (result.length == 0) {
@@ -383,11 +506,32 @@ exports.verify_today_historico = function (db, today_date) {
 	});
 }
 
-// exports.sync_box_with_web = function (db, today_date) {
-// 	db.collection("box").find({}).toArray(function(err, result) {
-//
-// 	});
-// }
+exports.sync_box_with_web = function (objs) {
+	db.collection("box").deleteMany({}, function(err, result) {
+    if (err) throw err;
+		db.collection("box").insertMany(objs, function(err, result_2) {
+			if (err) throw err;
+		});
+  });
+}
+
+exports.sync_monitor_with_web = function (objs) {
+	db.collection("monitor").deleteMany({}, function(err, result) {
+    if (err) throw err;
+		db.collection("monitor").insertMany(objs, function(err, result_2) {
+			if (err) throw err;
+		});
+  });
+}
+
+exports.sync_totem_with_web = function (objs) {
+	db.collection("totem").deleteMany({}, function(err, result) {
+    if (err) throw err;
+		db.collection("totem").insertMany(objs, function(err, result_2) {
+			if (err) throw err;
+		});
+  });
+}
 
 function millisToMinutesAndSeconds(millis) {
   var minutes = Math.floor(millis / 60000);

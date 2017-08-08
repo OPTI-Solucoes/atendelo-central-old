@@ -1,4 +1,4 @@
-const {app, BrowserWindow} = require('electron')
+const {app, BrowserWindow, ipcMain} = require('electron')
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -53,7 +53,6 @@ app.on('activate', () => {
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and require them here.
 
-var mongo = require('mongodb').MongoClient;
 var server = require('http').createServer();
 
 var io = require('socket.io')(server);
@@ -64,8 +63,7 @@ var monitor = io.of('/monitor');
 var totem = io.of('/totem');
 
 var consumers = require("./consumers.js");
-
-var db;
+consumers.connect_to_database();
 
 var sockets = {
   geral: geral,
@@ -74,25 +72,6 @@ var sockets = {
   monitor: monitor,
   totem: totem
 };
-
-var url_db = "mongodb://localhost:27017/localdb";
-
-mongo.connect(url_db, function(err, db_){
-  if (err) {throw err;}
-  console.log("Connected to the Database...");
-
-  db = db_;
-
-  db.createCollection("historico", function(err, res){
-    if (err) {console.log(err);}
-    else {console.log("Table can be writted...");}
-
-    verificar(db);
-    setInterval(function() {
-      verificar(db);
-    }, 10000);
-  });
-});
 
 io.on('connection', function(client){
   console.log('user connected');
@@ -111,7 +90,7 @@ geral.on('connection', function(client) {
 
   client.on("add_fila_sala", function(incoming_json) {
     console.log("add_fila_sala event");
-    consumers.add_fila_sala(incoming_json, sockets, db);
+    consumers.add_fila_sala(incoming_json, sockets);
   });
 })
 
@@ -124,18 +103,28 @@ box.on('connection', function(client){
 
   client.on("proxima_senha", function(incoming_json) {
     console.log("proxima_senha event");
-    consumers.get_senha(incoming_json, sockets, db);
+    consumers.get_senha(incoming_json, sockets);
   });
 
   client.on("encaminhar_senha_fila", function(incoming_json) {
     console.log("encaminhar_senha_fila event");
-    consumers.enviar_nova_senha_sala(incoming_json, sockets, db);
+    consumers.enviar_nova_senha_sala(incoming_json, sockets);
   });
 
   client.on("select_all_filas_box", function(incoming_json) {
     console.log("select_all_filas_box event");
-    consumers.select_all_filas_box(incoming_json, sockets, db);
+    consumers.select_all_filas_box(incoming_json, sockets);
   });
+
+  client.on("check_me", function(incoming_json) {
+    console.log("check_me event");
+    consumers.check_box(incoming_json, client);
+  });
+
+  // client.on("activate_me", function(incoming_json) {
+  //   console.log("activate_me event");
+  //   consumers.activate_box(incoming_json, client);
+  // });
 });
 
 box_sala.on('connection', function(client){
@@ -147,18 +136,28 @@ box_sala.on('connection', function(client){
 
   client.on("atender_senha", function(incoming_json) {
     console.log("atender_senha event");
-    consumers.atender_senha(incoming_json, sockets, db);
+    consumers.atender_senha(incoming_json, sockets);
   });
 
   client.on("edit_fila", function(incoming_json) {
     console.log("edit_fila event");
-    consumers.edit_fila(incoming_json, sockets, db);
+    consumers.edit_fila(incoming_json, sockets);
   });
 
   client.on("select_all_filas", function(incoming_json) {
     console.log("select_all_filas event");
-    consumers.select_all_filas(incoming_json, sockets, db);
+    consumers.select_all_filas(incoming_json, sockets);
   });
+
+  client.on("check_me", function(incoming_json) {
+    console.log("check_me event");
+    consumers.check_box(incoming_json, client);
+  });
+
+  // client.on("activate_me", function(incoming_json) {
+  //   console.log("activate_me event");
+  //   consumers.activate_box(incoming_json, client);
+  // });
 });
 
 monitor.on('connection', function(client){
@@ -170,8 +169,18 @@ monitor.on('connection', function(client){
 
   client.on("get_view", function(incoming_json) {
     console.log("get_view event");
-    consumers.get_view(incoming_json, sockets, db);
+    consumers.get_view(incoming_json, sockets);
   });
+
+  client.on("check_me", function(incoming_json) {
+    console.log("check_me event");
+    consumers.check_monitor(incoming_json, client);
+  });
+
+  // client.on("activate_me", function(incoming_json) {
+  //   console.log("activate_me event");
+  //   consumers.activate_monitor(incoming_json, client);
+  // });
 });
 
 totem.on('connection', function(client){
@@ -183,21 +192,24 @@ totem.on('connection', function(client){
 
   client.on("socilitar_nova_senha", function(incoming_json) {
     console.log("socilitar_nova_senha event");
-    consumers.insert_senha(incoming_json, sockets, db);
+    consumers.insert_senha(incoming_json, sockets);
   });
+
+  client.on("check_me", function(incoming_json) {
+    console.log("check_me event");
+    consumers.check_totem(incoming_json, client);
+  });
+
+  // client.on("activate_me", function(incoming_json) {
+  //   console.log("activate_me event");
+  //   consumers.activate_totem(incoming_json, client);
+  // });
 });
 
 var porta = 3000;
 server.listen(porta, "0.0.0.0", function() {
   console.log('Socket IO listening on port ' + porta);
 });
-
-function verificar(db) {
-  console.log("Verificando...");
-  today_date = new Date();
-  today_date.setHours(0,0,0,0);
-  consumers.verify_today_historico(db, today_date);
-}
 
 // START AutoDiscover server
 var PORT = 6024;
@@ -220,26 +232,3 @@ server_broadcast.on('message', function (message, rinfo) {
 
 server_broadcast.bind(PORT);
 // END
-
-// Conexão entre o Main e a WebPage
-const {ipcMain} = require('electron');
-ipcMain.on('boxes', (event, arg) => {
-  console.log(arg);
-  var boxes = arg;
-});
-ipcMain.on('monitores', (event, arg) => {
-  console.log(arg);
-  var monitores = arg;
-});
-ipcMain.on('salas', (event, arg) => {
-  console.log(arg);
-  var salas = arg;
-});
-ipcMain.on('totens', (event, arg) => {
-  console.log(arg);
-  var totens = arg;
-});
-ipcMain.on('internet_connected', (event, arg) => {
-  console.log(arg);
-  var internet_connected = arg;
-});
