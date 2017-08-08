@@ -442,7 +442,7 @@ exports.check_totem = function (incoming_json_, client) {
 	incoming_json = JSON.parse(incoming_json_);
 	ws_response_to_totem = new WsResponse("check_result");
 
-	db.collection("box").findOne({'fields.ip': incoming_json.body.ip}, function(err, result) {
+	db.collection("totem").findOne({'fields.ip': incoming_json.body.ip}, function(err, result) {
 		if (err) throw err;
 		if (result) {
 			ws_response_to_totem.body["success_check"] = true;
