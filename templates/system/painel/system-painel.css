@@ -1,3 +1,18 @@
+.button-update-server {
+	margin: 10px;
+	position: absolute;
+	right: 0px;
+	top: 0px;
+	cursor: pointer;
+}
+
+.button-update-server .text-update {
+	vertical-align: super;
+  padding: 5px;
+  background-color: #eaeaea;
+  border-radius: 5px;
+}
+
 .banner-painel {
 	background-image: url('../../../img/banner.jpg');
 	background-repeat: no-repeat;
@@ -38,6 +53,14 @@
 
 .card_media_monitor {
 	background-image: url('../../../img/monitor.jpg');
+	background-repeat: no-repeat;
+	background-size: cover;
+	background-position: center center;
+	height: 100px;
+}
+
+.card_media_box_medico {
+	background-image: url('../../../img/medico.jpg');
 	background-repeat: no-repeat;
 	background-size: cover;
 	background-position: center center;

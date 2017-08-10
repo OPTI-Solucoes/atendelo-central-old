@@ -42,7 +42,7 @@
 
     <div class="main-content" v-else>
       <menu-vertical id="menu_vertical" ref="menu-vertical"></menu-vertical>
-      <router-view ref="routerView"></router-view>
+      <router-view ref="routerView" style="position: relative;"></router-view>
     </div>
 
     <!-- Snackbar -->
@@ -83,49 +83,29 @@
 
   <!-- CSS's -->
   <link rel="stylesheet" href="css/index.css">
-  <link rel="stylesheet" href="templates/home/home.css">
   <link rel="stylesheet" href="templates/system/config/system-config.css">
   <link rel="stylesheet" href="templates/system/painel/system-painel.css">
 
-  <link rel="stylesheet" href="templates/system/subsystem/home/home.css">
-  <link rel="stylesheet" href="templates/system/subsystem/totem/totem.css">
-  <link rel="stylesheet" href="templates/system/subsystem/box/box.css">
-  <link rel="stylesheet" href="templates/system/subsystem/monitor/monitor.css">
-
-  <link rel="stylesheet" href="templates/saiba_mais/saiba_mais.css"></link>
-  <link rel="stylesheet" href="templates/cartao/imprimir/imprimir_cartao_print.css" media="print">
-  <link rel="stylesheet" href="templates/cartao/imprimir/imprimir_cartao_screen.css">
   <link rel="stylesheet" href="templates/menu/menu.css">
   <link rel="stylesheet" href="templates/login/login.css">
 
   <!-- JS + Componentes (HTML) -->
-  <script type="text/javascript" src="templates/home/home.js"></script>
   <script type="text/javascript" src="templates/system/config/system-config.js"></script>
   <script type="text/javascript" src="templates/system/painel/system-painel.js"></script>
 
-  <script type="text/javascript" src="templates/system/insert/totem/add_totem.js"></script>
   <script type="text/javascript" src="templates/system/insert/box/add_box.js"></script>
+  <script type="text/javascript" src="templates/system/insert/box_medico/add_box_medico.js"></script>
   <script type="text/javascript" src="templates/system/insert/monitor/add_monitor.js"></script>
+  <script type="text/javascript" src="templates/system/insert/totem/add_totem.js"></script>
 
-  <script type="text/javascript" src="templates/system/activate/totem/activate_totem.js"></script>
-  <script type="text/javascript" src="templates/system/activate/box/activate_box.js"></script>
-  <script type="text/javascript" src="templates/system/activate/monitor/activate_monitor.js"></script>
-
-  <script type="text/javascript" src="templates/system/subsystem/home/home.js"></script>
-  <script type="text/javascript" src="templates/system/subsystem/totem/totem.js"></script>
-  <script type="text/javascript" src="templates/system/subsystem/box/box.js"></script>
-  <script type="text/javascript" src="templates/system/subsystem/monitor/monitor.js"></script>
-
-  <script type="text/javascript" src="templates/saiba_mais/saiba_mais.js"></script>
   <script type="text/javascript" src="templates/menu/menu.js"></script>
   <script type="text/javascript" src="templates/login/login.js"></script>
   <script type="text/javascript" src="templates/usuario/inserir/inserir_usuario.js"></script>
-  <script type="text/javascript" src="templates/cartao/cartao.js"></script>
-  <script type="text/javascript" src="templates/cartao/imprimir/imprimir_cartao.js"></script>
 
   <!-- Dao's -->
   <script type="text/javascript" src="js/daoclient/dao_clinica.js"></script>
   <script type="text/javascript" src="js/daoclient/dao_totem.js"></script>
+  <script type="text/javascript" src="js/daoclient/dao_box_medico.js"></script>
   <script type="text/javascript" src="js/daoclient/dao_box.js"></script>
   <script type="text/javascript" src="js/daoclient/dao_monitor.js"></script>
   <script type="text/javascript" src="js/daoclient/dao_binarios.js"></script

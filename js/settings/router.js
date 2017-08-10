@@ -1,9 +1,5 @@
 var _router = new VueRouter({
   routes: [
-    // { name: 'home', path: '/', component: {
-    //   template: '<home ref="home" />' }
-    // },
-
     { name: 'login', path: '/login', component: {
       template: '<login ref="login" />' }
     },
@@ -11,10 +7,6 @@ var _router = new VueRouter({
     { name: 'inserir-usuario', path: '/registrar', component: {
       template: '<inserir-usuario ref="registrar" />' }
     },
-
-    // { name: 'saiba-mais', path: '/saibamais', component: {
-    //   template: '<saiba-mais ref="saibamais" />' }
-    // },
 
     // Config
     { name: 'system-config', path: '/system-config', component: {
@@ -27,46 +19,20 @@ var _router = new VueRouter({
     },
 
     // Add
-    { name: 'add-totem', path: '/add-totem', component: {
-      template: '<add-totem ref="add-totem" />' }
-    },
-
     { name: 'add-box', path: '/add-box', component: {
       template: '<add-box ref="add-box" />' }
+    },
+
+    { name: 'add-box-medico', path: '/add-box-medico', component: {
+      template: '<add-box-medico ref="add-box-medico" />' }
     },
 
     { name: 'add-monitor', path: '/add-monitor', component: {
       template: '<add-monitor ref="add-monitor" />' }
     },
 
-    // Activate
-    { name: 'activate-totem', path: '/activate-totem', component: {
-      template: '<activate-totem ref="activate-totem" />' }
-    },
-
-    { name: 'activate-box', path: '/activate-box', component: {
-      template: '<activate-box ref="activate-box" />' }
-    },
-
-    { name: 'activate-monitor', path: '/activate-monitor', component: {
-      template: '<activate-monitor ref="activate-monitor" />' }
-    },
-
-    // Subsystem
-    { name: 'subsystem', path: '/subsystem', component: {
-      template: '<subsystem ref="subsystem" />' }
-    },
-
-    { name: 'totem', path: '/totem', component: {
-      template: '<totem ref="totem" />' }
-    },
-
-    { name: 'box', path: '/box', component: {
-      template: '<box ref="box" />' }
-    },
-
-    { name: 'monitor', path: '/monitor', component: {
-      template: '<monitor ref="monitor" />' }
+    { name: 'add-totem', path: '/add-totem', component: {
+      template: '<add-totem ref="add-totem" />' }
     },
   ]
 });

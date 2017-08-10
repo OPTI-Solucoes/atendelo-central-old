@@ -21,6 +21,7 @@ Vue.component('system-painel', {
 			this.testando = this.$root.user.model.fields.testando;
 			this.comprou = this.$root.user.model.fields.comprou;
 			this.ja_configurou = this.$root.user.model.fields.ip_central;
+			this.is_server = this.$root.user.local_ip == this.$root.user.model.fields.ip_central;
 
 			if (this.ja_configurou) {
 				this.carregar_maquinas_conectadas();
@@ -35,7 +36,7 @@ Vue.component('system-painel', {
 		if (this.carregar_maquinas_interval) {
 			clearInterval(this.carregar_maquinas_interval);
 		}
-  },
+	},
 
 	data: function() {
 		var self = this;
@@ -44,10 +45,12 @@ Vue.component('system-painel', {
 			testando: false,
 			comprou: false,
 			ja_configurou: false,
+			is_server: true,
 
-			totem_list: [],
 			box_list: [],
+			box_medico_list: [],
 			monitor_list: [],
+			totem_list: [],
 			carregar_maquinas_interval: null,
 			consumers: require('electron').remote.require("./consumers"),
 		};
@@ -70,6 +73,27 @@ Vue.component('system-painel', {
 				self.$root.mostrar_msg("Deletado");
 				var index = self.box_list.findIndex(function(obj){return obj == box});
 				self.box_list.splice(index, 1);
+			})
+			.fail(function(data) {
+				console.log(data.responseText);
+				self.$root.mostrar_msg(data.responseText);
+			});
+		},
+
+		add_box_medico: function() {
+			var self = this;
+			this.$root.$router.push({name:"add-box-medico"});
+		},
+
+		delete_box_medico: function(box_medico) {
+			var self = this;
+
+			new daoclient.DaoBoxMedico().delete(box_medico, this.$root.user.token)
+			.done(function(data) {
+				console.log("done");
+				self.$root.mostrar_msg("Deletado");
+				var index = self.box_medico_list.findIndex(function(obj){return obj == box_medico});
+				self.box_medico_list.splice(index, 1);
 			})
 			.fail(function(data) {
 				console.log(data.responseText);
@@ -123,24 +147,10 @@ Vue.component('system-painel', {
 
 		carregar_maquinas_conectadas: function() {
 			var self = this;
-			new daoclient.DaoTotem().list(this.$root.user.token)
-			.done(function(data) {
-				console.log("done list totem");
-				self.totem_list = [];
-				for (var i = 0; i < data.length; i++) {
-					self.totem_list.push(data[i]);
-				}
-				if (self.totem_list.length > 0) {
-					self.consumers.sync_totem_with_web(self.totem_list);
-				}
-			})
-			.fail(function(data) {
-				console.log("Erro no list totem");
-			});
 
 			new daoclient.DaoBox().list(this.$root.user.token)
 			.done(function(data) {
-				console.log("done list box");
+				// console.log("done list box");
 				self.box_list = [];
 				for (var i = 0; i < data.length; i++) {
 					self.box_list.push(data[i]);
@@ -155,7 +165,7 @@ Vue.component('system-painel', {
 
 			new daoclient.DaoMonitor().list(this.$root.user.token)
 			.done(function(data) {
-				console.log("done list monitor");
+				// console.log("done list monitor");
 				self.monitor_list = [];
 				for (var i = 0; i < data.length; i++) {
 					self.monitor_list.push(data[i]);
@@ -166,6 +176,50 @@ Vue.component('system-painel', {
 			})
 			.fail(function(data) {
 				console.log("Erro no list monitor");
+			});
+
+			new daoclient.DaoTotem().list(this.$root.user.token)
+			.done(function(data) {
+				// console.log("done list totem");
+				self.totem_list = [];
+				for (var i = 0; i < data.length; i++) {
+					self.totem_list.push(data[i]);
+				}
+				if (self.totem_list.length > 0) {
+					self.consumers.sync_totem_with_web(self.totem_list);
+				}
+			})
+			.fail(function(data) {
+				console.log("Erro no list totem");
+			});
+
+			new daoclient.DaoBoxMedico().list(this.$root.user.token)
+			.done(function(data) {
+				// console.log("done list box_medico");
+				self.box_medico_list = [];
+				for (var i = 0; i < data.length; i++) {
+					self.box_medico_list.push(data[i]);
+				}
+				// if (self.box_medico_list.length > 0) {
+				// 	self.consumers.sync_box_medico_with_web(self.box_medico_list);
+				// }
+			})
+			.fail(function(data) {
+				console.log("Erro no list totem");
+			});
+		},
+
+		atualizar_server: function() {
+			var self = this;
+			new daoclient.DaoClinica().configurar_central(this.$root.user.token, this.$root.user.local_ip)
+			.done(function(data) {
+				console.log("done");
+				self.$root.user.model = data[0];
+				self.is_server = self.$root.user.local_ip == self.$root.user.model.fields.ip_central;
+				self.$root.mostrar_msg("Servidor atualizado!");
+			})
+			.fail(function(data) {
+				console.log("Erro");
 			});
 		},
 
