@@ -136,7 +136,7 @@ box_sala.on('connection', function(client){
 
   client.on("atender_senha", function(incoming_json) {
     console.log("atender_senha event");
-    consumers.atender_senha(incoming_json, sockets);
+    consumers.atender_senha_sala(incoming_json, sockets);
   });
 
   client.on("edit_fila", function(incoming_json) {

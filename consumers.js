@@ -30,7 +30,7 @@ function verificar(db) {
   verify_today_historico(db, today_date);
 }
 
-exports.atender_senha = function(incoming_json_, sockets) {
+exports.atender_senha_sala = function(incoming_json_, sockets) {
 	console.log("atender_senha");
 	incoming_json = JSON.parse(incoming_json_);
 	console.log(incoming_json);
