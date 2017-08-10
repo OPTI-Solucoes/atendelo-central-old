@@ -224,7 +224,9 @@ exports.get_view = function(incoming_json_, sockets) {
 	db.collection("senha").find({atendida: true}).toArray(function(err, res) {
 		if (err) {throw err};
 		for (var i = res.length-1; i > res.length-4; i--) {
-			senhas.push(res[i]);
+			if (res[i]) {
+				senhas.push(res[i]);
+			}
 		}
 
 		if (senhas.length > 0) {
