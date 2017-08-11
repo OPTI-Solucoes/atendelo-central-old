@@ -31,7 +31,7 @@ function verificar(db) {
 }
 
 exports.atender_senha_sala = function(incoming_json_, sockets) {
-	console.log("atender_senha");
+	console.log("atender_senha_sala");
 	incoming_json = JSON.parse(incoming_json_);
 	console.log(incoming_json);
 
@@ -81,6 +81,87 @@ exports.enviar_nova_senha_sala = function(incoming_json_, sockets) {
 				sockets.box_sala.emit(ws_response_to_box_sala.header.action, ws_response_to_box_sala);
 				sockets.box.emit(ws_response_to_box.header.action, ws_response_to_box_sala);
 			});
+		}
+	});
+}
+
+exports.get_proxima_senha = function(incoming_json_, sockets) {
+	console.log("get_proxima_senha");
+	incoming_json = JSON.parse(incoming_json_);
+	console.log(incoming_json);
+
+	ws_response_to_monitores = new WsResponse("get_proxima_senha");
+	ws_response_to_box = new WsResponse("proxima_senha");
+
+	ultima_fila_usada = incoming_json.body.fila.iniciais;
+	fila_manual = incoming_json.body.fila_manual.iniciais;
+
+	if (fila_manual) {
+		db.collection("senha").findOne({fila: fila_manual, atendida: false}, function(err, result) {
+			if (err) {throw err;}
+			if (result) {
+				proxima_senha = result;
+				ws_response_to_box.body['senha'] = proxima_senha;
+				ws_response_to_monitores.body['senha'] = proxima_senha;
+			} else {
+				ws_response_to_box.header.action = "nenhuma_senha";
+			}
+
+			sockets.box.emit(ws_response_to_box.header.action, ws_response_to_box);
+			if (ws_response_to_box.header.action!="nenhuma_senha") {
+				sockets.monitor.emit(ws_response_to_monitores.header.action, ws_response_to_monitores);
+			}
+		});
+	} else {
+		db.collection("senha").find({atendida: false}).toArray(function(err, res) {
+			if (err) {throw err};
+			console.log(res.length);
+			if (res.length > 0){
+				ws_response_to_box.header.action = "proxima_senha";
+				escolher = true;
+				for (var i = 0; i < res.length; i++) {
+					if (res[i].fila == "PRE") {
+						proxima_senha = res[i];
+						break;
+					} else {
+						if (escolher) {
+							proxima_senha = res[i];
+							escolher = false;
+						}
+					}
+				}
+				ws_response_to_box.body['senha'] = proxima_senha;
+				ws_response_to_monitores.body['senha'] = proxima_senha;
+			} else {
+				ws_response_to_box.header.action = "nenhuma_senha";
+			}
+
+			sockets.box.emit(ws_response_to_box.header.action, ws_response_to_box);
+			if (ws_response_to_box.header.action!="nenhuma_senha") {
+				sockets.monitor.emit(ws_response_to_monitores.header.action, ws_response_to_monitores);
+			}
+		});
+	}
+}
+
+exports.atender_senha = function(incoming_json_, sockets) {
+	ws_response_to_box = new WsResponse("atendeu_senha");
+
+	db.collection("senha").findOne({_id: new ObjectId(incoming_json.body.senha._id)}, function(err, result) {
+		if (err) {throw err;}
+		console.log(result);
+		if (result) {
+			var senha_enviada = result;
+			senha_enviada.atendida = true;
+			db.collection("senha").updateOne({_id: new ObjectId(senha_enviada._id)}, senha_enviada, function(err, res) {
+				if (err) {throw err;}
+				console.log("Senha updated");
+				ws_response_to_box.body["atendeu"] = true;
+				sockets.box.emit(ws_response_to_box.header.action, ws_response_to_box);
+			});
+		} else {
+			ws_response_to_box.body["atendeu"] = false;
+			sockets.box.emit(ws_response_to_box.header.action, ws_response_to_box);
 		}
 	});
 }
