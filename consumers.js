@@ -59,39 +59,13 @@ exports.atender_senha_sala = function(incoming_json_, sockets) {
 
 }
 
-exports.enviar_nova_senha_sala = function(incoming_json_, sockets) {
-	console.log("enviar_nova_senha_sala");
-	incoming_json = JSON.parse(incoming_json_);
-	console.log(incoming_json);
-
-	ws_response_to_box_sala = new WsResponse("nova_senha");
-	ws_response_to_box = new WsResponse("definiu_fila_sala");
-	db.collection("senha").findOne({_id: new ObjectId(incoming_json.body.senha._id)}, function(err, result) {
-		if (err) {throw err;}
-		console.log(result);
-		if (result) {
-			var senha_enviada = result;
-			senha_enviada.fila_sala = incoming_json.body.senha.fila_sala;
-			db.collection("senha").updateOne({_id: new ObjectId(result._id)}, senha_enviada, function(err, res) {
-				if (err) {throw err;}
-				console.log("Senha updated");
-				ws_response_to_box_sala.body['senha'] = senha_enviada;
-				ws_response_to_box.body['success'] = true;
-
-				sockets.box_sala.emit(ws_response_to_box_sala.header.action, ws_response_to_box_sala);
-				sockets.box.emit(ws_response_to_box.header.action, ws_response_to_box_sala);
-			});
-		}
-	});
-}
-
+// Nova função de pedir próxia senha para o Box
 exports.get_proxima_senha = function(incoming_json_, sockets) {
-	console.log("get_proxima_senha");
 	incoming_json = JSON.parse(incoming_json_);
 	console.log(incoming_json);
 
-	ws_response_to_monitores = new WsResponse("get_proxima_senha");
-	ws_response_to_box = new WsResponse("proxima_senha");
+	ws_response_to_monitores = new WsResponse("get_senha");
+	ws_response_to_box = new WsResponse("get_proxima_senha");
 
 	ultima_fila_usada = incoming_json.body.fila.iniciais;
 	fila_manual = incoming_json.body.fila_manual.iniciais;
@@ -126,7 +100,9 @@ exports.get_proxima_senha = function(incoming_json_, sockets) {
 					} else {
 						if (escolher) {
 							proxima_senha = res[i];
-							escolher = false;
+							if (!res[i].desistiu) {
+								escolher = false;
+							}
 						}
 					}
 				}
@@ -144,8 +120,10 @@ exports.get_proxima_senha = function(incoming_json_, sockets) {
 	}
 }
 
-exports.atender_senha = function(incoming_json_, sockets) {
+// Nova função de atender senhas para o Box
+exports.atender_senha_box = function(incoming_json_, sockets) {
 	ws_response_to_box = new WsResponse("atendeu_senha");
+	ws_response_to_box_sala = new WsResponse("nova_senha");
 
 	db.collection("senha").findOne({_id: new ObjectId(incoming_json.body.senha._id)}, function(err, result) {
 		if (err) {throw err;}
@@ -153,19 +131,61 @@ exports.atender_senha = function(incoming_json_, sockets) {
 		if (result) {
 			var senha_enviada = result;
 			senha_enviada.atendida = true;
+			senha_enviada.fila_sala = incoming_json.body.senha.fila_sala;
 			db.collection("senha").updateOne({_id: new ObjectId(senha_enviada._id)}, senha_enviada, function(err, res) {
 				if (err) {throw err;}
 				console.log("Senha updated");
-				ws_response_to_box.body["atendeu"] = true;
+				ws_response_to_box.body["atendeu_senha"] = true;
 				sockets.box.emit(ws_response_to_box.header.action, ws_response_to_box);
 			});
 		} else {
-			ws_response_to_box.body["atendeu"] = false;
+			ws_response_to_box.body["atendeu_senha"] = false;
 			sockets.box.emit(ws_response_to_box.header.action, ws_response_to_box);
 		}
 	});
 }
 
+exports.enviar_nova_senha_sala = function(incoming_json_, sockets) {
+	console.log("enviar_nova_senha_sala");
+	incoming_json = JSON.parse(incoming_json_);
+	console.log(incoming_json);
+
+	ws_response_to_box_sala = new WsResponse("nova_senha");
+	ws_response_to_box = new WsResponse("definiu_fila_sala");
+	db.collection("senha").findOne({_id: new ObjectId(incoming_json.body.senha._id)}, function(err, result) {
+		if (err) {throw err;}
+		console.log(result);
+		if (result) {
+			var senha_enviada = result;
+			senha_enviada.fila_sala = incoming_json.body.senha.fila_sala;
+			db.collection("senha").updateOne({_id: new ObjectId(result._id)}, senha_enviada, function(err, res) {
+				if (err) {throw err;}
+				console.log("Senha updated");
+				ws_response_to_box_sala.body['senha'] = senha_enviada;
+				ws_response_to_box.body['success'] = true;
+
+				sockets.box_sala.emit(ws_response_to_box_sala.header.action, ws_response_to_box_sala);
+				sockets.box.emit(ws_response_to_box.header.action, ws_response_to_box_sala);
+			});
+		}
+	});
+}
+
+// Nova função para desistir da senha para o Box
+exports.desistir_atender_senha = function(incoming_json_, sockets) {
+	db.collection("senha").findOne({_id: new ObjectId(incoming_json.body.senha._id)}, function(err, result) {
+		if (err) {throw err;}
+		console.log(result);
+		var senha_enviada = result;
+		senha_enviada.desistiu = true;
+		db.collection("senha").updateOne({_id: new ObjectId(senha_enviada._id)}, senha_enviada, function(err, res) {
+			if (err) {throw err;}
+			console.log("Senha updated");
+		});
+	});
+}
+
+// Função antiga, ainda em uso
 exports.get_senha = function(incoming_json_, sockets) {
 	console.log("get_senha");
 	incoming_json = JSON.parse(incoming_json_);
@@ -428,7 +448,8 @@ exports.insert_senha = function(incoming_json_, sockets) {
 			atendida: false,
 			atendida_sala: false,
 			criada: new Date(),
-			finalizada: null
+			finalizada: null,
+			desistiu: false,
 		};
 
 		db.collection("senha").insertOne(senha, function(err, res) {

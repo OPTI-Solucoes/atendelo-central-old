@@ -101,6 +101,21 @@ box.on('connection', function(client){
     console.log("Disconnect from Box");
   });
 
+  client.on("get_proxima_senha", function() {
+    console.log("get_proxima_senha");
+    consumers.get_proxima_senha(incoming_json, sockets);
+  });
+
+  client.on("atender_senha_box", function() {
+    console.log("atender_senha_box");
+    consumers.atender_senha_box(incoming_json, sockets);
+  });
+
+  client.on("desistir_atender_senha", function() {
+    console.log("desistir_atender_senha");
+    consumers.desistir_atender_senha(incoming_json, sockets);
+  });
+
   client.on("proxima_senha", function(incoming_json) {
     console.log("proxima_senha event");
     consumers.get_senha(incoming_json, sockets);
