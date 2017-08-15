@@ -62,13 +62,11 @@ exports.atender_senha_sala = function(incoming_json_, sockets) {
 // Nova função de pedir próxia senha para o Box
 exports.get_proxima_senha = function(incoming_json_, sockets) {
 	incoming_json = JSON.parse(incoming_json_);
-	console.log(incoming_json);
 
 	ws_response_to_monitores = new WsResponse("get_senha");
 	ws_response_to_box = new WsResponse("get_proxima_senha");
 
-	ultima_fila_usada = incoming_json.body.fila.iniciais;
-	fila_manual = incoming_json.body.fila_manual.iniciais;
+	fila_manual = incoming_json.body.fila_manual;
 
 	if (fila_manual) {
 		db.collection("senha").findOne({fila: fila_manual, atendida: false}, function(err, result) {
@@ -91,17 +89,19 @@ exports.get_proxima_senha = function(incoming_json_, sockets) {
 			if (err) {throw err};
 			console.log(res.length);
 			if (res.length > 0){
-				ws_response_to_box.header.action = "proxima_senha";
 				escolher = true;
+				proxima_senha = null;
 				for (var i = 0; i < res.length; i++) {
 					if (res[i].fila == "PRE") {
 						proxima_senha = res[i];
 						break;
 					} else {
 						if (escolher) {
-							proxima_senha = res[i];
 							if (!res[i].desistiu) {
+								proxima_senha = res[i];
 								escolher = false;
+							} else if (!proxima_senha) {
+								proxima_senha = res[i];
 							}
 						}
 					}
@@ -122,6 +122,8 @@ exports.get_proxima_senha = function(incoming_json_, sockets) {
 
 // Nova função de atender senhas para o Box
 exports.atender_senha_box = function(incoming_json_, sockets) {
+	incoming_json = JSON.parse(incoming_json_);
+
 	ws_response_to_box = new WsResponse("atendeu_senha");
 	ws_response_to_box_sala = new WsResponse("nova_senha");
 
@@ -146,7 +148,6 @@ exports.atender_senha_box = function(incoming_json_, sockets) {
 }
 
 exports.enviar_nova_senha_sala = function(incoming_json_, sockets) {
-	console.log("enviar_nova_senha_sala");
 	incoming_json = JSON.parse(incoming_json_);
 	console.log(incoming_json);
 
@@ -173,6 +174,8 @@ exports.enviar_nova_senha_sala = function(incoming_json_, sockets) {
 
 // Nova função para desistir da senha para o Box
 exports.desistir_atender_senha = function(incoming_json_, sockets) {
+	incoming_json = JSON.parse(incoming_json_);
+
 	db.collection("senha").findOne({_id: new ObjectId(incoming_json.body.senha._id)}, function(err, result) {
 		if (err) {throw err;}
 		console.log(result);
@@ -182,135 +185,6 @@ exports.desistir_atender_senha = function(incoming_json_, sockets) {
 			if (err) {throw err;}
 			console.log("Senha updated");
 		});
-	});
-}
-
-// Função antiga, ainda em uso
-exports.get_senha = function(incoming_json_, sockets) {
-	console.log("get_senha");
-	incoming_json = JSON.parse(incoming_json_);
-	console.log(incoming_json);
-
-	ws_response_to_monitores = new WsResponse("get_senha");
-	ws_response_to_box = new WsResponse("proxima_senha");
-
-	chamar_proxima = incoming_json.body.chamar_proxima;
-
-	ultima_fila_usada = incoming_json.body.fila.iniciais;
-	fila_manual = incoming_json.body.fila_manual.iniciais;
-
-	db.collection("senha").findOne({_id: new ObjectId(incoming_json.body.senha._id)}, function(err, result) {
-		if (err) {throw err;}
-		console.log(result);
-		if (result) {
-			var senha_enviada = result;
-			senha_enviada.atendida = true;
-			db.collection("senha").updateOne({_id: new ObjectId(senha_enviada._id)}, senha_enviada, function(err, res) {
-				if (err) {throw err;}
-				console.log("Senha updated");
-				// ws_response_to_monitores.body['senha'] = senha_enviada;
-
-				if (fila_manual) {
-					db.collection("senha").findOne({fila: fila_manual, atendida: false}, function(err, result) {
-						if (err) {throw err;}
-						if (result) {
-							proxima_senha = result;
-							ws_response_to_box.body['senha'] = proxima_senha;
-							ws_response_to_monitores.body['senha'] = proxima_senha;
-						} else {
-							ws_response_to_box.header.action = "nenhuma_senha";
-						}
-
-						sockets.box.emit(ws_response_to_box.header.action, ws_response_to_box);
-						if (chamar_proxima && ws_response_to_box.header.action!="nenhuma_senha") {
-							sockets.monitor.emit(ws_response_to_monitores.header.action, ws_response_to_monitores);
-						}
-					});
-
-				} else {
-					db.collection("senha").find({atendida: false}).toArray(function(err, res) {
-						if (err) {throw err};
-						console.log(res.length);
-						if (res.length > 0){
-							ws_response_to_box.header.action = "proxima_senha";
-							escolher = true;
-							for (var i = 0; i < res.length; i++) {
-								if (res[i].fila == "PRE") {
-									proxima_senha = res[i];
-									break;
-								} else {
-									if (escolher) {
-										proxima_senha = res[i];
-										escolher = false;
-									}
-								}
-							}
-							ws_response_to_box.body['senha'] = proxima_senha;
-							ws_response_to_monitores.body['senha'] = proxima_senha;
-						} else {
-							ws_response_to_box.header.action = "nenhuma_senha";
-						}
-
-						sockets.box.emit(ws_response_to_box.header.action, ws_response_to_box);
-						if (chamar_proxima && ws_response_to_box.header.action!="nenhuma_senha") {
-							sockets.monitor.emit(ws_response_to_monitores.header.action, ws_response_to_monitores);
-						}
-					});
-				}
-			});
-		} else {
-			console.log("NENHUMA SENHA ENVIADA");
-
-			if (fila_manual) {
-				console.log("FILA_MANUAL");
-				console.log(fila_manual);
-				db.collection("senha").findOne({fila: fila_manual, atendida: false}, function(err, result) {
-					if (err) {throw err;}
-					if (result) {
-						proxima_senha = result;
-						ws_response_to_box.body['senha'] = proxima_senha;
-						ws_response_to_monitores.body['senha'] = proxima_senha;
-					} else {
-						ws_response_to_box.header.action = "nenhuma_senha";
-					}
-					sockets.box.emit(ws_response_to_box.header.action, ws_response_to_box);
-					if (chamar_proxima && ws_response_to_box.header.action!="nenhuma_senha") {
-						sockets.monitor.emit(ws_response_to_monitores.header.action, ws_response_to_monitores);
-					}
-				});
-
-			} else {
-				console.log("FILA_AUTOMATICA");
-				db.collection("senha").find({atendida: false}).toArray(function(err, res) {
-					if (err) {throw err};
-					console.log("Quant_senhas: "+res.length);
-					if (res.length > 0){
-						ws_response_to_box.header.action = "proxima_senha";
-						escolher = true;
-						for (var i = 0; i < res.length; i++) {
-							if (res[i].fila == "PRE") {
-								proxima_senha = res[i];
-								break;
-							} else {
-								if (escolher) {
-									proxima_senha = res[i];
-									escolher = false;
-								}
-							}
-						}
-						console.log(proxima_senha);
-						ws_response_to_box.body['senha'] = proxima_senha;
-						ws_response_to_monitores.body['senha'] = proxima_senha;
-					} else {
-						ws_response_to_box.header.action = "nenhuma_senha";
-					}
-					sockets.box.emit(ws_response_to_box.header.action, ws_response_to_box);
-					if (chamar_proxima && ws_response_to_box.header.action!="nenhuma_senha") {
-						sockets.monitor.emit(ws_response_to_monitores.header.action, ws_response_to_monitores);
-					}
-				});
-			}
-		}
 	});
 }
 
