@@ -1,6 +1,6 @@
 {
   "name": "inovefila_server",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Projeto do inovefila_server",
   "main": "index.js",
   "scripts": {
@@ -53,7 +53,7 @@
     },
     "win": {
       "target": "NSIS",
-      "icon": "inovefilaserver.ico"
+      "icon": "lineit.ico"
     }
   }
 }
