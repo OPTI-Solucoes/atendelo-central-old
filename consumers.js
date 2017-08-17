@@ -517,9 +517,9 @@ exports.init_udp_autodiscover = function(server) {
 	// START AutoDiscover server
 	var server_json = JSON.stringify({
 		id: server.pk,
-		ip: server.fields.ip_central,
-		nome: server.fields.nome,
-		email: server.fields.email,
+		ip: server.local_ip,
+		nome: server.model.fields.nome,
+		email: server.model.fields.email,
 		sou_server: true,
 	});
 

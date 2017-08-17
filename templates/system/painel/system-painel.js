@@ -11,7 +11,7 @@ Vue.component('system-painel', {
 		var self = this;
 		console.log("System-painel: beforeMount");
 		this.$root.has_logged();
-		self.consumers.init_udp_autodiscover(self.$root.user.model);
+		self.consumers.init_udp_autodiscover(self.$root.user);
 	},
 
 	mounted: function() {
