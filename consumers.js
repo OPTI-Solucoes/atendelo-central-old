@@ -516,7 +516,7 @@ exports.sync_totem_with_web = function (objs) {
 exports.init_udp_autodiscover = function(server) {
 	// START AutoDiscover server
 	var server_json = JSON.stringify({
-		id: server.model.fields.pk,
+		id: server.model.pk,
 		ip: server.local_ip,
 		nome: server.model.fields.nome,
 		email: server.model.fields.email,
