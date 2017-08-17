@@ -1,6 +1,8 @@
 var mongo = require('mongodb').MongoClient;
 var ObjectId = require('mongodb').ObjectID;
 var db = null;
+var dgram = require('dgram');
+var server_broadcast = null;
 
 exports.connect_to_database = function() {
 	var url_db = "mongodb://localhost:27017/localdb";
@@ -509,6 +511,52 @@ exports.sync_totem_with_web = function (objs) {
 			if (err) throw err;
 		});
   });
+}
+
+exports.init_udp_autodiscover = function(server) {
+	// START AutoDiscover server
+	var server_json = JSON.stringify({
+		id: server.pk,
+		ip: server.fields.ip_central,
+		nome: server.fields.nome,
+		email: server.fields.email,
+		sou_server: true,
+	});
+
+	init_udp_autodiscover_server(server_json);
+	// END
+}
+
+function init_udp_autodiscover_server(server_json) {
+	var SERVER_PORT = 6024;
+	var CLIENT_PORT = 6025;
+
+	if (server_broadcast) {
+		server_broadcast.close(
+      function() {
+        server_broadcast = null;
+        init_udp_autodiscover_server(server_json);
+      }
+		);
+	} else {
+		server_broadcast = dgram.createSocket('udp4');
+
+		server_broadcast.on('listening', function () {
+		    var address = server_broadcast.address();
+		    console.log('UDP Server listening on ' + address.address + ":" + address.port);
+		    server_broadcast.setBroadcast(false);
+		});
+
+		server_broadcast.on('message', function (message, rinfo) {
+		    console.log('Message from: ' + rinfo.address + ':' + rinfo.port +' - '+message.toString());
+		    var message_to_send = new Buffer(server_json);
+		    server_broadcast.send(message_to_send, 0, message_to_send.length, CLIENT_PORT, rinfo.address, function() {
+		      console.log('Message sended to client ' + rinfo.address + ':' + rinfo.port +'');
+		    });
+		});
+
+		server_broadcast.bind(SERVER_PORT);
+	}
 }
 
 function millisToMinutesAndSeconds(millis) {

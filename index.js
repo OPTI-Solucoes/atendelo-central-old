@@ -220,26 +220,3 @@ var porta = 3000;
 server.listen(porta, "0.0.0.0", function() {
   console.log('Socket IO listening on port ' + porta);
 });
-
-// START AutoDiscover server
-var SERVER_PORT = 6024;
-var CLIENT_PORT = 6025;
-var dgram = require('dgram');
-var server_broadcast = dgram.createSocket('udp4');
-
-server_broadcast.on('listening', function () {
-    var address = server_broadcast.address();
-    console.log('UDP Server listening on ' + address.address + ":" + address.port);
-    server_broadcast.setBroadcast(false);
-});
-
-server_broadcast.on('message', function (message, rinfo) {
-    console.log('Message from: ' + rinfo.address + ':' + rinfo.port +' - '+message.toString());
-    var message_2 = new Buffer("You found me.");
-    server_broadcast.send(message_2, 0, message_2.length, CLIENT_PORT, rinfo.address, function() {
-      console.log('Message sended to client ' + rinfo.address + ':' + rinfo.port +'');
-    });
-});
-
-server_broadcast.bind(SERVER_PORT);
-// END
