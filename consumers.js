@@ -71,7 +71,7 @@ exports.get_proxima_senha = function(incoming_json_, sockets) {
 	fila_manual = incoming_json.body.fila_manual;
 
 	if (fila_manual) {
-		db.collection("senha").findOne({fila: fila_manual, atendida: false}, function(err, result) {
+		db.collection("senha").findOne({fila: fila_manual, atendida: false, desistiu: false}, function(err, result) {
 			if (err) {throw err;}
 			if (result) {
 				proxima_senha = result;
@@ -87,7 +87,7 @@ exports.get_proxima_senha = function(incoming_json_, sockets) {
 			}
 		});
 	} else {
-		db.collection("senha").find({atendida: false}).toArray(function(err, res) {
+		db.collection("senha").find({atendida: false, desistiu: false}).toArray(function(err, res) {
 			if (err) {throw err};
 			console.log(res.length);
 			if (res.length > 0){
@@ -99,12 +99,8 @@ exports.get_proxima_senha = function(incoming_json_, sockets) {
 						break;
 					} else {
 						if (escolher) {
-							if (!res[i].desistiu) {
-								proxima_senha = res[i];
-								escolher = false;
-							} else if (!proxima_senha) {
-								proxima_senha = res[i];
-							}
+							proxima_senha = res[i];
+							escolher = false;
 						}
 					}
 				}
@@ -183,6 +179,7 @@ exports.desistir_atender_senha = function(incoming_json_, sockets) {
 		console.log(result);
 		var senha_enviada = result;
 		senha_enviada.desistiu = true;
+		senha_enviada.atendida = true;
 		db.collection("senha").updateOne({_id: new ObjectId(senha_enviada._id)}, senha_enviada, function(err, res) {
 			if (err) {throw err;}
 			console.log("Senha updated");
