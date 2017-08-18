@@ -118,7 +118,7 @@ exports.get_proxima_senha = function(incoming_json_, sockets) {
 	}
 }
 
-// Nova função de atender senhas para o Box
+// Nova função dee atender senhas para o Box
 exports.atender_senha_box = function(incoming_json_, sockets) {
 	incoming_json = JSON.parse(incoming_json_);
 
