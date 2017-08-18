@@ -32,7 +32,7 @@ function verificar(db) {
   verify_today_historico(db, today_date);
 }
 
-exports.atender_senha_sala = function(incoming_json_, sockets) {
+exports.atender_senha_sala = function(incoming_json_, sockets, client) {
 	console.log("atender_senha_sala");
 	incoming_json = JSON.parse(incoming_json_);
 	console.log(incoming_json);
@@ -54,7 +54,7 @@ exports.atender_senha_sala = function(incoming_json_, sockets) {
 				ws_response_to_box_sala.body['senha'] = senha_enviada;
 
 				sockets.monitor.emit(ws_response_to_monitores.header.action, ws_response_to_monitores);
-				sockets.box_sala.emit(ws_response_to_box_sala.header.action, ws_response_to_box_sala);
+				client.emit(ws_response_to_box_sala.header.action, ws_response_to_box_sala);
 			});
 		}
 	});
@@ -62,7 +62,7 @@ exports.atender_senha_sala = function(incoming_json_, sockets) {
 }
 
 // Nova função de pedir próxia senha para o Box
-exports.get_proxima_senha = function(incoming_json_, sockets) {
+exports.get_proxima_senha = function(incoming_json_, sockets, client) {
 	incoming_json = JSON.parse(incoming_json_);
 
 	ws_response_to_monitores = new WsResponse("get_senha");
@@ -81,7 +81,7 @@ exports.get_proxima_senha = function(incoming_json_, sockets) {
 				ws_response_to_box.header.action = "nenhuma_senha";
 			}
 
-			sockets.box.emit(ws_response_to_box.header.action, ws_response_to_box);
+			client.emit(ws_response_to_box.header.action, ws_response_to_box);
 			if (ws_response_to_box.header.action!="nenhuma_senha") {
 				sockets.monitor.emit(ws_response_to_monitores.header.action, ws_response_to_monitores);
 			}
@@ -110,7 +110,7 @@ exports.get_proxima_senha = function(incoming_json_, sockets) {
 				ws_response_to_box.header.action = "nenhuma_senha";
 			}
 
-			sockets.box.emit(ws_response_to_box.header.action, ws_response_to_box);
+			client.emit(ws_response_to_box.header.action, ws_response_to_box);
 			if (ws_response_to_box.header.action!="nenhuma_senha") {
 				sockets.monitor.emit(ws_response_to_monitores.header.action, ws_response_to_monitores);
 			}
@@ -119,7 +119,7 @@ exports.get_proxima_senha = function(incoming_json_, sockets) {
 }
 
 // Nova função dee atender senhas para o Box
-exports.atender_senha_box = function(incoming_json_, sockets) {
+exports.atender_senha_box = function(incoming_json_, sockets, client) {
 	incoming_json = JSON.parse(incoming_json_);
 
 	ws_response_to_box = new WsResponse("atendeu_senha");
@@ -136,36 +136,13 @@ exports.atender_senha_box = function(incoming_json_, sockets) {
 				if (err) {throw err;}
 				console.log("Senha updated");
 				ws_response_to_box.body["atendeu_senha"] = true;
-				sockets.box.emit(ws_response_to_box.header.action, ws_response_to_box);
+				ws_response_to_box_sala.body["senha"] = senha_enviada;
+				client.emit(ws_response_to_box.header.action, ws_response_to_box);
+				sockets.box_sala.emit(ws_response_to_box_sala.header.action, ws_response_to_box_sala);
 			});
 		} else {
 			ws_response_to_box.body["atendeu_senha"] = false;
-			sockets.box.emit(ws_response_to_box.header.action, ws_response_to_box);
-		}
-	});
-}
-
-exports.enviar_nova_senha_sala = function(incoming_json_, sockets) {
-	incoming_json = JSON.parse(incoming_json_);
-	console.log(incoming_json);
-
-	ws_response_to_box_sala = new WsResponse("nova_senha");
-	ws_response_to_box = new WsResponse("definiu_fila_sala");
-	db.collection("senha").findOne({_id: new ObjectId(incoming_json.body.senha._id)}, function(err, result) {
-		if (err) {throw err;}
-		console.log(result);
-		if (result) {
-			var senha_enviada = result;
-			senha_enviada.fila_sala = incoming_json.body.senha.fila_sala;
-			db.collection("senha").updateOne({_id: new ObjectId(result._id)}, senha_enviada, function(err, res) {
-				if (err) {throw err;}
-				console.log("Senha updated");
-				ws_response_to_box_sala.body['senha'] = senha_enviada;
-				ws_response_to_box.body['success'] = true;
-
-				sockets.box_sala.emit(ws_response_to_box_sala.header.action, ws_response_to_box_sala);
-				sockets.box.emit(ws_response_to_box.header.action, ws_response_to_box_sala);
-			});
+			client.emit(ws_response_to_box.header.action, ws_response_to_box);
 		}
 	});
 }
@@ -187,7 +164,7 @@ exports.desistir_atender_senha = function(incoming_json_, sockets) {
 	});
 }
 
-exports.get_view = function(incoming_json_, sockets) {
+exports.get_view = function(incoming_json_, sockets, client) {
 	console.log("get_view");
 	incoming_json = JSON.parse(incoming_json_);
 
@@ -210,7 +187,7 @@ exports.get_view = function(incoming_json_, sockets) {
 			ws_response_to_monitores.header.action = "nenhuma_senha";
 		}
 
-		sockets.monitor.emit(ws_response_to_monitores.header.action, ws_response_to_monitores);
+		client.emit(ws_response_to_monitores.header.action, ws_response_to_monitores);
 	});
 }
 
@@ -243,7 +220,7 @@ exports.add_fila_sala = function(incoming_json_, sockets) {
 	});
 }
 
-exports.select_all_filas = function(incoming_json_, sockets) {
+exports.select_all_filas = function(incoming_json_, sockets, client) {
 	console.log("select_all_filas");
 	ws_response_to_box_sala = new WsResponse("select_all_filas");
 	db.collection("fila_sala").find({}).toArray(function(err, result) {
@@ -252,12 +229,12 @@ exports.select_all_filas = function(incoming_json_, sockets) {
 		db.collection("senha").find({atendida: true, atendida_sala: false})
 		.toArray(function(err, result_2) {
 			ws_response_to_box_sala.body['senhas_list'] = result_2;
-			sockets.box_sala.emit(ws_response_to_box_sala.header.action, ws_response_to_box_sala);
+			client.emit(ws_response_to_box_sala.header.action, ws_response_to_box_sala);
 		});
 	});
 }
 
-exports.select_all_filas_box = function(incoming_json_, sockets) {
+exports.select_all_filas_box = function(incoming_json_, sockets, client) {
 	console.log("select_all_filas_box");
 	ws_response_to_box = new WsResponse("select_all_filas_box");
 	db.collection("fila_sala").find({}).toArray(function(err, result) {
@@ -266,12 +243,12 @@ exports.select_all_filas_box = function(incoming_json_, sockets) {
 		db.collection("senha").find({atendida: true, atendida_sala: false})
 		.toArray(function(err, result_2) {
 			ws_response_to_box.body['senhas_list'] = result_2;
-			sockets.box.emit(ws_response_to_box.header.action, ws_response_to_box);
+			client.emit(ws_response_to_box.header.action, ws_response_to_box);
 		});
 	});
 }
 
-exports.edit_fila = function(incoming_json_, sockets) {
+exports.edit_fila = function(incoming_json_, sockets, client) {
 	console.log("edit_fila");
 	incoming_json = JSON.parse(incoming_json_);
 
@@ -292,13 +269,13 @@ exports.edit_fila = function(incoming_json_, sockets) {
 					ws_response_to_box_sala.body["sucesso"] = false;
 				}
 
-				sockets.box_sala.emit(ws_response_to_box_sala.header.action, ws_response_to_box_sala);
+				client.emit(ws_response_to_box_sala.header.action, ws_response_to_box_sala);
 			});
 		}
 	});
 }
 
-exports.insert_senha = function(incoming_json_, sockets) {
+exports.insert_senha = function(incoming_json_, sockets, client) {
 	console.log("insert_senha");
 	incoming_json = JSON.parse(incoming_json_);
 
@@ -334,7 +311,7 @@ exports.insert_senha = function(incoming_json_, sockets) {
 			ws_response_to_totens.body['senha'] = senha;
 
 			sockets.box.emit(ws_response_to_boxes.header.action, ws_response_to_boxes);
-			sockets.totem.emit(ws_response_to_totens.header.action, ws_response_to_totens);
+			client.emit(ws_response_to_totens.header.action, ws_response_to_totens);
 		});
 	});
 }
@@ -548,7 +525,7 @@ function init_udp_autodiscover_server(server_json) {
 		    console.log('Message from: ' + rinfo.address + ':' + rinfo.port +' - '+message.toString());
 		    var message_to_send = new Buffer(server_json);
 		    server_broadcast.send(message_to_send, 0, message_to_send.length, CLIENT_PORT, rinfo.address, function() {
-		      console.log('Message sended to client ' + rinfo.address + ':' + rinfo.port +'');
+		      console.log('Message sended to client ' + rinfo.address + ':' + CLIENT_PORT +'');
 		    });
 		});
 

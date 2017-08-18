@@ -103,12 +103,12 @@ box.on('connection', function(client){
 
   client.on("get_proxima_senha", function(incoming_json) {
     console.log("get_proxima_senha");
-    consumers.get_proxima_senha(incoming_json, sockets);
+    consumers.get_proxima_senha(incoming_json, sockets, client);
   });
 
   client.on("atender_senha_box", function(incoming_json) {
     console.log("atender_senha_box");
-    consumers.atender_senha_box(incoming_json, sockets);
+    consumers.atender_senha_box(incoming_json, sockets, client);
   });
 
   client.on("desistir_atender_senha", function(incoming_json) {
@@ -116,14 +116,9 @@ box.on('connection', function(client){
     consumers.desistir_atender_senha(incoming_json, sockets);
   });
 
-  client.on("encaminhar_senha_fila", function(incoming_json) {
-    console.log("encaminhar_senha_fila event");
-    consumers.enviar_nova_senha_sala(incoming_json, sockets);
-  });
-
   client.on("select_all_filas_box", function(incoming_json) {
     console.log("select_all_filas_box event");
-    consumers.select_all_filas_box(incoming_json, sockets);
+    consumers.select_all_filas_box(incoming_json, sockets, client);
   });
 
   client.on("check_me", function(incoming_json) {
@@ -146,17 +141,17 @@ box_sala.on('connection', function(client){
 
   client.on("atender_senha", function(incoming_json) {
     console.log("atender_senha event");
-    consumers.atender_senha_sala(incoming_json, sockets);
+    consumers.atender_senha_sala(incoming_json, sockets, client);
   });
 
   client.on("edit_fila", function(incoming_json) {
     console.log("edit_fila event");
-    consumers.edit_fila(incoming_json, sockets);
+    consumers.edit_fila(incoming_json, sockets, client);
   });
 
   client.on("select_all_filas", function(incoming_json) {
     console.log("select_all_filas event");
-    consumers.select_all_filas(incoming_json, sockets);
+    consumers.select_all_filas(incoming_json, sockets, client);
   });
 
   client.on("check_me", function(incoming_json) {
@@ -179,7 +174,7 @@ monitor.on('connection', function(client){
 
   client.on("get_view", function(incoming_json) {
     console.log("get_view event");
-    consumers.get_view(incoming_json, sockets);
+    consumers.get_view(incoming_json, sockets, client);
   });
 
   client.on("check_me", function(incoming_json) {
@@ -202,7 +197,7 @@ totem.on('connection', function(client){
 
   client.on("socilitar_nova_senha", function(incoming_json) {
     console.log("socilitar_nova_senha event");
-    consumers.insert_senha(incoming_json, sockets);
+    consumers.insert_senha(incoming_json, sockets, client);
   });
 
   client.on("check_me", function(incoming_json) {

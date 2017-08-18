@@ -1,7 +1,7 @@
 {
-  "name": "inovefila_server",
+  "name": "line_it_server",
   "version": "1.0.5",
-  "description": "Projeto do inovefila_server",
+  "description": "Projeto do line_it_server",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -39,8 +39,8 @@
     "electron-packager": "^8.7.2"
   },
   "build": {
-    "appId": "br.com.optiapps.inovefila_server",
-    "productName": "I9Fila - Server",
+    "appId": "br.com.optiapps.line_it",
+    "productName": "Line-it - Server",
     "compression": "maximum",
     "linux": {
       "target": "deb",
@@ -49,7 +49,7 @@
         "mongodb"
       ],
       "category": "Utility",
-      "desktop": "I9Fila - Server"
+      "desktop": "Line-it - Server"
     },
     "win": {
       "target": "NSIS",
