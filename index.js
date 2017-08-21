@@ -205,6 +205,11 @@ totem.on('connection', function(client){
     consumers.check_totem(incoming_json, client);
   });
 
+  client.on("ding", function() {
+    console.log("ding");
+    client.emit("dong", "dong");
+  });
+
   // client.on("activate_me", function(incoming_json) {
   //   console.log("activate_me event");
   //   consumers.activate_totem(incoming_json, client);

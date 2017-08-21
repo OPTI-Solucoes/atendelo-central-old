@@ -11,7 +11,6 @@ Vue.component('system-painel', {
 		var self = this;
 		console.log("System-painel: beforeMount");
 		this.$root.has_logged();
-		self.consumers.init_udp_autodiscover(self.$root.user);
 	},
 
 	mounted: function() {
@@ -30,6 +29,8 @@ Vue.component('system-painel', {
 					self.carregar_maquinas_conectadas();
 				}, 10000);
 			};
+
+			self.consumers.init_udp_autodiscover(self.$root.user);
 		}
 	},
 
