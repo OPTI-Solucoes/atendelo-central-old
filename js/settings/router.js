@@ -104,7 +104,7 @@ router.firebase = {};
 
 router.firebase.login = function(user) {
   console.log("Logando firebase...");
-  user.getToken().then(function(token) {
+  user.getIdToken().then(function(token) {
     console.log("getToken firebase");
     app.user.token = token;
     app.user.firebase = user;
@@ -247,3 +247,11 @@ var interval_mdc = setInterval(function() {
   window.mdc.autoInit(document, () => {});
   app.internet_connected = navigator.onLine;
 }, 500);
+
+var interval_refresh_token_firebase = setInterval(function() {
+  console.log("Refreshing token...");
+  app.user.firebase.getIdToken().then(function(token) {
+    console.log("Token refreshed!");
+    app.user.token = token;
+  });
+}, 1200000);
