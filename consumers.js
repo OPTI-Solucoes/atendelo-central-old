@@ -71,23 +71,38 @@ exports.get_proxima_senha = function(incoming_json_, sockets, client) {
 	fila_manual = incoming_json.body.fila_manual;
 
 	if (fila_manual) {
-		db.collection("senha").findOne({fila: fila_manual, atendida: false, desistiu: false}, function(err, result) {
+		var obj = {
+			fila: fila_manual,
+			atendida: false,
+			desistiu: false,
+			em_atendimento_box: false
+		};
+
+		db.collection("senha").findOne(obj, function(err, result) {
 			if (err) {throw err;}
 			if (result) {
 				proxima_senha = result;
-				ws_response_to_box.body['senha'] = proxima_senha;
-				ws_response_to_monitores.body['senha'] = proxima_senha;
+				proxima_senha.em_atendimento_box = true;
+				db.collection("senha").updateOne({_id: new ObjectId(proxima_senha._id)}, proxima_senha, function(err, res) {
+					if (err) {throw err;}
+					ws_response_to_box.body['senha'] = proxima_senha;
+					ws_response_to_monitores.body['senha'] = proxima_senha;
+					client.emit(ws_response_to_box.header.action, ws_response_to_box);
+					sockets.monitor.emit(ws_response_to_monitores.header.action, ws_response_to_monitores);
+				});
 			} else {
 				ws_response_to_box.header.action = "nenhuma_senha";
-			}
-
-			client.emit(ws_response_to_box.header.action, ws_response_to_box);
-			if (ws_response_to_box.header.action!="nenhuma_senha") {
-				sockets.monitor.emit(ws_response_to_monitores.header.action, ws_response_to_monitores);
+				client.emit(ws_response_to_box.header.action, ws_response_to_box);
 			}
 		});
 	} else {
-		db.collection("senha").find({atendida: false, desistiu: false}).toArray(function(err, res) {
+		var obj = {
+			atendida: false,
+			desistiu: false,
+			em_atendimento_box: false
+		};
+
+		db.collection("senha").find(obj).toArray(function(err, res) {
 			if (err) {throw err};
 			console.log(res.length);
 			if (res.length > 0){
@@ -104,15 +119,17 @@ exports.get_proxima_senha = function(incoming_json_, sockets, client) {
 						}
 					}
 				}
-				ws_response_to_box.body['senha'] = proxima_senha;
-				ws_response_to_monitores.body['senha'] = proxima_senha;
+
+				proxima_senha.em_atendimento_box = true;
+				db.collection("senha").updateOne({_id: new ObjectId(proxima_senha._id)}, proxima_senha, function(err, res) {
+					ws_response_to_box.body['senha'] = proxima_senha;
+					ws_response_to_monitores.body['senha'] = proxima_senha;
+					client.emit(ws_response_to_box.header.action, ws_response_to_box);
+					sockets.monitor.emit(ws_response_to_monitores.header.action, ws_response_to_monitores);
+				});
 			} else {
 				ws_response_to_box.header.action = "nenhuma_senha";
-			}
-
-			client.emit(ws_response_to_box.header.action, ws_response_to_box);
-			if (ws_response_to_box.header.action!="nenhuma_senha") {
-				sockets.monitor.emit(ws_response_to_monitores.header.action, ws_response_to_monitores);
+				client.emit(ws_response_to_box.header.action, ws_response_to_box);
 			}
 		});
 	}
@@ -300,6 +317,7 @@ exports.insert_senha = function(incoming_json_, sockets, client) {
 			criada: new Date(),
 			finalizada: null,
 			desistiu: false,
+			em_atendimento_box: false,
 		};
 
 		db.collection("senha").insertOne(senha, function(err, res) {
