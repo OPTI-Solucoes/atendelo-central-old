@@ -50,30 +50,22 @@ var app = new Vue({
     // Listen for messages
     const {ipcRenderer} = require('electron');
     ipcRenderer.on('message_index', function(event, text) {
-      console.log(text);
       if (text == "checking-for-update") {
-        console.log(text);
         app.loading.update = true;
       } else if (text == "update-available") {
-        console.log(text);
         app.loading.update = true;
         app.loading.downloading = true;
       } else if (text == "update-not-available") {
-        console.log(text);
         app.loading.update = false;
       } else if (text.indexOf("error") != -1) {
-        app.loading.update = false;
-        console.error(text);
         window.alert(text);
-      } else if (text == "download-progress") {
-        console.log(text);
-        app.download_progress = text;
+        app.loading.update = false;
+      } else if (text.indexOf("download-progress") != -1) {
+        // app.download_progress = text;
       } else if (text == "update-downloaded") {
-        console.log(text);
         app.download_message = "Em 5 segundos iremos atualizar o aplicativo..."
       } else {
-        console.log(text);
-        document.getElementById('title').innerText = "Line-it - Server "+text;
+        document.getElementById('title').innerText = "Line-it - Server " + text;
       }
     });
     // END UPDATER
@@ -84,7 +76,7 @@ var app = new Vue({
       page: true,
       user: true,
       // UPDATER
-      update: true,
+      update: false,
       downloading: false,
       download_progress: 0,
       download_message: "",

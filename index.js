@@ -18,8 +18,6 @@ function createWindow () {
       height: 600,
       title: "I9Fila - Server",
   });
-  win.webContents.openDevTools();
-
   // and load the index.html of the app.
   win.loadURL(`file://${__dirname}/index.html`);
 
@@ -77,17 +75,16 @@ autoUpdater.on('checking-for-update', () => {
   sendStatusToWindow('checking-for-update');
 });
 autoUpdater.on('update-available', (ev, info) => {
-  sendStatusToWindow('update-availables');
+  sendStatusToWindow('update-available');
 });
 autoUpdater.on('update-not-available', (ev, info) => {
   sendStatusToWindow('update-not-available');
 });
 autoUpdater.on('error', (ev, err) => {
-  sendStatusToWindow('error : '+err);
+  sendStatusToWindow('error : ' + err);
 });
-autoUpdater.on('download-progress', (ev, progressObj) => {
-  console.log(progressObj);
-  sendStatusToWindow('download-progress');
+autoUpdater.on('download-progress', (ev, progress) => {
+  // sendStatusToWindow('download-progress: ' + progress.percent + "%");
 });
 autoUpdater.on('update-downloaded', (ev, info) => {
   sendStatusToWindow('update-downloaded');
