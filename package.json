@@ -1,6 +1,6 @@
 {
   "name": "line_it_server",
-  "version": "1.0.12",
+  "version": "1.0.13",
   "description": "Projeto do line_it_server",
   "main": "index.js",
   "scripts": {
