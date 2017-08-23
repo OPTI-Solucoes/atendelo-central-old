@@ -2,7 +2,7 @@
 <html class="mdc-typography">
 <head>
   <meta charset="utf-8">
-  <title>Line-it - Server</title>
+  <title id="title">Line-it - Server</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <script type="text/javascript" src="node_modules/firebase/firebase.js"></script>
@@ -23,7 +23,7 @@
 <body class="mdc-typography demo-body">
   <div id="app">
     <!-- Loading -->
-    <div v-if="loading.page || loading.user" style="margin: 50px 50px 50px 50px">
+    <div v-if="loading.page || loading.user || loading.update" style="margin: 50px 50px 50px 50px">
       <h1>Line-it</h1>
       <figure class="linear-progress-demo">
         <div role="progressbar" class="mdc-linear-progress mdc-linear-progress--indeterminate">
@@ -37,6 +37,24 @@
           </div>
         </div>
       </figure>
+      <br />
+      <div v-if="loading.downloading">
+        <h2>Atualizando...</h2><br />
+        <span>{{ loading.download_progress }}</span><br />
+        <span>{{ loading.download_message }}</span><br />
+        <figure class="linear-progress-demo">
+          <div role="progressbar" class="mdc-linear-progress mdc-linear-progress--indeterminate">
+            <div class="mdc-linear-progress__buffering-dots"></div>
+            <div class="mdc-linear-progress__buffer"></div>
+            <div class="mdc-linear-progress__bar mdc-linear-progress__primary-bar">
+              <span class="mdc-linear-progress__bar-inner"></span>
+            </div>
+            <div class="mdc-linear-progress__bar mdc-linear-progress__secondary-bar">
+              <span class="mdc-linear-progress__bar-inner"></span>
+            </div>
+          </div>
+        </figure>
+      </div>
     </div>
     <!-- end -->
 

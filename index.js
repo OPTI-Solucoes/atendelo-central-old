@@ -1,8 +1,14 @@
-const {app, BrowserWindow, ipcMain} = require('electron')
+const {app, BrowserWindow, ipcMain} = require('electron');
+const log = require('electron-log');
+const {autoUpdater} = require("electron-updater");
+
+autoUpdater.logger = log;
+autoUpdater.logger.transports.file.level = 'info';
+log.info('App starting...');
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
-let win
+let win;
 
 function createWindow () {
   // Create the browser window.
@@ -12,9 +18,10 @@ function createWindow () {
       height: 600,
       title: "I9Fila - Server",
   });
+  win.webContents.openDevTools();
 
   // and load the index.html of the app.
-  win.loadURL(`file://${__dirname}/index.html`)
+  win.loadURL(`file://${__dirname}/index.html`);
 
   // Open the DevTools.
   // win.webContents.openDevTools()
@@ -25,13 +32,19 @@ function createWindow () {
     // in an array if your app supports multi windows, this is the time
     // when you should delete the corresponding element.
     win = null
-  })
+  });
 }
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
-app.on('ready', createWindow)
+app.on('ready', function() {
+  createWindow();
+  setTimeout(function() {
+    sendStatusToWindow("v"+app.getVersion());
+    autoUpdater.checkForUpdates();
+  }, 3000);
+});
 
 // Quit when all windows are closed.
 app.on('window-all-closed', () => {
@@ -40,18 +53,52 @@ app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
     app.quit()
   }
-})
+});
 
 app.on('activate', () => {
   // On macOS it's common to re-create a window in the app when the
   // dock icon is clicked and there are no other windows open.
   if (win === null) {
-    createWindow()
+    createWindow();
   }
-})
+});
 
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and require them here.
+
+// UPDATER
+
+function sendStatusToWindow(text) {
+  log.info(text);
+  win.webContents.send('message_index', text);
+}
+
+autoUpdater.on('checking-for-update', () => {
+  sendStatusToWindow('checking-for-update');
+});
+autoUpdater.on('update-available', (ev, info) => {
+  sendStatusToWindow('update-availables');
+});
+autoUpdater.on('update-not-available', (ev, info) => {
+  sendStatusToWindow('update-not-available');
+});
+autoUpdater.on('error', (ev, err) => {
+  sendStatusToWindow('error : '+err);
+});
+autoUpdater.on('download-progress', (ev, progressObj) => {
+  console.log(progressObj);
+  sendStatusToWindow('download-progress');
+});
+autoUpdater.on('update-downloaded', (ev, info) => {
+  sendStatusToWindow('update-downloaded');
+  setTimeout(function() {
+    var isSilent = false;
+    var isForceRunAfter = true;
+    autoUpdater.quitAndInstall(isSilent, isForceRunAfter);
+  }, 5000);
+});
+
+// END UPDATER
 
 var server = require('http').createServer();
 
