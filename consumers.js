@@ -32,34 +32,6 @@ function verificar(db) {
   verify_today_historico(db, today_date);
 }
 
-exports.atender_senha_sala = function(incoming_json_, sockets, client) {
-	console.log("atender_senha_sala");
-	incoming_json = JSON.parse(incoming_json_);
-	console.log(incoming_json);
-
-	ws_response_to_monitores = new WsResponse("get_senha");
-	ws_response_to_box_sala = new WsResponse("atender_senha");
-
-	db.collection("senha").findOne({_id: new ObjectId(incoming_json.body.senha._id)}, function(err, result) {
-		if (err) {throw err;}
-		console.log(result);
-		if (result) {
-			var senha_enviada = result;
-			senha_enviada.atendida_sala = true;
-			senha_enviada.finalizada = new Date();
-			db.collection("senha").updateOne({_id: new ObjectId(senha_enviada._id)}, senha_enviada, function(err, res) {
-				if (err) {throw err;}
-				console.log("Senha updated");
-				ws_response_to_monitores.body['senha'] = senha_enviada;
-				ws_response_to_box_sala.body['senha'] = senha_enviada;
-
-				sockets.monitor.emit(ws_response_to_monitores.header.action, ws_response_to_monitores);
-				client.emit(ws_response_to_box_sala.header.action, ws_response_to_box_sala);
-			});
-		}
-	});
-}
-
 // Nova função dee atender senhas para o Box
 exports.atender_senha_box = function(incoming_json_, sockets, client) {
 	incoming_json = JSON.parse(incoming_json_);
@@ -108,6 +80,54 @@ exports.desistir_atender_senha = function(incoming_json_, sockets) {
 		db.collection("senha").updateOne({_id: new ObjectId(senha_enviada._id)}, senha_enviada, function(err, res) {
 			if (err) {throw err;}
 			console.log("Senha updated");
+		});
+	});
+}
+
+exports.atender_senha_sala = function(incoming_json_, sockets, client) {
+	console.log("atender_senha_sala");
+	incoming_json = JSON.parse(incoming_json_);
+	console.log(incoming_json);
+
+	ws_response_to_monitores = new WsResponse("get_senha");
+	ws_response_to_box_sala_all = new WsResponse("atualizar_senhas");
+
+	db.collection("senha").findOne({_id: new ObjectId(incoming_json.body.senha._id)}, function(err, result) {
+		if (err) {throw err;}
+		console.log(result);
+		if (result) {
+			var senha_enviada = result;
+			senha_enviada.atendida_sala = true;
+			senha_enviada.finalizada = new Date();
+			db.collection("senha").updateOne({_id: new ObjectId(senha_enviada._id)}, senha_enviada, function(err, res) {
+				if (err) {throw err;}
+				console.log("Senha updated");
+				ws_response_to_monitores.body['senha'] = senha_enviada;
+				ws_response_to_box_sala_all.body['senha'] = senha_enviada;
+
+				sockets.monitor.emit(ws_response_to_monitores.header.action, ws_response_to_monitores);
+				sockets.box_sala.emit(ws_response_to_box_sala_all.header.action, ws_response_to_box_sala_all);
+			});
+		}
+	});
+}
+
+// Nova função para desistir da senha para a Sala
+exports.desistir_atender_senha_sala = function(incoming_json_, sockets) {
+	incoming_json = JSON.parse(incoming_json_);
+	ws_response_to_box_sala = new WsResponse("atualizar_senhas");
+
+	db.collection("senha").findOne({_id: new ObjectId(incoming_json.body.senha._id)}, function(err, result) {
+		if (err) {throw err;}
+		console.log(result);
+		var senha_enviada = result;
+		senha_enviada.desistiu = true;
+		senha_enviada.atendida_sala = true;
+		db.collection("senha").updateOne({_id: new ObjectId(senha_enviada._id)}, senha_enviada, function(err, res) {
+			if (err) {throw err;}
+			console.log("Senha updated");
+			ws_response_to_box_sala.body['senha'] = senha_enviada;
+			sockets.box_sala.emit(ws_response_to_box_sala.header.action, ws_response_to_box_sala);
 		});
 	});
 }

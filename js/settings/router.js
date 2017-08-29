@@ -64,10 +64,14 @@ var app = new Vue({
         // self.download_progress = text;
       } else if (text == "update-downloaded") {
         self.download_message = "Em 5 segundos iremos atualizar o aplicativo..."
+      } else if (text == "cant_update") {
+        self.loading.update = false;
       } else {
         document.getElementById('title').innerText = "Line-it - Server " + text;
       }
     });
+
+    self.updater();
     // END UPDATER
   },
 
@@ -76,7 +80,7 @@ var app = new Vue({
       page: true,
       user: true,
       // UPDATER
-      update: false,
+      update: true,
       downloading: false,
       download_progress: 0,
       download_message: "",
@@ -90,6 +94,8 @@ var app = new Vue({
     registrando_usuario: false,
     snackbar: null,
     internet_connected: false,
+
+    updater: require('electron').remote.require("./index").init_updater,
   },
 
   methods: {

@@ -1,6 +1,6 @@
 const {app, BrowserWindow, ipcMain} = require('electron');
-const log = require('electron-log');
 const {autoUpdater} = require("electron-updater");
+const log = require('electron-log');
 
 autoUpdater.logger = log;
 autoUpdater.logger.transports.file.level = 'info';
@@ -38,10 +38,6 @@ function createWindow () {
 // Some APIs can only be used after this event occurs.
 app.on('ready', function() {
   createWindow();
-  setTimeout(function() {
-    sendStatusToWindow("v"+app.getVersion());
-    autoUpdater.checkForUpdates();
-  }, 3000);
 });
 
 // Quit when all windows are closed.
@@ -71,29 +67,65 @@ function sendStatusToWindow(text) {
   win.webContents.send('message_index', text);
 }
 
-autoUpdater.on('checking-for-update', () => {
-  sendStatusToWindow('checking-for-update');
-});
-autoUpdater.on('update-available', (ev, info) => {
-  sendStatusToWindow('update-available');
-});
-autoUpdater.on('update-not-available', (ev, info) => {
-  sendStatusToWindow('update-not-available');
-});
-autoUpdater.on('error', (ev, err) => {
-  sendStatusToWindow('error : ' + err);
-});
-autoUpdater.on('download-progress', (ev, progress) => {
-  // sendStatusToWindow('download-progress: ' + progress.percent + "%");
-});
-autoUpdater.on('update-downloaded', (ev, info) => {
-  sendStatusToWindow('update-downloaded');
-  setTimeout(function() {
-    var isSilent = false;
-    var isForceRunAfter = true;
-    autoUpdater.quitAndInstall(isSilent, isForceRunAfter);
-  }, 5000);
-});
+exports.init_updater = function() {
+  log.info('Updater starting...');
+
+  autoUpdater.on('checking-for-update', () => {
+    sendStatusToWindow('checking-for-update');
+  });
+  autoUpdater.on('update-available', (ev, info) => {
+    sendStatusToWindow('update-available');
+  });
+  autoUpdater.on('update-not-available', (ev, info) => {
+    sendStatusToWindow('update-not-available');
+  });
+  autoUpdater.on('error', (ev, err) => {
+    sendStatusToWindow('error : ' + err);
+  });
+  autoUpdater.on('download-progress', (ev, progress) => {
+    // sendStatusToWindow('download-progress: ' + progress.percent + "%");
+  });
+  autoUpdater.on('update-downloaded', (ev, info) => {
+    sendStatusToWindow('update-downloaded');
+    setTimeout(function() {
+      var isSilent = false;
+      var isForceRunAfter = true;
+      autoUpdater.quitAndInstall(isSilent, isForceRunAfter);
+    }, 5000);
+  });
+
+  sendStatusToWindow("v"+app.getVersion());
+  var os = require('os');
+  if (os.platform() != 'win32') {
+    sendStatusToWindow("cant_update");
+  } else {
+    autoUpdater.checkForUpdates();
+  }
+}
+
+// autoUpdater.on('checking-for-update', () => {
+//   sendStatusToWindow('checking-for-update');
+// });
+// autoUpdater.on('update-available', (ev, info) => {
+//   sendStatusToWindow('update-available');
+// });
+// autoUpdater.on('update-not-available', (ev, info) => {
+//   sendStatusToWindow('update-not-available');
+// });
+// autoUpdater.on('error', (ev, err) => {
+//   sendStatusToWindow('error : ' + err);
+// });
+// autoUpdater.on('download-progress', (ev, progress) => {
+//   // sendStatusToWindow('download-progress: ' + progress.percent + "%");
+// });
+// autoUpdater.on('update-downloaded', (ev, info) => {
+//   sendStatusToWindow('update-downloaded');
+//   setTimeout(function() {
+//     var isSilent = false;
+//     var isForceRunAfter = true;
+//     autoUpdater.quitAndInstall(isSilent, isForceRunAfter);
+//   }, 5000);
+// });
 
 // END UPDATER
 
