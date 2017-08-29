@@ -225,6 +225,11 @@ box_sala.on('connection', function(client){
     consumers.edit_fila(incoming_json, sockets, client);
   });
 
+  client.on("desistir_atender_senha", function(incoming_json) {
+    console.log("desistir_atender_senha event");
+    consumers.desistir_atender_senha_sala(incoming_json, sockets, client);
+  });
+
   client.on("select_all_filas", function(incoming_json) {
     console.log("select_all_filas event");
     consumers.select_all_filas(incoming_json, sockets, client);
