@@ -1,73 +1,72 @@
 .button-update-server {
-	margin: 10px;
-	position: absolute;
-	right: 0px;
-	top: 0px;
-	cursor: pointer;
+  margin: 10px;
+  position: absolute;
+  right: 0px;
+  top: 0px;
+  cursor: pointer;
 }
 
 .button-update-server .text-update {
-	vertical-align: super;
+  vertical-align: super;
   padding: 5px;
   background-color: #eaeaea;
   border-radius: 5px;
 }
 
 .banner-painel {
-	background-image: url('../../../img/banner.jpg');
-	background-repeat: no-repeat;
-	background-size: cover;
-	background-position: top center;
-	height: 200px;
+  background-image: url('../../../img/banner.jpg');
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: top center;
+  height: 200px;
 }
 
 .horizontal-scroll {
-	width: auto;
-    overflow-x: scroll;
-    overflow-y: hidden;
-    white-space: nowrap;
+  width: auto;
+  overflow-x: scroll;
+  overflow-y: hidden;
+  white-space: nowrap;
 }
 
-
 .horizontal-scroll div {
-	display: inline-block;
-	width: 300px;
-	margin: 0px 10px 0px 10px;
+  display: inline-block;
+  width: 220px;
+  margin: 0px 10px 0px 10px;
 }
 
 .card_media_totem {
-	background-image: url('../../../img/totem.jpg');
-	background-repeat: no-repeat;
-	background-size: cover;
-	background-position: center center;
-	height: 100px;
+  background-image: url('../../../img/totem.jpg');
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center center;
+  height: 100px;
 }
 
 .card_media_box {
-	background-image: url('../../../img/box.jpg');
-	background-repeat: no-repeat;
-	background-size: cover;
-	background-position: center center;
-	height: 100px;
+  background-image: url('../../../img/box.jpg');
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center center;
+  height: 100px;
 }
 
 .card_media_monitor {
-	background-image: url('../../../img/monitor.jpg');
-	background-repeat: no-repeat;
-	background-size: cover;
-	background-position: center center;
-	height: 100px;
+  background-image: url('../../../img/monitor.jpg');
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center center;
+  height: 100px;
 }
 
 .card_media_box_medico {
-	background-image: url('../../../img/medico.jpg');
-	background-repeat: no-repeat;
-	background-size: cover;
-	background-position: center center;
-	height: 100px;
+  background-image: url('../../../img/medico.jpg');
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center center;
+  height: 100px;
 }
 
 .liberar-acessar {
-	text-align: center;
-	margin-top: 30px;
+  text-align: center;
+  margin-top: 30px;
 }

@@ -103,30 +103,6 @@ exports.init_updater = function() {
   }
 }
 
-// autoUpdater.on('checking-for-update', () => {
-//   sendStatusToWindow('checking-for-update');
-// });
-// autoUpdater.on('update-available', (ev, info) => {
-//   sendStatusToWindow('update-available');
-// });
-// autoUpdater.on('update-not-available', (ev, info) => {
-//   sendStatusToWindow('update-not-available');
-// });
-// autoUpdater.on('error', (ev, err) => {
-//   sendStatusToWindow('error : ' + err);
-// });
-// autoUpdater.on('download-progress', (ev, progress) => {
-//   // sendStatusToWindow('download-progress: ' + progress.percent + "%");
-// });
-// autoUpdater.on('update-downloaded', (ev, info) => {
-//   sendStatusToWindow('update-downloaded');
-//   setTimeout(function() {
-//     var isSilent = false;
-//     var isForceRunAfter = true;
-//     autoUpdater.quitAndInstall(isSilent, isForceRunAfter);
-//   }, 5000);
-// });
-
 // END UPDATER
 
 var server = require('http').createServer();
