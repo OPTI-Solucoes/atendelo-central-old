@@ -163,6 +163,11 @@ Vue.component('system-painel', {
 			})
 			.fail(function(data) {
 				console.log("Erro no list box");
+				console.log("Refreshing token...");
+				self.$root.user.firebase.getIdToken().then(function(token) {
+			    console.log("Token refreshed!");
+			    app.user.token = token;
+			  });
 			});
 
 			new daoclient.DaoMonitor().list(this.$root.user.token)

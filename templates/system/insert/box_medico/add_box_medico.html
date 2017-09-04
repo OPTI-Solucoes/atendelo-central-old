@@ -5,8 +5,8 @@
 			<div class="mdc-card">
 
 				<section class="mdc-card__primary">
-					<h1 class="mdc-card__title mdc-card__title--large">Adicione um Médico</h1>
-					<h2 class="mdc-card__subtitle">Formulário de adição de Médicos</h2>
+					<h1 class="mdc-card__title mdc-card__title--large">Gerar uma chave para médicos</h1>
+					<!-- <h2 class="mdc-card__subtitle">Formulário de adição de Médicos</h2> -->
 				</section>
 				<section class="mdc-card__supporting-text">
 					<form action="#">
@@ -15,7 +15,7 @@
 								<div class="mdc-textfield" data-mdc-auto-init="MDCTextfield">
 									<input id="email" type="text" class="mdc-textfield__input" @keydown.enter="add_box_medico($event)" v-model="box_medico.fields.apelido">
 									<label for="email" class="mdc-textfield__label">
-										Nome do Médico
+										Apelido para Chave
 									</label>
 								</div>
 							</div>
@@ -25,7 +25,7 @@
 				</section>
 				<section class="mdc-card__actions mdc-card__actions--vertical" dir="rtl">
 					<button type="submit" class="mdc-button mdc-button--compact mdc-card__action dark-theme" v-on:click="add_box_medico($event)">
-						Cadastrar Médico
+						Gerar Chave Para Médicos
 					</button>
 				</section>
 			</div>
