@@ -140,6 +140,7 @@ exports.get_proxima_senha = function(incoming_json_, sockets, client) {
 	ws_response_to_box = new WsResponse("get_proxima_senha");
 
 	fila_manual = incoming_json.body.fila_manual;
+	tipo_atendimento = incoming_json.body.tipo_atendimento;
 
 	if (fila_manual) {
 		var obj = {
@@ -148,6 +149,15 @@ exports.get_proxima_senha = function(incoming_json_, sockets, client) {
 			desistiu: false,
 			em_atendimento_box: false
 		};
+
+		console.log(tipo_atendimento);
+
+		if (tipo_atendimento) {
+			console.log("entrou");
+			obj["tipo_atendimento"] = tipo_atendimento;
+		}
+
+		console.log(obj);
 
 		db.collection("senha").findOne(obj, function(err, result) {
 			if (err) {throw err;}
@@ -173,6 +183,10 @@ exports.get_proxima_senha = function(incoming_json_, sockets, client) {
 			desistiu: false,
 			em_atendimento_box: false
 		};
+
+		if (tipo_atendimento) {
+			obj["tipo_atendimento"] = tipo_atendimento;
+		}
 
 		db.collection("senha").find(obj).toArray(function(err, res) {
 			if (err) {throw err};
@@ -328,6 +342,8 @@ exports.insert_senha = function(incoming_json_, sockets, client) {
 	ws_response_to_boxes = new WsResponse("nova_senha_em_espera");
 	ws_response_to_totens = new WsResponse("solicitar_nova_senha");
 
+	console.log(incoming_json);
+
 	db.collection("senha").find({}).toArray(function(err, res) {
 		if (err) {throw err};
 		var prox_num = 1;
@@ -339,6 +355,7 @@ exports.insert_senha = function(incoming_json_, sockets, client) {
 		senha = {
 			numero: prox_num,
 			paciente: incoming_json.body.paciente,
+			tipo_atendimento: incoming_json.body.tipo_atendimento,
 			fila: incoming_json.body.fila,
 			fila_sala: null,
 			atendida: false,
