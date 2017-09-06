@@ -27,27 +27,15 @@
           <a class="mdc-list-item mdc-theme--primary" href="#" data-mdc-tabindex-handled="true" tabindex="-1" v-on:click="drawer.open = false">
             <i class="material-icons mdc-list-item__start-detail mdc-theme--primary" aria-hidden="true">home</i>Início
           </a>
-          <!-- <a class="mdc-list-item mdc-theme--primary" href="#saibamais" data-mdc-tabindex-handled="true" tabindex="-1" v-on:click="drawer.open = false">
-            <i class="material-icons mdc-list-item__start-detail mdc-theme--primary" aria-hidden="true">format_align_left</i>Saiba mais
-          </a> -->
-          <!-- <a class="mdc-list-item mdc-theme--primary" href="#system-config" data-mdc-tabindex-handled="true" tabindex="-1" v-on:click="drawer.open = false">
-            <i class="material-icons mdc-list-item__start-detail mdc-theme--primary" aria-hidden="true">add_to_queue</i>Experimente o sistema
-          </a> -->
         </div>
 
-        <!-- <hr class="mdc-list-divider"> -->
+        <hr class="mdc-list-divider">
 
-        <!-- <div class="mdc-list">
-          <a class="mdc-list-item mdc-theme--primary" href="#activate-box" v-on:click="drawer.open = false" data-mdc-tabindex-handled="true" tabindex="-1">
-            <i class="material-icons mdc-list-item__start-detail mdc-theme--primary" aria-hidden="true">vpn_key</i>Sou um Box
+        <div id="icon-with-text-demo" class="mdc-list">
+          <a v-if="$root.user.model" class="mdc-list-item mdc-theme--primary" href="#" data-mdc-tabindex-handled="true" tabindex="-1" v-on:click="drawer.open = false; deslogar_firebase();">
+            <i class="material-icons mdc-list-item__start-detail mdc-theme--primary" aria-hidden="true">exit_to_app</i>Deslogar e Sair
           </a>
-          <a class="mdc-list-item mdc-theme--primary" href="#activate-monitor" v-on:click="drawer.open = false" data-mdc-tabindex-handled="true" tabindex="-1">
-            <i class="material-icons mdc-list-item__start-detail mdc-theme--primary" aria-hidden="true">vpn_key</i>Sou um Monitor
-          </a>
-          <a class="mdc-list-item mdc-theme--primary" href="#activate-totem" v-on:click="drawer.open = false" data-mdc-tabindex-handled="true" tabindex="-1">
-            <i class="material-icons mdc-list-item__start-detail mdc-theme--primary" aria-hidden="true">vpn_key</i>Sou um Totem
-          </a>
-        </div> -->
+        </div>
       </nav>
     </nav>
   </aside>

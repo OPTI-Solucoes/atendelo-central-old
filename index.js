@@ -1,5 +1,13 @@
-const {app, BrowserWindow, ipcMain} = require('electron');
-const {autoUpdater} = require("electron-updater");
+const {
+  app,
+  BrowserWindow,
+  ipcMain,
+  Menu,
+  Tray
+} = require('electron');
+const {
+  autoUpdater
+} = require("electron-updater");
 const log = require('electron-log');
 
 autoUpdater.logger = log;
@@ -9,15 +17,47 @@ log.info('App starting...');
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let win;
+let appIcon = null;
 
-function createWindow () {
+function createWindow() {
   // Create the browser window.
-  win = new BrowserWindow(
-    {
-      width: 800,
-      height: 600,
-      title: "I9Fila - Server",
+  win = new BrowserWindow({
+    width: 800,
+    height: 600,
+    title: "I9Fila - Server",
   });
+
+  // Icon tray
+  win.on('minimize', function(event) {
+    event.preventDefault();
+    win.hide();
+  });
+
+  win.on('close', function(event) {
+    if (!app.isQuiting) {
+      event.preventDefault()
+      win.hide();
+    }
+    return false;
+  });
+
+  appIcon = new Tray('./icons/24x24.png');
+  const contextMenu = Menu.buildFromTemplate([{
+      label: 'Abrir Central',
+      click: function() {
+        win.show();
+      }
+    },
+    {
+      label: 'Sair',
+      click: function() {
+        app.isQuiting = true;
+        app.quit();
+      }
+    }
+  ]);
+  appIcon.setContextMenu(contextMenu);
+
   // and load the index.html of the app.
   win.loadURL(`file://${__dirname}/index.html`);
 
@@ -94,7 +134,7 @@ exports.init_updater = function() {
     }, 5000);
   });
 
-  sendStatusToWindow("v"+app.getVersion());
+  sendStatusToWindow("v" + app.getVersion());
   var os = require('os');
   if (os.platform() != 'win32') {
     sendStatusToWindow("cant_update");
@@ -125,10 +165,10 @@ var sockets = {
   totem: totem
 };
 
-io.on('connection', function(client){
+io.on('connection', function(client) {
   console.log('user connected');
 
-  client.on("disconnect", function(){
+  client.on("disconnect", function() {
     console.log("Disconnect");
   });
 });
@@ -136,7 +176,7 @@ io.on('connection', function(client){
 geral.on('connection', function(client) {
   console.log('user connected to Geral');
 
-  client.on("disconnect", function(){
+  client.on("disconnect", function() {
     console.log("Disconnect from Geral");
   });
 
@@ -146,10 +186,10 @@ geral.on('connection', function(client) {
   });
 })
 
-box.on('connection', function(client){
+box.on('connection', function(client) {
   console.log('user connected to Box');
 
-  client.on("disconnect", function(){
+  client.on("disconnect", function() {
     console.log("Disconnect from Box");
   });
 
@@ -184,10 +224,10 @@ box.on('connection', function(client){
   // });
 });
 
-box_sala.on('connection', function(client){
+box_sala.on('connection', function(client) {
   console.log('user connected to Box_Sala');
 
-  client.on("disconnect", function(){
+  client.on("disconnect", function() {
     console.log("Disconnect from Box_Sala");
   });
 
@@ -222,10 +262,10 @@ box_sala.on('connection', function(client){
   // });
 });
 
-monitor.on('connection', function(client){
+monitor.on('connection', function(client) {
   console.log('user connected to Monitor');
 
-  client.on("disconnect", function(){
+  client.on("disconnect", function() {
     console.log("Disconnect from Monitor");
   });
 
@@ -245,10 +285,10 @@ monitor.on('connection', function(client){
   // });
 });
 
-totem.on('connection', function(client){
+totem.on('connection', function(client) {
   console.log('user connected to Totem');
 
-  client.on("disconnect", function(){
+  client.on("disconnect", function() {
     console.log("Disconnect from Totem");
   });
 
@@ -273,7 +313,16 @@ totem.on('connection', function(client){
   // });
 });
 
-var porta = 3000;
-server.listen(porta, "0.0.0.0", function() {
-  console.log('Socket IO listening on port ' + porta);
-});
+exports.close_app = function() {
+	app.isQuiting = true;
+  app.quit();
+}
+
+exports.init_io_server = function() {
+  if (!server.listening) {
+    var porta = 3000;
+    server.listen(porta, "0.0.0.0", function() {
+      console.log('Socket IO listening on port ' + porta);
+    });
+  }
+}

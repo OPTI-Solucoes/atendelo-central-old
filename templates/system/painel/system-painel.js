@@ -25,12 +25,13 @@ Vue.component('system-painel', {
 
 			if (this.ja_configurou) {
 				this.carregar_maquinas_conectadas();
+				this.index.init_io_server();
+				self.consumers.init_udp_autodiscover(self.$root.user);
+
 				self.carregar_maquinas_interval = setInterval(function() {
 					self.carregar_maquinas_conectadas();
 				}, 10000);
 			};
-
-			self.consumers.init_udp_autodiscover(self.$root.user);
 		}
 	},
 
@@ -55,6 +56,7 @@ Vue.component('system-painel', {
 			totem_list: [],
 			carregar_maquinas_interval: null,
 			consumers: require('electron').remote.require("./consumers"),
+			index: require('electron').remote.require("./index"),
 		};
 
 		return data;

@@ -1,39 +1,46 @@
 // $(document).ready(function() {
 
 Vue.component('menu-vertical', {
-	template: $.readFile('templates/menu/menu.html'),
+  template: $.readFile('templates/menu/menu.html'),
 
-	data: function() {
-		var rc_data = {
-			drawer: null,
+  data: function() {
+    var rc_data = {
+      drawer: null,
+			elec: require('electron').remote.require("./index"),
+    };
+    return rc_data;
+  },
 
-		};
-		return rc_data;
-	},
+  mounted: function() {
+    var self = this;
+    mdc.autoInit()
 
-	mounted: function() {
-		var self = this;
-		mdc.autoInit()
+    var drawerEl = document.querySelector('.mdc-temporary-drawer');
+    var MDCTemporaryDrawer = mdc.drawer.MDCTemporaryDrawer;
+    self.drawer = new MDCTemporaryDrawer(drawerEl);
+    document.querySelector('.demo-menu').addEventListener('click', function() {
+      self.drawer.open = true;
+    });
+    drawerEl.addEventListener('MDCTemporaryDrawer:open', function() {
+      // console.log('Received MDCTemporaryDrawer:open');
+    });
+    drawerEl.addEventListener('MDCTemporaryDrawer:close', function() {
+      // console.log('Received MDCTemporaryDrawer:close');
+    });
+  },
 
-		var drawerEl = document.querySelector('.mdc-temporary-drawer');
-		var MDCTemporaryDrawer = mdc.drawer.MDCTemporaryDrawer;
-		self.drawer = new MDCTemporaryDrawer(drawerEl);
-		document.querySelector('.demo-menu').addEventListener('click', function() {
-			self.drawer.open = true;
-		});
-		drawerEl.addEventListener('MDCTemporaryDrawer:open', function() {
-		// console.log('Received MDCTemporaryDrawer:open');
-		});
-		drawerEl.addEventListener('MDCTemporaryDrawer:close', function() {
-		// console.log('Received MDCTemporaryDrawer:close');
-		});
-	},
+  methods: {
+    deslogar_firebase: function() {
+      var self = this;
+      firebase.auth().signOut().then(function() {
+        // Sign-out successful.
+				self.elec.close_app();
+      }, function(error) {
+        // An error happened.
+				console.log(error);
+      });
+    },
 
-	methods: {
+  },
 
-	},
 });
-
-
-	
-
