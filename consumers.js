@@ -319,6 +319,7 @@ exports.edit_fila = function(incoming_json_, sockets, client) {
 		if (result) {
 			var sala_ = result;
 			sala_.medico = incoming_json.body.sala.medico;
+			sala_.apelido = incoming_json.body.sala.apelido;
 			db.collection("fila_sala").updateOne({_id: new ObjectId(incoming_json.body.sala._id)},
 			sala_, function(err, result_2) {
 				if (err) {throw err;}
