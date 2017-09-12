@@ -9,6 +9,7 @@ const {
   autoUpdater
 } = require("electron-updater");
 const log = require('electron-log');
+const path = require('path');
 
 autoUpdater.logger = log;
 autoUpdater.logger.transports.file.level = 'info';
@@ -41,7 +42,9 @@ function createWindow() {
     return false;
   });
 
-  appIcon = new Tray('./icons/24x24.png');
+
+  var iconPath = path.join(__dirname, "icons/24x24.png")
+  appIcon = new Tray(iconPath);
   const contextMenu = Menu.buildFromTemplate([{
       label: 'Abrir Central',
       click: function() {
