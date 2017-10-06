@@ -142,7 +142,13 @@ exports.init_updater = function() {
   if (os.platform() != 'win32') {
     sendStatusToWindow("cant_update");
   } else {
-    autoUpdater.checkForUpdates();
+    var DEBUG = false;
+    if (DEBUG) {
+      log.error('DEBUG TRUE');
+      sendStatusToWindow("cant_update");
+    } else {
+      autoUpdater.checkForUpdates();
+    }
   }
 }
 
