@@ -99,6 +99,7 @@ exports.atender_senha_sala = function(incoming_json_, sockets, client) {
 			var senha_enviada = result;
 			senha_enviada.atendida_sala = true;
 			senha_enviada.finalizada = new Date();
+			senha_enviada.nome_medico = incoming_json.body.fila.nome_medico;
 			db.collection("senha").updateOne({_id: new ObjectId(senha_enviada._id)}, senha_enviada, function(err, res) {
 				if (err) {throw err;}
 				console.log("Senha updated");
@@ -359,6 +360,7 @@ exports.insert_senha = function(incoming_json_, sockets, client) {
 			tipo_atendimento: incoming_json.body.tipo_atendimento,
 			fila: incoming_json.body.fila,
 			fila_sala: null,
+			nome_medico: "",
 			atendida: false,
 			atendida_sala: false,
 			criada: new Date(),
