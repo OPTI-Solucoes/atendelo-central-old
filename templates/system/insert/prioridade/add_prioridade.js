@@ -1,5 +1,5 @@
-Vue.component('add-totem', {
-	template: $.readFile('templates/system/insert/totem/add_totem.html'),
+Vue.component('add-prioridade', {
+	template: $.readFile('templates/system/insert/prioridade/add_prioridade.html'),
 
 	props: {
 		exemplo: {
@@ -9,22 +9,24 @@ Vue.component('add-totem', {
 
 	beforeMount: function() {
         var self = this;
-        console.log("add-totem: beforeMount");
+        console.log("add-prioridade: beforeMount");
         this.$root.has_logged();
     },
 
     mounted: function() {
         var self = this;
         window.mdc.autoInit(/* root */ document, () => {});
-        console.log("add-totem: mounted");
+        console.log("add-prioridade: mounted");
     },
 
     data: function() {
         var self = this;
     	var data = {
-            totem: {
+            prioridade: {
                 fields: {
-                    apelido: null,
+                    nome: null,
+                    abrev: null,
+                    cor: null,
                 },
             },
 		};
@@ -32,19 +34,25 @@ Vue.component('add-totem', {
     	return data;
     },
 
+    watch: {
+        prioridade: function(newVal){
+            console.log(newVal);
+        }
+    },
+
 	methods: {
-        add_totem: function(event) {
+        add_prioridade: function(event) {
             if (event) event.preventDefault();
 
             var self = this;
-            new daoclient.DaoTotem().insert(self.totem, this.$root.user.token)
+            new daoclient.DaoPrioridade().insert(self.prioridade, this.$root.user.token)
                 .done(function(data) {
                     console.log("done");
-                    self.totem = data[0];
+                    self.prioridade = data[0];
                     self.$root.$router.push({name: "home"});
                 })
                 .fail(function(data) {
-                    console.log("Erro no insert totem");
+                    console.log("Erro no insert prioridade");
                 });
         },
 	},

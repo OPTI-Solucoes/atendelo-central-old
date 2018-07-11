@@ -21,17 +21,21 @@ Vue.component('system-painel', {
 			this.testando = this.$root.user.model.fields.testando;
 			this.comprou = this.$root.user.model.fields.comprou;
 			this.ja_configurou = this.$root.user.model.fields.ip_central;
+			console.log('--- central ip ---')
+			console.log(this.$root.user.local_ip)
+			console.log(this.$root.user.model.fields.ip_central)
 			this.is_server = this.$root.user.local_ip == this.$root.user.model.fields.ip_central;
 
 			if (this.ja_configurou) {
 				this.carregar_maquinas_conectadas();
 				this.index.init_io_server();
 				self.consumers.init_udp_autodiscover(self.$root.user);
-
 				self.carregar_maquinas_interval = setInterval(function() {
 					self.carregar_maquinas_conectadas();
 				}, 10000);
 			};
+		} else { 
+			console.log('não logado')
 		}
 	},
 
@@ -49,7 +53,7 @@ Vue.component('system-painel', {
 			comprou: false,
 			ja_configurou: false,
 			is_server: true,
-
+			prio_list: [],
 			box_list: [],
 			box_medico_list: [],
 			monitor_list: [],
@@ -63,6 +67,27 @@ Vue.component('system-painel', {
 	},
 
 	methods: {
+		add_prioridade: function() {
+			var self = this;
+			this.$root.$router.push({name:"add-prioridade"});
+		},
+
+		delete_prioridade: function(prioridade) {
+			var self = this;
+
+			new daoclient.DaoPrioridade().delete(prioridade, this.$root.user.token)
+			.done(function(data) {
+				console.log("done");
+				self.$root.mostrar_msg("Deletado");
+				var index = self.prio_list.findIndex(function(obj){return obj == prioridade});
+				self.prio_list.splice(index, 1);
+			})
+			.fail(function(data) {
+				console.log(data.responseText);
+				self.$root.mostrar_msg(data.responseText);
+			});
+		},
+
 		add_box: function() {
 			var self = this;
 			this.$root.$router.push({name:"add-box"});
@@ -151,6 +176,29 @@ Vue.component('system-painel', {
 
 		carregar_maquinas_conectadas: function() {
 			var self = this;
+
+			/**
+				Incluir prioridades!
+			*/
+			new daoclient.DaoPrioridade().list(this.$root.user.token)
+			.done(function(data) {
+				// console.log("done list box");
+				self.prio_list = [];
+				for (var i = 0; i < data.length; i++) {
+					self.prio_list.push(data[i]);
+				}
+				if (self.prio_list.length > 0) {
+					self.consumers.sync_prioridade_with_web(self.prio_list);
+				}
+			})
+			.fail(function(data) {
+				console.log("Erro no list prioridade");
+				console.log("Refreshing token...");
+				self.$root.user.firebase.getIdToken().then(function(token) {
+			    console.log("Token refreshed!");
+			    app.user.token = token;
+			  });
+			});
 
 			new daoclient.DaoBox().list(this.$root.user.token)
 			.done(function(data) {

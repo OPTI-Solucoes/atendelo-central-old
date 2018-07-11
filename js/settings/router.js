@@ -19,6 +19,11 @@ var _router = new VueRouter({
     },
 
     // Add
+    { name: 'add-prioridade', path: '/add-prioridade', component: {
+      template: '<add-prioridade ref="add-prioridade" />' }
+    },
+
+    // Add
     { name: 'add-box', path: '/add-box', component: {
       template: '<add-box ref="add-box" />' }
     },
@@ -228,6 +233,7 @@ function getIPs(callback){
     //construct a new RTCPeerConnection
     var pc = new RTCPeerConnection(servers, mediaConstraints);
     function handleCandidate(candidate){
+        console.log(candidate)
         //match just the IP address
         var ip_regex = /([0-9]{1,3}(\.[0-9]{1,3}){3}|[a-f0-9]{1,4}(:[a-f0-9]{1,4}){7})/
         var ip_addr = ip_regex.exec(candidate)[1];
@@ -260,16 +266,18 @@ function getIPs(callback){
 }
 //Test: Print the IP addresses into the console
 getIPs(function(ip){
+  console.log('getIP');
+  console.log(ip);
   if (app.user.local_ip) {
     if (app.user.local_ip.indexOf('.') == -1) {
       app.user.local_ip = ip;
-      console.log("Meu IP: "+app.user.local_ip);
+      console.log("Meu IP (1): "+app.user.local_ip);
     } else {
-      console.log("Meu IP: " + app.user.local_ip + " - Outro: " + ip);
+      console.log("Meu IP: (2)" + app.user.local_ip + " - Outro: " + ip);
     }
   } else {
     app.user.local_ip = ip;
-    console.log("Meu IP: " + app.user.local_ip);
+    console.log("Meu IP: (3)" + app.user.local_ip);
   }
 });
 

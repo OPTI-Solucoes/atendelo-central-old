@@ -22,7 +22,7 @@ Vue.component('system-config', {
             this.comprou = this.$root.user.model.fields.comprou;
             this.ja_configurou = this.$root.user.model.fields.ip_central;
             if (this.ja_configurou) {
-                this.$root.$router.push({name: "system-painel"});
+                this.$root.$router.push({name: "home"});
             }
             this.etapa_0 = true;
         }
@@ -152,7 +152,7 @@ Vue.component('system-config', {
             }  else if (num == 3) {
                 this.etapa_3 = true;
             } else if (num == 4) {
-                this.$root.$router.push({name: "system-painel"});
+                this.$root.$router.push({name: "home"});
             }
 
             setTimeout(function() {

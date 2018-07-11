@@ -25,7 +25,7 @@ function createWindow() {
   win = new BrowserWindow({
     width: 800,
     height: 600,
-    title: "I9Fila - Server",
+    title: "I9Fila - Server"
   });
 
   // Icon tray
@@ -221,16 +221,21 @@ box.on('connection', function(client) {
     console.log("select_all_filas_box event");
     consumers.select_all_filas_box(incoming_json, sockets, client);
   });
+  
+  client.on("select_all_prioridades", function(incoming_json) {
+    console.log("select_all_prioridades event");
+    consumers.select_all_prioridades(incoming_json, sockets, client);
+  });
 
   client.on("check_me", function(incoming_json) {
     console.log("check_me event");
     consumers.check_box(incoming_json, client);
   });
 
-  // client.on("activate_me", function(incoming_json) {
-  //   console.log("activate_me event");
-  //   consumers.activate_box(incoming_json, client);
-  // });
+  client.on("activate_me", function(incoming_json) {
+    console.log("activate_me event");
+    consumers.activate_box(incoming_json, client);
+  });
 });
 
 box_sala.on('connection', function(client) {
@@ -316,10 +321,10 @@ totem.on('connection', function(client) {
     client.emit("dong", "dong");
   });
 
-  // client.on("activate_me", function(incoming_json) {
-  //   console.log("activate_me event");
-  //   consumers.activate_totem(incoming_json, client);
-  // });
+  client.on("activate_me", function(incoming_json) {
+    console.log("activate_me event");
+    consumers.activate_totem(incoming_json, client);
+  });
 });
 
 exports.close_app = function() {

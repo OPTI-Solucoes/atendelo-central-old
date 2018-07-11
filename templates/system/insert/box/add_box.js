@@ -41,7 +41,7 @@ Vue.component('add-box', {
                 .done(function(data) {
                     console.log("done");
                     self.box = data[0];
-                    self.$root.$router.push({name: "system-painel"});
+                    self.$root.$router.push({name: "home"});
                 })
                 .fail(function(data) {
                     console.log("Erro no insert box");

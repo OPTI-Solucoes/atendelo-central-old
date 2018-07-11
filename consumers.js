@@ -3,6 +3,7 @@ var ObjectId = require('mongodb').ObjectID;
 var db = null;
 var dgram = require('dgram');
 var server_broadcast = null;
+var proxima_senha_pref = 0;
 
 exports.connect_to_database = function() {
 	var url_db = "mongodb://localhost:27017/localdb";
@@ -189,36 +190,50 @@ exports.get_proxima_senha = function(incoming_json_, sockets, client) {
 			obj["tipo_atendimento"] = tipo_atendimento;
 		}
 
-		db.collection("senha").find(obj).toArray(function(err, res) {
-			if (err) {throw err};
-			console.log(res.length);
-			if (res.length > 0){
-				escolher = true;
-				proxima_senha = null;
-				for (var i = 0; i < res.length; i++) {
-					if (res[i].fila == "PRE") {
-						proxima_senha = res[i];
-						break;
-					} else {
-						if (escolher) {
-							proxima_senha = res[i];
-							escolher = false;
-						}
-					}
-				}
+		db.collection("prioridade").find({}).toArray(function(err, prioridades) {
+			if (err) {throw err;}
+			db.collection("senha").find(obj).toArray(function(err, res) {
+				if (err) {throw err};
+				console.log(res.length);
+				if (res.length > 0){
+					escolher = true;
+					proxima_senha = null;
 
-				proxima_senha.em_atendimento_box = true;
-				proxima_senha.box = incoming_json.body.box.apelido;
-				db.collection("senha").updateOne({_id: new ObjectId(proxima_senha._id)}, proxima_senha, function(err, res) {
-					ws_response_to_box.body['senha'] = proxima_senha;
-					ws_response_to_monitores.body['senha'] = proxima_senha;
+					var prioridades_len = prioridades.length;
+					if(proxima_senha_pref >= prioridades_len){
+						proxima_senha_pref = 0;
+					}
+
+					var i = 0;
+					while (i < res.length) {
+						if (res[i].fila == prioridades[proxima_senha_pref].fields.abrev) {
+							console.log('próxima senha')
+							console.log(proxima_senha_pref)
+							proxima_senha = res[i];
+							proxima_senha_pref++;
+							break;
+						} else {
+							if (escolher) {
+								proxima_senha = res[i];
+								escolher = false;
+							}
+						}
+						i++;
+					}
+
+					proxima_senha.em_atendimento_box = true;
+					proxima_senha.box = incoming_json.body.box.apelido;
+					db.collection("senha").updateOne({_id: new ObjectId(proxima_senha._id)}, proxima_senha, function(err, res) {
+						ws_response_to_box.body['senha'] = proxima_senha;
+						ws_response_to_monitores.body['senha'] = proxima_senha;
+						client.emit(ws_response_to_box.header.action, ws_response_to_box);
+						sockets.monitor.emit(ws_response_to_monitores.header.action, ws_response_to_monitores);
+					});
+				} else {
+					ws_response_to_box.header.action = "nenhuma_senha";
 					client.emit(ws_response_to_box.header.action, ws_response_to_box);
-					sockets.monitor.emit(ws_response_to_monitores.header.action, ws_response_to_monitores);
-				});
-			} else {
-				ws_response_to_box.header.action = "nenhuma_senha";
-				client.emit(ws_response_to_box.header.action, ws_response_to_box);
-			}
+				}
+			});
 		});
 	}
 }
@@ -292,6 +307,16 @@ exports.select_all_filas = function(incoming_json_, sockets, client) {
 			ws_response_to_box_sala.body['senhas_list'] = result_2;
 			client.emit(ws_response_to_box_sala.header.action, ws_response_to_box_sala);
 		});
+	});
+}
+
+exports.select_all_prioridades = function(incoming_json_, sockets, client) {
+	console.log("select_all_filas_box");
+	ws_response_to_box = new WsResponse("set_prioridades");
+	db.collection("prioridade").find({}).toArray(function(err, result) {
+		if (err) {throw err;}
+		ws_response_to_box.body['prioridades'] = result;
+		client.emit(ws_response_to_box.header.action, ws_response_to_box);
 	});
 }
 
@@ -386,6 +411,8 @@ exports.insert_senha = function(incoming_json_, sockets, client) {
 
 exports.check_box = function (incoming_json_, client) {
 	incoming_json = JSON.parse(incoming_json_);
+	console.log(incoming_json);
+	console.log(incoming_json_);
 	ws_response_to_box = new WsResponse("check_result");
 
 	db.collection("box").findOne({'fields.ip': incoming_json.body.ip}, function(err, result) {
@@ -401,30 +428,31 @@ exports.check_box = function (incoming_json_, client) {
 	});
 }
 
-// exports.activate_box = function () {
-// 	incoming_json = JSON.parse(incoming_json_);
-// 	ws_response_to_box = new WsResponse("activate_result");
-//
-// 	db.collection("box").findOne({'fields.chave': incoming_json.body.chave}, function(err, result) {
-// 		if (err) throw err;
-// 		if (result) {
-// 			db.collection("box").updateOne({'fields.chave': incoming_json.body.chave},
-// 				{'fields.ip': incoming_json.body.ip}, function(err, result_2) {
-// 					if (err) throw err;
-// 					if (result_2.result.ok && result_2.result.n > 0) {
-// 						ws_response_to_box.body["success_check"] = true;
-// 						ws_response_to_box.body["obj"] = result;
-// 					} else {
-// 						ws_response_to_box.body["success_check"] = false;
-// 					}
-//
-// 					client.emit(ws_response_to_box.header.action, ws_response_to_box);
-// 				});
-// 		} else {
-// 			ws_response_to_box.body["message"] = "Esta chave não existe"
-// 		}
-// 	});
-// }
+exports.activate_box = function (incoming_json_, client) {
+	incoming_json = JSON.parse(incoming_json_);
+	ws_response_to_box = new WsResponse("activate_result");
+
+	console.log(incoming_json.body.ip);
+
+	db.collection("box").findOneAndUpdate({'fields.chave': incoming_json.body.chave}, {
+			$set: { "fields.ip" : incoming_json.body.ip }
+		}, function(err, result) {
+		if (err) throw err;
+		if (result) {
+			console.log(result);
+			if (result.ok && result.lastErrorObject.n > 0) {
+				ws_response_to_box.body["success_check"] = true;
+				ws_response_to_box.body["obj"] = result;
+			} else {
+				ws_response_to_box.body["success_check"] = false;
+			}
+
+			client.emit(ws_response_to_box.header.action, ws_response_to_box);
+		} else {
+			ws_response_to_box.body["message"] = "Esta chave não existe"
+		}
+	});
+}
 
 exports.check_box_sala = function (incoming_json_, client) {
 	incoming_json = JSON.parse(incoming_json_);
@@ -469,12 +497,48 @@ exports.check_totem = function (incoming_json_, client) {
 		if (result) {
 			ws_response_to_totem.body["success_check"] = true;
 			ws_response_to_totem.body["obj"] = result;
+			console.log("check_totem");
+			db.collection("prioridade").find({}).toArray(function(err_prio, prioridades) {
+				console.log("prioridade");
+				console.log(prioridades);
+				if(prioridades){
+					ws_response_to_totem.body["prioridades"] = prioridades;
+				}
+				client.emit(ws_response_to_totem.header.action, ws_response_to_totem);
+			});
 		} else {
 			ws_response_to_totem.body["success_check"] = false;
+			client.emit(ws_response_to_totem.header.action, ws_response_to_totem);
 		}
-
-		client.emit(ws_response_to_totem.header.action, ws_response_to_totem);
 	});
+}
+
+exports.activate_totem = function (incoming_json_, client) {
+	incoming_json = JSON.parse(incoming_json_);
+	ws_response_to_totem = new WsResponse("result");
+
+	try {
+		db.collection("totem").findOneAndUpdate({"fields.chave": incoming_json.body.chave}, {
+				$set: { "fields.ip" : incoming_json.body.ip }
+			}, function(err, result) {
+			if (err) throw err;
+			if (result) {
+				console.log(result);
+				if (result.ok && result.lastErrorObject.n > 0) {
+					ws_response_to_totem.body["success_check"] = true;
+					ws_response_to_totem.body["obj"] = result;
+				} else {
+					ws_response_to_totem.body["success_check"] = false;
+				}
+				client.emit(ws_response_to_totem.header.action, ws_response_to_totem);
+			} else {
+				ws_response_to_totem.body["message"] = "Esta chave não existe"
+				client.emit(ws_response_to_totem.header.action, ws_response_to_totem);
+			}
+		});
+	}catch(e){
+		print(e);
+	}
 }
 
 verify_today_historico = function (db, today_date) {
@@ -528,6 +592,15 @@ verify_today_historico = function (db, today_date) {
 	});
 }
 
+exports.sync_prioridade_with_web = function (objs) {
+	db.collection("prioridade").deleteMany({}, function(err, result) {
+    if (err) throw err;
+		db.collection("prioridade").insertMany(objs, function(err, result_2) {
+			if (err) throw err;
+		});
+  });
+}
+
 exports.sync_box_with_web = function (objs) {
 	db.collection("box").deleteMany({}, function(err, result) {
     if (err) throw err;
@@ -556,20 +629,12 @@ exports.sync_totem_with_web = function (objs) {
 }
 
 exports.init_udp_autodiscover = function(server) {
-	// START AutoDiscover server
-	var server_json = JSON.stringify({
-		id: server.model.pk,
-		ip: server.local_ip,
-		nome: server.model.fields.nome,
-		email: server.model.fields.email,
-		sou_server: true,
-	});
 
-	init_udp_autodiscover_server(server_json);
+	init_udp_autodiscover_server(server);
 	// END
 }
 
-function init_udp_autodiscover_server(server_json) {
+function init_udp_autodiscover_server(server) {
 	var SERVER_PORT = 6024;
 	var CLIENT_PORT = 6025;
 
@@ -577,7 +642,7 @@ function init_udp_autodiscover_server(server_json) {
 		server_broadcast.close(
       function() {
         server_broadcast = null;
-        init_udp_autodiscover_server(server_json);
+        init_udp_autodiscover_server(server);
       }
 		);
 	} else {
@@ -590,7 +655,19 @@ function init_udp_autodiscover_server(server_json) {
 		});
 
 		server_broadcast.on('message', function (message, rinfo) {
-		    console.log('Message from: ' + rinfo.address + ':' + rinfo.port +' - '+message.toString());
+			console.log('Message from: ' + rinfo.address + ':' + rinfo.port +' - '+message.toString());
+			
+			// START AutoDiscover server
+			var server_json = JSON.stringify({
+				id: server.model.pk,
+				nome: server.model.fields.nome,
+				email: server.model.fields.email,
+				ip: server.local_ip,
+				sou_server: true,
+			});
+
+			console.log(server.local_ip);
+
 		    var message_to_send = new Buffer(server_json);
 		    server_broadcast.send(message_to_send, 0, message_to_send.length, CLIENT_PORT, rinfo.address, function() {
 		      console.log('Message sended to client ' + rinfo.address + ':' + CLIENT_PORT +'');
@@ -600,6 +677,37 @@ function init_udp_autodiscover_server(server_json) {
 		server_broadcast.bind(SERVER_PORT);
 	}
 }
+
+// function init_udp_autodiscover_server(server_json) {
+	
+// 	var SERVER_PORT = 6024;
+// 	var CLIENT_PORT = 6025;
+// 	server_broadcast = dgram.createSocket('udp4');
+
+// 	//be sure Buffer is present
+// 	var Buffer = require('buffer').Buffer;
+
+// 	var message_to_send = new Buffer(server_json);
+
+// 	server_broadcast.bind(SERVER_PORT, function() {
+// 		server_broadcast.setBroadcast(true);
+
+// 		var looking_servers_interval = setInterval(function() {		
+// 			server_broadcast.send(message_to_send, 0, message_to_send.length, CLIENT_PORT, '192.168.1.255', function() {
+// 				console.log('Message sended to client ' + '192.168.1.255' + ':' + CLIENT_PORT +'');
+// 			});
+// 		}, 5000);
+// 	});
+
+// 	server_broadcast.on('listening', function(buf, rinfo) {
+// 		console.log('Message from: - ');
+// 	});
+	
+// 	server_broadcast.on('message', function(buf, rinfo) {
+// 		console.log('Message from: - ');
+// 	});
+
+// }
 
 function millisToMinutesAndSeconds(millis) {
   var minutes = Math.floor(millis / 60000);

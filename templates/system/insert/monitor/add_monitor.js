@@ -40,7 +40,7 @@ Vue.component('add-monitor', {
 			.done(function(data) {
 				console.log("done");
 				self.monitor = data[0];
-				self.$root.$router.push({name: "system-painel"});
+				self.$root.$router.push({name: "home"});
 			})
 			.fail(function(data) {
 				console.log(data);

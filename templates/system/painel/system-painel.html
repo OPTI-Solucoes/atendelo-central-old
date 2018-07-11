@@ -7,6 +7,26 @@
 
 	<div class="mdc-layout-grid">
 		<div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
+			<h1>PRIORIDADES <a class="mdc-button mdc-button--compact material-icons" v-on:click="add_prioridade()">add_box</a></h1>
+
+			<div class="horizontal-scroll">
+
+				<div v-for="prio in prio_list" class="mdc-card" v-bind:style="{ backgroundColor: prio.fields.cor, color: '#FFFFFF' }">
+					<section class="mdc-card__media" style="height: 10px"></section>
+					<section class="mdc-card__supporting-text" v-bind:style="{ color: '#FFFFFF' }">
+						({{prio.fields.abrev}}) {{ prio.fields.nome }}<br>
+					</section>
+					<section class="mdc-card__actions" dir="rtl" >
+						<a class="mdc-button mdc-button--compact mdc-card__action" v-bind:style="{ color: '#FFFFFF' }" v-on:click="delete_prioridade(prio)">Remover</a>
+					</section>
+				</div>
+
+			</div>
+		</div>
+	</div>
+
+	<div class="mdc-layout-grid">
+		<div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
 			<h1>BOXES <a class="mdc-button mdc-button--compact material-icons" v-on:click="add_box()">add_box</a></h1>
 
 			<div class="horizontal-scroll">

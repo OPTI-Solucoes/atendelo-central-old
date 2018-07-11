@@ -1,0 +1,52 @@
+<div class="">
+	<div class="mdc-layout-grid">
+		<div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-2"></div>
+		<div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-8">
+			<div class="mdc-card">
+
+				<section class="mdc-card__primary">
+					<h1 class="mdc-card__title mdc-card__title--large">Adicione uma Prioridade</h1>
+					<h2 class="mdc-card__subtitle">Formulário de adição de Prioridades</h2>
+				</section>
+				<section class="mdc-card__supporting-text">
+					<form action="#">
+						<div>
+							<div class="mdc-form-field">
+								<div class="mdc-textfield" data-mdc-auto-init="MDCTextfield">
+									<input id="nome" type="text" class="mdc-textfield__input" @keydown.enter="add_prioridade($event)" v-model="prioridade.fields.nome">
+									<label for="nome" class="mdc-textfield__label">
+										Nome
+									</label>
+								</div>
+							</div>
+							<br>
+                            <div class="mdc-form-field">
+								<div class="mdc-textfield" data-mdc-auto-init="MDCTextfield">
+									<input id="abrev" type="text" class="mdc-textfield__input" @keydown.enter="add_prioridade($event)" v-model="prioridade.fields.abrev">
+									<label for="abrev" class="mdc-textfield__label">
+										Iniciais (3)
+									</label>
+								</div>
+							</div>
+							<br>
+                            <div class="mdc-form-field">
+								<div class="mdc-textfield" data-mdc-auto-init="MDCTextfield">
+									<input id="cor" type="text" class="mdc-textfield__input" @keydown.enter="add_prioridade($event)" v-model="prioridade.fields.cor">
+									<label for="cor" class="mdc-textfield__label">
+										Cor
+									</label>
+								</div>
+							</div>
+						</div>
+					</form>
+				</section>
+				<section class="mdc-card__actions mdc-card__actions--vertical" dir="rtl">
+					<button type="submit" class="mdc-button mdc-button--compact mdc-card__action dark-theme" v-on:click="add_prioridade($event)">
+						Cadastrar Prioridade
+					</button>
+				</section>
+			</div>
+		</div>
+		<div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-2"></div>
+	</div>
+</div>

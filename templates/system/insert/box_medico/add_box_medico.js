@@ -41,9 +41,7 @@ Vue.component('add-box-medico', {
         .done(function(data) {
           console.log("done");
           self.box_medico = data[0];
-          self.$root.$router.push({
-            name: "system-painel"
-          });
+          self.$root.$router.push({name: "home"});
         })
         .fail(function(data) {
           console.log("Erro no insert médico");
