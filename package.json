@@ -41,7 +41,7 @@
   },
   "build": {
     "appId": "br.com.optiapps.line_it",
-    "productName": "Line-it - Server",
+    "productName": "Atendelo - Server",
     "compression": "maximum",
     "linux": {
       "target": "deb",
