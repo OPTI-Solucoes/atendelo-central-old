@@ -236,6 +236,11 @@ box.on('connection', function(client) {
     console.log("activate_me event");
     consumers.activate_box(incoming_json, client);
   });
+
+  client.on("select_all_lista_espera", function(incoming_json) {
+    console.log("select_all_lista_espera event");
+    consumers.select_all_lista_espera(incoming_json, sockets, client);
+  });
 });
 
 box_sala.on('connection', function(client) {

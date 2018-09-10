@@ -320,6 +320,16 @@ exports.select_all_prioridades = function(incoming_json_, sockets, client) {
 	});
 }
 
+exports.select_all_lista_espera = function(incoming_json_, sockets, client) {
+	console.log("select_all_lista_espera");
+	ws_response_to_box = new WsResponse("set_lista_espera");
+	db.collection("senha").find({}).toArray(function(err, result) {
+		if (err) {throw err;}
+		ws_response_to_box.body['lista_espera'] = result;
+		client.emit(ws_response_to_box.header.action, ws_response_to_box);
+	});
+}
+
 exports.select_all_filas_box = function(incoming_json_, sockets, client) {
 	console.log("select_all_filas_box");
 	ws_response_to_box = new WsResponse("select_all_filas_box");
