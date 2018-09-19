@@ -323,7 +323,7 @@ exports.select_all_prioridades = function(incoming_json_, sockets, client) {
 exports.select_all_lista_espera = function(incoming_json_, sockets, client) {
 	console.log("select_all_lista_espera");
 	ws_response_to_box = new WsResponse("set_lista_espera");
-	db.collection("senha").find({}).toArray(function(err, result) {
+	db.collection("senha").find({atendida: false}).toArray(function(err, result) {
 		if (err) {throw err;}
 		ws_response_to_box.body['lista_espera'] = result;
 		client.emit(ws_response_to_box.header.action, ws_response_to_box);
@@ -412,6 +412,7 @@ exports.insert_senha = function(incoming_json_, sockets, client) {
 			senha = res.ops[0];
 
 			ws_response_to_totens.body['senha'] = senha;
+			ws_response_to_boxes.body['senha'] = senha;
 
 			sockets.box.emit(ws_response_to_boxes.header.action, ws_response_to_boxes);
 			client.emit(ws_response_to_totens.header.action, ws_response_to_totens);
