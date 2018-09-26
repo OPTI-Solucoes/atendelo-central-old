@@ -24,7 +24,14 @@ Vue.component('system-painel', {
 			console.log('--- central ip ---')
 			console.log(this.$root.user.local_ip)
 			console.log(this.$root.user.model.fields.ip_central)
-			this.$root.is_server = this.$root.user.local_ip == this.$root.user.model.fields.ip_central;
+			
+			var ip_central = this.$root.user.model.fields.ip_central;
+			if(ip_central != this.$root.user.local_ip){
+			  if(this.$root.iplist[ip_central]){
+				this.$root.user.local_ip = ip_central;
+			  }
+			}
+			this.$root.is_server = this.$root.user.local_ip == ip_central;
 
 			if (this.ja_configurou) {
 				this.carregar_maquinas_conectadas();

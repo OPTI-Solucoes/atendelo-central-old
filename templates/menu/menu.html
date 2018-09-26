@@ -6,8 +6,8 @@
         <!-- <span class="mdc-toolbar__title catalog-title">line-it</span> -->
       </section>
       <div id="outline-js-select" class="mdc-select mdc-select--outlined">
-        <select v-model="$root.user.local_ip" class="mdc-select__native-control" id="outlined-select">
-          <option v-for="(value, key) in $root.iplist" :value="key">
+        <select v-model="$root.user.local_ip" class="mdc-select__native-control mdc-theme--on-primary" id="outlined-select">
+          <option v-for="(value, key) in $root.iplist" class="mdc-theme--primary" :value="key">
             {{key}}
           </option>
         </select>

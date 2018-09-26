@@ -27,11 +27,13 @@
   overflow-x: scroll;
   overflow-y: hidden;
   white-space: nowrap;
+  padding-bottom: 10px;
 }
 
 .horizontal-scroll div {
   display: inline-block;
-  width: 220px;
+  width: auto;
+  min-width: 220px;
   margin: 0px 10px 0px 10px;
 }
 
@@ -78,4 +80,20 @@
 .liberar-acessar {
   text-align: center;
   margin-top: 30px;
+}
+
+.demo-card__primary {
+	padding: 1rem;
+}
+
+.demo-card__title {
+  margin: 0;
+}
+
+.demo-card__subtitle {
+	margin: 0;
+}
+
+.demo-card__secondary {  
+	padding: 0 1rem 8px 1rem;
 }

@@ -6,109 +6,105 @@
 	</div>
 
 	<div class="mdc-layout-grid">
-		<div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
-			<h1>PRIORIDADES <a class="mdc-button mdc-button--compact material-icons" v-on:click="add_prioridade()">add_box</a></h1>
+		<div class="mdc-layout-grid__inner">
+			<div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">				
+				<h1>PRIORIDADES <a class="mdc-button mdc-button--compact material-icons" v-on:click="add_prioridade()">add_box</a></h1>
+				<div class="horizontal-scroll">
 
-			<div class="horizontal-scroll">
+					<div v-for="prio in prio_list" class="mdc-card" v-bind:style="{ backgroundColor: prio.fields.cor, color: '#FFFFFF' }">
+						<div class="demo-card__primary">
+							<h2 class="demo-card__title mdc-typography--headline6">{{ prio.fields.nome }}</h2>
+							<h3 class="demo-card__subtitle mdc-typography--subtitle2">({{prio.fields.abrev}})</h3>
+						</div>
+						<section class="mdc-card__actions" dir="rtl" >
+							<a class="mdc-button mdc-button--compact mdc-card__action" v-bind:style="{ color: '#FFFFFF' }" v-on:click="delete_prioridade(prio)">Remover</a>
+						</section>
+					</div>
 
-				<div v-for="prio in prio_list" class="mdc-card" v-bind:style="{ backgroundColor: prio.fields.cor, color: '#FFFFFF' }">
-					<section class="mdc-card__media" style="height: 10px"></section>
-					<section class="mdc-card__supporting-text" v-bind:style="{ color: '#FFFFFF' }">
-						({{prio.fields.abrev}}) {{ prio.fields.nome }}<br>
-					</section>
-					<section class="mdc-card__actions" dir="rtl" >
-						<a class="mdc-button mdc-button--compact mdc-card__action" v-bind:style="{ color: '#FFFFFF' }" v-on:click="delete_prioridade(prio)">Remover</a>
-					</section>
 				</div>
-
 			</div>
 		</div>
 	</div>
 
 	<div class="mdc-layout-grid">
-		<div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
-			<h1>BOXES <a class="mdc-button mdc-button--compact material-icons" v-on:click="add_box()">add_box</a></h1>
-
-			<div class="horizontal-scroll">
-
-				<div v-for="box in box_list" class="mdc-card">
-					<section class="mdc-card__media card_media_box"></section>
-					<section class="mdc-card__supporting-text">
-						<b>Apelido:</b> {{ box.fields.apelido }}<br>
-						<b>Chave:</b> {{ box.fields.chave }}<br>
-						<b>Ip:</b> {{ box.fields.ip }}<br>
-					</section>
-					<section class="mdc-card__actions" dir="rtl">
-						<a class="mdc-button mdc-button--compact mdc-card__action" v-on:click="delete_box(box)">Remover</a>
-					</section>
+		<div class="mdc-layout-grid__inner">
+			<div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">				
+				<h1>BOXES <a class="mdc-button mdc-button--compact material-icons" v-on:click="add_box()">add_box</a></h1>
+				<div class="horizontal-scroll">
+					<div v-for="box in box_list" class="mdc-card">
+						<section class="mdc-card__media card_media_box"></section>
+						<div class="demo-card__primary">
+							<h2 class="demo-card__subtitle mdc-typography--subtitle2"><b>Apelido:</b> {{ box.fields.apelido }}</h2>
+							<h3 class="demo-card__subtitle mdc-typography--subtitle2"><b>Chave:</b> {{ box.fields.chave }}</h3>
+							<h3 class="demo-card__subtitle mdc-typography--subtitle2"><b>Ip:</b> {{ box.fields.ip }}</h3>
+						</div>
+						<section class="mdc-card__actions" dir="rtl" >
+							<a class="mdc-button mdc-button--compact mdc-card__action" v-on:click="delete_box(box)">Remover</a>
+						</section>
+					</div>
 				</div>
-
 			</div>
 		</div>
 	</div>
 
 	<div class="mdc-layout-grid">
-		<div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
-			<h1>MÉDICOS <a class="mdc-button mdc-button--compact material-icons" v-on:click="add_box_medico()">add_box</a></h1>
-
-			<div class="horizontal-scroll">
-
-				<div v-for="box_medico in box_medico_list" class="mdc-card">
-					<section class="mdc-card__media card_media_box_medico"></section>
-					<section class="mdc-card__supporting-text">
-						<b>Apelido:</b> {{ box_medico.fields.apelido }}<br>
-						<b>Chave:</b> {{ box_medico.fields.chave }}<br>
-						<!-- <b>Ip:</b> {{ box_medico.fields.ip }}<br> -->
-					</section>
-					<section class="mdc-card__actions" dir="rtl">
-						<a class="mdc-button mdc-button--compact mdc-card__action" v-on:click="delete_box_medico(box_medico)">Remover</a>
-					</section>
+		<div class="mdc-layout-grid__inner">
+			<div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">				
+				<h1>MÉDICOS <a class="mdc-button mdc-button--compact material-icons" v-on:click="add_box_medico()">add_box</a></h1>
+				<div class="horizontal-scroll">
+					<div v-for="box_medico in box_medico_list" class="mdc-card">
+						<section class="mdc-card__media card_media_box"></section>
+						<div class="demo-card__primary">
+							<h2 class="demo-card__subtitle mdc-typography--subtitle2"><b>Apelido:</b> {{ box_medico.fields.apelido }}</h2>
+							<h3 class="demo-card__subtitle mdc-typography--subtitle2"><b>Chave:</b> {{ box_medico.fields.chave }}</h3>
+						</div>
+						<section class="mdc-card__actions" dir="rtl" >
+							<a class="mdc-button mdc-button--compact mdc-card__action" v-on:click="delete_box_medico(box_medico)">Remover</a>
+						</section>
+					</div>
 				</div>
-
 			</div>
 		</div>
 	</div>
 
 	<div class="mdc-layout-grid">
-		<div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
-			<h1>MONITORES <a class="mdc-button mdc-button--compact material-icons" v-on:click="add_monitor()">add_box</a></h1>
-
-			<div class="horizontal-scroll">
-
-				<div v-for="monitor in monitor_list" class="mdc-card">
-					<section class="mdc-card__media card_media_monitor"></section>
-					<section class="mdc-card__supporting-text">
-						<b>Apelido:</b> {{ monitor.fields.apelido }}<br>
-						<b>Chave:</b> {{ monitor.fields.chave }}<br>
-						<b>Ip:</b> {{ monitor.fields.ip }}<br>
-					</section>
-					<section class="mdc-card__actions" dir="rtl">
-						<a class="mdc-button mdc-button--compact mdc-card__action" v-on:click="delete_monitor(monitor)">Remover</a>
-					</section>
+		<div class="mdc-layout-grid__inner">
+			<div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">				
+				<h1>MONITORES <a class="mdc-button mdc-button--compact material-icons" v-on:click="add_monitor()">add_box</a></h1>
+				<div class="horizontal-scroll">
+					<div v-for="monitor in monitor_list" class="mdc-card">
+						<section class="mdc-card__media card_media_box"></section>
+						<div class="demo-card__primary">
+							<h2 class="demo-card__subtitle mdc-typography--subtitle2"><b>Apelido:</b> {{ monitor.fields.apelido }}</h2>
+							<h3 class="demo-card__subtitle mdc-typography--subtitle2"><b>Chave:</b> {{ monitor.fields.chave }}</h3>
+							<h3 class="demo-card__subtitle mdc-typography--subtitle2"><b>Ip:</b> {{ monitor.fields.ip }}</h3>
+						</div>
+						<section class="mdc-card__actions" dir="rtl" >
+							<a class="mdc-button mdc-button--compact mdc-card__action" v-on:click="delete_monitor(monitor)">Remover</a>
+						</section>
+					</div>
 				</div>
-
 			</div>
 		</div>
 	</div>
 
 	<div class="mdc-layout-grid">
-		<div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
-			<h1>TOTENS <a class="mdc-button mdc-button--compact material-icons" v-on:click="add_totem()">add_box</a></h1>
-
-			<div class="horizontal-scroll">
-
-				<div v-for="totem in totem_list" class="mdc-card">
-					<section class="mdc-card__media card_media_totem"></section>
-					<section class="mdc-card__supporting-text">
-						<b>Apelido:</b> {{ totem.fields.apelido }}<br>
-						<b>Chave:</b> {{ totem.fields.chave }}<br>
-						<b>Ip:</b> {{ totem.fields.ip }}<br>
-					</section>
-					<section class="mdc-card__actions" dir="rtl">
-						<a class="mdc-button mdc-button--compact mdc-card__action" v-on:click="delete_totem(totem)">Remover</a>
-					</section>
+		<div class="mdc-layout-grid__inner">
+			<div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">				
+				<h1>TOTENS <a class="mdc-button mdc-button--compact material-icons" v-on:click="add_totem()">add_box</a></h1>
+				<div class="horizontal-scroll">
+					<div v-for="totem in totem_list" class="mdc-card">
+						<section class="mdc-card__media card_media_box"></section>
+						<div class="demo-card__primary">
+							<h2 class="demo-card__subtitle mdc-typography--subtitle2"><b>Apelido:</b> {{ totem.fields.apelido }}</h2>
+							<h3 class="demo-card__subtitle mdc-typography--subtitle2"><b>Chave:</b> {{ totem.fields.chave }}</h3>
+							<h3 class="demo-card__subtitle mdc-typography--subtitle2"><b>Ip:</b> {{ totem.fields.ip }}</h3>
+						</div>
+						<section class="mdc-card__actions" dir="rtl" >
+							<a class="mdc-button mdc-button--compact mdc-card__action" v-on:click="delete_totem(totem)">Remover</a>
+						</section>
+					</div>
 				</div>
-
 			</div>
 		</div>
 	</div>

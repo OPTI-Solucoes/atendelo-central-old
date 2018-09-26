@@ -116,8 +116,14 @@ var app = new Vue({
 			new daoclient.DaoClinica().configurar_central(this.$root.user.token, this.$root.user.local_ip)
 			.done(function(data) {
 				console.log("done");
-				self.user.model = data[0];
-				self.is_server = self.$root.user.local_ip == self.$root.user.model.fields.ip_central;
+        self.user.model = data[0];
+        var ip_central = self.$root.user.model.fields.ip_central;
+        if(ip_central != self.$root.user.local_ip){
+          if(self.iplist[ip_central]){
+            self.$root.user.local_ip = ip_central;
+          }
+        }
+				self.is_server = self.$root.user.local_ip == ip_central;
 				self.mostrar_msg("Servidor atualizado!");
 			})
 			.fail(function(data) {
