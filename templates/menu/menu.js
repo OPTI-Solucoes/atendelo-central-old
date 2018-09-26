@@ -4,8 +4,9 @@ Vue.component('menu-vertical', {
   template: $.readFile('templates/menu/menu.html'),
 
   data: function() {
+    var self = this;
     var rc_data = {
-      drawer: null,
+      select: null,
 			elec: require('electron').remote.require("./index"),
     };
     return rc_data;
@@ -13,20 +14,19 @@ Vue.component('menu-vertical', {
 
   mounted: function() {
     var self = this;
-    mdc.autoInit()
+    mdc.autoInit();
 
-    var drawerEl = document.querySelector('.mdc-temporary-drawer');
-    var MDCTemporaryDrawer = mdc.drawer.MDCTemporaryDrawer;
-    self.drawer = new MDCTemporaryDrawer(drawerEl);
-    document.querySelector('.demo-menu').addEventListener('click', function() {
-      self.drawer.open = true;
+    var root = document.getElementById('outline-js-select');
+    console.log(root);    
+    self.select = new mdc.select.MDCSelect(root);
+    root.addEventListener('change', () => {
+        console.log('entrou');
+        self.$root.atualizar_server();        
     });
-    drawerEl.addEventListener('MDCTemporaryDrawer:open', function() {
-      // console.log('Received MDCTemporaryDrawer:open');
-    });
-    drawerEl.addEventListener('MDCTemporaryDrawer:close', function() {
-      // console.log('Received MDCTemporaryDrawer:close');
-    });
+		document.querySelector('.demo-menu').addEventListener('click', function() {
+			self.$root.drawer.open = true;
+		});
+
   },
 
   methods: {

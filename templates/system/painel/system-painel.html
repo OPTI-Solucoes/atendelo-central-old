@@ -1,6 +1,6 @@
 <div class="">
 
-	<div v-if="!is_server" @click="atualizar_server" class="button-update-server">
+	<div v-if="!$root.is_server" @click="$root.atualizar_server" class="button-update-server">
 		<span class="text-update">Atualizar servidor</span>
 		<i class="material-icons">refresh</i>
 	</div>

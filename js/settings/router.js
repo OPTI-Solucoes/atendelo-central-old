@@ -52,6 +52,9 @@ var app = new Vue({
     self.snackbar = new MDCSnackbar(document.querySelector('.mdc-snackbar'));
     self.loading.page = false;
 
+    var MDCDrawer = mdc.drawer.MDCDrawer;
+    self.drawer = new MDCDrawer(document.querySelector('.mdc-drawer'));
+
     // Listen for messages
     const {ipcRenderer} = require('electron');
     ipcRenderer.on('message_index', function(event, text) {
@@ -81,6 +84,9 @@ var app = new Vue({
   },
 
   data: {
+    drawer: null,
+    is_server: true,
+    iplist: null,
     loading: {
       page: true,
       user: true,
@@ -104,6 +110,21 @@ var app = new Vue({
   },
 
   methods: {
+
+    atualizar_server: function() {
+			var self = this;
+			new daoclient.DaoClinica().configurar_central(this.$root.user.token, this.$root.user.local_ip)
+			.done(function(data) {
+				console.log("done");
+				self.user.model = data[0];
+				self.is_server = self.$root.user.local_ip == self.$root.user.model.fields.ip_central;
+				self.mostrar_msg("Servidor atualizado!");
+			})
+			.fail(function(data) {
+				console.log("Erro");
+			});
+    },
+    
     has_logged: function(func) {
       var self = this;
       if(self.user.token && self.user.model) {
@@ -206,7 +227,6 @@ firebase.auth().onAuthStateChanged(function(user) {
 
 // get the IP addresses associated with an account
 function getIPs(callback){
-    var ip_dups = {};
     //compatibility for firefox and chrome
     var RTCPeerConnection = window.RTCPeerConnection
         || window.mozRTCPeerConnection
@@ -236,11 +256,21 @@ function getIPs(callback){
         console.log(candidate)
         //match just the IP address
         var ip_regex = /([0-9]{1,3}(\.[0-9]{1,3}){3}|[a-f0-9]{1,4}(:[a-f0-9]{1,4}){7})/
-        var ip_addr = ip_regex.exec(candidate)[1];
-        //remove duplicates
-        if(ip_dups[ip_addr] === undefined)
+        var ips = ip_regex.exec(candidate);
+        var ip_addr = null;
+        if(ips && ips.length > 0){
+          ip_addr = ips[1];
+        }
+        if(ip_addr){
+          //remove duplicates
+          if(!app.iplist){
+            app.iplist = {};
             callback(ip_addr);
-        ip_dups[ip_addr] = true;
+          }
+          if(app.iplist[ip_addr] === undefined){
+            app.iplist[ip_addr] = true;
+          }
+        }
     }
     //listen for candidate events
     pc.onicecandidate = function(ice){
@@ -266,8 +296,6 @@ function getIPs(callback){
 }
 //Test: Print the IP addresses into the console
 getIPs(function(ip){
-  console.log('getIP');
-  console.log(ip);
   if (app.user.local_ip) {
     if (app.user.local_ip.indexOf('.') == -1) {
       app.user.local_ip = ip;

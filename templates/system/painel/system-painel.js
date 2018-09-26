@@ -24,7 +24,7 @@ Vue.component('system-painel', {
 			console.log('--- central ip ---')
 			console.log(this.$root.user.local_ip)
 			console.log(this.$root.user.model.fields.ip_central)
-			this.is_server = this.$root.user.local_ip == this.$root.user.model.fields.ip_central;
+			this.$root.is_server = this.$root.user.local_ip == this.$root.user.model.fields.ip_central;
 
 			if (this.ja_configurou) {
 				this.carregar_maquinas_conectadas();
@@ -52,7 +52,6 @@ Vue.component('system-painel', {
 			testando: false,
 			comprou: false,
 			ja_configurou: false,
-			is_server: true,
 			prio_list: [],
 			box_list: [],
 			box_medico_list: [],
@@ -263,20 +262,6 @@ Vue.component('system-painel', {
 			})
 			.fail(function(data) {
 				console.log("Erro no list totem");
-			});
-		},
-
-		atualizar_server: function() {
-			var self = this;
-			new daoclient.DaoClinica().configurar_central(this.$root.user.token, this.$root.user.local_ip)
-			.done(function(data) {
-				console.log("done");
-				self.$root.user.model = data[0];
-				self.is_server = self.$root.user.local_ip == self.$root.user.model.fields.ip_central;
-				self.$root.mostrar_msg("Servidor atualizado!");
-			})
-			.fail(function(data) {
-				console.log("Erro");
 			});
 		},
 

@@ -21,6 +21,21 @@
 </head>
 
 <body class="mdc-typography demo-body">
+  <aside class="mdc-drawer mdc-drawer--modal">
+    <div class="mdc-drawer__content">
+      <nav class="mdc-list">
+        <a class="mdc-list-item mdc-list-item--activated" href="#" aria-selected="true" v-on:click="drawer.open = false">
+          <i class="material-icons mdc-list-item__graphic" aria-hidden="true">home</i>
+          <span class="mdc-list-item__text">Início</span>
+        </a>
+        <a class="mdc-list-item" href="#" v-on:click="drawer.open = false; deslogar_firebase();">
+          <i class="material-icons mdc-list-item__graphic" aria-hidden="true">exit_to_app</i>
+          <span class="mdc-list-item__text">Deslogar e Sair</span>
+        </a>
+      </nav>
+    </div>
+  </aside>
+  <div class="mdc-drawer-scrim"></div> 
   <div id="app">
     <!-- Loading -->
     <div v-if="loading.page || loading.user || loading.update" style="margin: 50px 50px 50px 50px">
@@ -60,9 +75,11 @@
     </div>
     <!-- end -->
 
-    <div class="main-content" v-else>
-      <menu-vertical id="menu_vertical" ref="menu-vertical"></menu-vertical>
-      <router-view ref="routerView" style="position: relative;"></router-view>
+    <div v-else>           
+      <div class="main-content">
+          <menu-vertical id="menu_vertical" ref="menu-vertical"></menu-vertical>
+          <router-view ref="routerView" style="position: relative;"></router-view>
+      </div>
     </div>
 
     <!-- Snackbar -->
@@ -120,7 +137,7 @@
   <script type="text/javascript" src="templates/system/insert/monitor/add_monitor.js"></script>
   <script type="text/javascript" src="templates/system/insert/totem/add_totem.js"></script>
 
-  <script type="text/javascript" src="templates/menu/menu.js"></script>
+  <script type="text/javascript" src="templates/menu/menu.js" async></script>
   <script type="text/javascript" src="templates/login/login.js"></script>
   <script type="text/javascript" src="templates/usuario/inserir/inserir_usuario.js"></script>
 

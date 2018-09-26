@@ -5,6 +5,20 @@
         <button class="demo-menu material-icons">menu</button>
         <!-- <span class="mdc-toolbar__title catalog-title">line-it</span> -->
       </section>
+      <div id="outline-js-select" class="mdc-select mdc-select--outlined">
+        <select v-model="$root.user.local_ip" class="mdc-select__native-control" id="outlined-select">
+          <option v-for="(value, key) in $root.iplist" :value="key">
+            {{key}}
+          </option>
+        </select>
+         <div class="mdc-notched-outline">
+           <svg>
+             <path class="mdc-notched-outline__path"></path>
+           </svg>
+         </div>
+         <div class="mdc-notched-outline__idle"></div>
+      </div>
+    </section>
       <section class="mdc-toolbar__section mdc-toolbar__section--align-end">
         Internet:&nbsp;&nbsp;
         <i class="mdc-toolbar__icon"
@@ -14,29 +28,4 @@
       </section>
     </div>
   </div>
-
-  <aside class="mdc-temporary-drawer" style="--mdc-temporary-drawer-opacity:0;">
-    <nav id="nav_phone" class="mdc-temporary-drawer__drawer">
-      <header class="mdc-temporary-drawer__header">
-        <div class="mdc-temporary-drawer__header-content div-header-imagem">
-          <!-- line-it -->
-        </div>
-      </header>
-      <nav class="mdc-temporary-drawer__content mdc-list-group">
-        <div id="icon-with-text-demo" class="mdc-list">
-          <a class="mdc-list-item mdc-theme--primary" href="#" data-mdc-tabindex-handled="true" tabindex="-1" v-on:click="drawer.open = false">
-            <i class="material-icons mdc-list-item__start-detail mdc-theme--primary" aria-hidden="true">home</i>Início
-          </a>
-        </div>
-
-        <hr class="mdc-list-divider">
-
-        <div id="icon-with-text-demo" class="mdc-list">
-          <a v-if="$root.user.model" class="mdc-list-item mdc-theme--primary" href="#" data-mdc-tabindex-handled="true" tabindex="-1" v-on:click="drawer.open = false; deslogar_firebase();">
-            <i class="material-icons mdc-list-item__start-detail mdc-theme--primary" aria-hidden="true">exit_to_app</i>Deslogar e Sair
-          </a>
-        </div>
-      </nav>
-    </nav>
-  </aside>
 </div>

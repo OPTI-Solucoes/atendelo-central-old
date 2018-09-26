@@ -35,7 +35,7 @@ Vue.component('system-config', {
             testando: false,
             comprou: false,
             ja_configurou: false,
-            ip_central: self.$root.user.local_ip,
+            ip_central: null,
             registrando: false,
             registro_ok: false,
             registro_erro: false,
