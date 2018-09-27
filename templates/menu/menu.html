@@ -5,12 +5,14 @@
         <button class="demo-menu material-icons">menu</button>
         <!-- <span class="mdc-toolbar__title catalog-title">line-it</span> -->
       </section>
+      <section class="mdc-toolbar__section">
       <div id="outline-js-select" class="mdc-select mdc-select--outlined">
-        <select v-model="$root.user.local_ip" class="mdc-select__native-control mdc-theme--on-primary" id="outlined-select">
+        <select v-model="$root.user.local_ip" class="mdc-select__native-control" id="outlined-select">
           <option v-for="(value, key) in $root.iplist" class="mdc-theme--primary" :value="key">
             {{key}}
           </option>
         </select>
+        <label class="mdc-floating-label mdc-floating-label--float-above">Network IP</label>
          <div class="mdc-notched-outline">
            <svg>
              <path class="mdc-notched-outline__path"></path>

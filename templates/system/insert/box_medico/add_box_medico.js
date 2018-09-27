@@ -17,6 +17,8 @@ Vue.component('add-box-medico', {
     var self = this;
     window.mdc.autoInit( /* root */ document, () => {});
     console.log("add-box-medico: mounted");
+    
+    const textField = new mdc.textField.MDCTextField(document.querySelector('.mdc-text-field'));
   },
 
   data: function() {

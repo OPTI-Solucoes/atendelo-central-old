@@ -17,6 +17,10 @@ Vue.component('add-prioridade', {
         var self = this;
         window.mdc.autoInit(/* root */ document, () => {});
         console.log("add-prioridade: mounted");
+        
+        const textFieldNome = new mdc.textField.MDCTextField(document.getElementById('nome-text-field'));
+        const textFieldIniciais = new mdc.textField.MDCTextField(document.getElementById('iniciais-text-field'));
+        const textFieldcor = new mdc.textField.MDCTextField(document.getElementById('cor-text-field'));
     },
 
     data: function() {

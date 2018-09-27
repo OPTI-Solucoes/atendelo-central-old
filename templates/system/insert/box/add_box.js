@@ -17,6 +17,8 @@ Vue.component('add-box', {
         var self = this;
         window.mdc.autoInit(/* root */ document, () => {});
         console.log("add-box: mounted");
+
+        const textField = new mdc.textField.MDCTextField(document.querySelector('.mdc-text-field'));
     },
 
     data: function() {

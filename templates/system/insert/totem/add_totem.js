@@ -17,6 +17,7 @@ Vue.component('add-totem', {
         var self = this;
         window.mdc.autoInit(/* root */ document, () => {});
         console.log("add-totem: mounted");
+        const textField = new mdc.textField.MDCTextField(document.querySelector('.mdc-text-field'));
     },
 
     data: function() {

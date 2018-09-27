@@ -1,33 +1,31 @@
-<div class="">
-	<div class="mdc-layout-grid">
+<div class="mdc-layout-grid">
+	<div class="mdc-layout-grid__inner">
 		<div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-2"></div>
 		<div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-8">
 			<div class="mdc-card">
-
-				<section class="mdc-card__primary">
-					<h1 class="mdc-card__title mdc-card__title--large">Adicione uma Totem</h1>
-					<h2 class="mdc-card__subtitle">Formulário de adição de Totens</h2>
-				</section>
-				<section class="mdc-card__supporting-text">
+				<div class="demo-card__primary">
+					<h2 class="demo-card__title mdc-typography--headline6">Adicione uma Totem</h2>
+					<h3 class="demo-card__subtitle mdc-typography--subtitle2">Formulário de adição de Totens</h3>
+				</div>
+				<div class="demo-card__secondary mdc-typography--body2">
 					<form action="#">
-						<div>
-							<div class="mdc-form-field">
-								<div class="mdc-textfield" data-mdc-auto-init="MDCTextfield">
-									<input id="email" type="text" class="mdc-textfield__input"@keydown.enter="add_totem($event)" v-model="totem.fields.apelido">
-									<label for="email" class="mdc-textfield__label">
-										Apelido da máquina
-									</label>
-								</div>
+						<div class="mdc-text-field mdc-text-field--outlined  mdc-text-field--dense">
+							<input type="text" id="teste" class="mdc-text-field__input" v-model="totem.fields.apelido">
+							<label for="teste" class="mdc-floating-label">Apelido</label>
+							<div class="mdc-notched-outline">
+								<svg>
+								<path class="mdc-notched-outline__path"/>
+								</svg>
 							</div>
-							<br>
+							<div class="mdc-notched-outline__idle"></div>
 						</div>
 					</form>
-				</section>
-				<section class="mdc-card__actions mdc-card__actions--vertical" dir="rtl">
+				</div>					
+				<div class="mdc-card__actions"dir="rtl">
 					<button type="submit" class="mdc-button mdc-button--compact mdc-card__action dark-theme" v-on:click="add_totem($event)">
 						Cadastrar Totem
 					</button>
-				</section>
+				</div>
 			</div>
 		</div>
 		<div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-2"></div>

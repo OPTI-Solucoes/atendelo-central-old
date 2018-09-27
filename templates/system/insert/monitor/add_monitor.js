@@ -17,6 +17,8 @@ Vue.component('add-monitor', {
 		var self = this;
 		window.mdc.autoInit(/* root */ document, () => {});
 		console.log("add-monitor: mounted");
+
+        const textField = new mdc.textField.MDCTextField(document.querySelector('.mdc-text-field'));
 	},
 
 	data: function() {
