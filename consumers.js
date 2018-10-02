@@ -671,6 +671,7 @@ function init_udp_autodiscover_server(server) {
 			// START AutoDiscover server
 			var server_json = JSON.stringify({
 				id: server.model.pk,
+				you: rinfo.address,
 				nome: server.model.fields.nome,
 				email: server.model.fields.email,
 				ip: server.local_ip,
