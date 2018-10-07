@@ -674,11 +674,12 @@ function init_udp_autodiscover_server(server) {
 				you: rinfo.address,
 				nome: server.model.fields.nome,
 				email: server.model.fields.email,
+				uid: server.firebase.uid,
 				ip: server.local_ip,
 				sou_server: true,
 			});
 
-			console.log(server.local_ip);
+			console.log(server_json);
 
 		    var message_to_send = new Buffer(server_json);
 		    server_broadcast.send(message_to_send, 0, message_to_send.length, CLIENT_PORT, rinfo.address, function() {
