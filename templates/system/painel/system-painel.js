@@ -60,6 +60,7 @@ Vue.component('system-painel', {
 			comprou: false,
 			ja_configurou: false,
 			prio_list: [],
+			espec_list: [{fields:{nome:"Nutrição"}},{fields:{nome:"Fisioterapia"}}],
 			box_list: [],
 			box_medico_list: [],
 			monitor_list: [],
@@ -87,6 +88,27 @@ Vue.component('system-painel', {
 				self.$root.mostrar_msg("Deletado");
 				var index = self.prio_list.findIndex(function(obj){return obj == prioridade});
 				self.prio_list.splice(index, 1);
+			})
+			.fail(function(data) {
+				console.log(data.responseText);
+				self.$root.mostrar_msg(data.responseText);
+			});
+		},
+
+		add_especialidade: function() {
+			var self = this;
+			this.$root.$router.push({name:"add-especialidade"});
+		},
+
+		delete_especialidade: function(especialidade) {
+			var self = this;
+
+			new daoclient.Especialidade().delete(especialidade, this.$root.user.token)
+			.done(function(data) {
+				console.log("done");
+				self.$root.mostrar_msg("Deletado");
+				var index = self.espec_list.findIndex(function(obj){return obj == especialidade});
+				self.espec_list.splice(index, 1);
 			})
 			.fail(function(data) {
 				console.log(data.responseText);

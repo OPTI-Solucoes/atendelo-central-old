@@ -29,6 +29,27 @@
 	<div class="mdc-layout-grid">
 		<div class="mdc-layout-grid__inner">
 			<div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">				
+				<h1>ESPECIALIDADES <a class="mdc-button mdc-button--compact material-icons" v-on:click="add_especialidade()">add_box</a></h1>
+				<div class="horizontal-scroll">
+
+					<div v-for="espec in espec_list" class="mdc-card" v-bind:style="{ backgroundColor: 'blue', color: '#FFFFFF' }">
+						<div class="demo-card__primary">
+							<h2 class="demo-card__title mdc-typography--headline6">{{ espec.fields.nome }}</h2>
+							<h3 class="demo-card__subtitle mdc-typography--subtitle2">(AAAA)</h3>
+						</div>
+						<section class="mdc-card__actions" dir="rtl" >
+							<a class="mdc-button mdc-button--compact mdc-card__action" v-bind:style="{ color: '#FFFFFF' }" v-on:click="delete_especialidade(espec)">Remover</a>
+						</section>
+					</div>
+
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="mdc-layout-grid">
+		<div class="mdc-layout-grid__inner">
+			<div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">				
 				<h1>BOXES <a class="mdc-button mdc-button--compact material-icons" v-on:click="add_box()">add_box</a></h1>
 				<div class="horizontal-scroll">
 					<div v-for="box in box_list" class="mdc-card">

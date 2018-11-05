@@ -22,6 +22,10 @@ var _router = new VueRouter({
     { name: 'add-prioridade', path: '/add-prioridade', component: {
       template: '<add-prioridade ref="add-prioridade" />' }
     },
+     // Add
+     { name: 'add-especialidade', path: '/add-especialidade', component: {
+      template: '<add-especialidade ref="add-especialidade" />' }
+    },
 
     // Add
     { name: 'add-box', path: '/add-box', component: {
