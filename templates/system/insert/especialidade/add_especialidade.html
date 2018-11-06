@@ -1,0 +1,54 @@
+	<div class="mdc-layout-grid">
+		<div class="mdc-layout-grid__inner">
+			<div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-2"></div>
+			<div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-8">
+				<div class="mdc-card">
+					<div class="demo-card__primary">
+						<h2 class="demo-card__title mdc-typography--headline6">Adicione uma Especialidade</h2>
+						<h3 class="demo-card__subtitle mdc-typography--subtitle2">Formulário de adição de Especialidade</h3>
+					</div>
+					<div class="demo-card__secondary mdc-typography--body2">
+						<form action="#">
+							
+							<div id="nome-text-field" class="mdc-text-field mdc-text-field--outlined mdc-text-field--dense">
+								<input type="text" id="apelido" class="mdc-text-field__input" @keydown.enter="add_especialidade($event)" v-model="especialidade.fields.nome">
+								<label for="apelido" class="mdc-floating-label">Nome</label>
+								<div class="mdc-notched-outline">
+									<svg>
+									<path class="mdc-notched-outline__path"/>
+									</svg>
+								</div>
+								<div class="mdc-notched-outline__idle"></div>
+							</div>
+							<div id="iniciais-text-field" class="mdc-text-field mdc-text-field--outlined mdc-text-field--dense">
+								<input type="text" id="iniciais" class="mdc-text-field__input" @keydown.enter="add_especialidade($event)" v-model="especialidade.fields.abrev">
+								<label for="iniciais" class="mdc-floating-label">Iniciais (3)</label>
+								<div class="mdc-notched-outline">
+									<svg>
+									<path class="mdc-notched-outline__path"/>
+									</svg>
+								</div>
+								<div class="mdc-notched-outline__idle"></div>
+							</div>
+							<div id="cor-text-field" class="mdc-text-field mdc-text-field--outlined mdc-text-field--dense">
+								<input type="text" id="cor" class="mdc-text-field__input" @keydown.enter="add_especialidade($event)" v-model="especialidade.fields.cor">
+								<label for="cor" class="mdc-floating-label">Cor</label>
+								<div class="mdc-notched-outline">
+									<svg>
+									<path class="mdc-notched-outline__path"/>
+									</svg>
+								</div>
+								<div class="mdc-notched-outline__idle"></div>
+							</div>
+						</form>
+					</div>					
+					<div class="mdc-card__actions"dir="rtl">
+						<button type="submit" class="mdc-button mdc-button--compact mdc-card__action dark-theme" v-on:click="add_especialidade($event)">
+							Cadastrar Especialidade
+						</button>
+					</div>
+				</div>
+			</div>
+			<div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-2"></div>
+		</div>
+	</div>

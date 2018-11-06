@@ -60,7 +60,7 @@ Vue.component('system-painel', {
 			comprou: false,
 			ja_configurou: false,
 			prio_list: [],
-			espec_list: [{fields:{nome:"Nutrição"}},{fields:{nome:"Fisioterapia"}}],
+			espec_list: [],
 			box_list: [],
 			box_medico_list: [],
 			monitor_list: [],
@@ -221,6 +221,26 @@ Vue.component('system-painel', {
 			})
 			.fail(function(data) {
 				console.log("Erro no list prioridade");
+				console.log("Refreshing token...");
+				self.$root.user.firebase.getIdToken().then(function(token) {
+			    console.log("Token refreshed!");
+			    app.user.token = token;
+			  });
+			});
+
+			new daoclient.Especialidade().list(this.$root.user.token)
+			.done(function(data) {
+				// console.log("done list box");
+				self.espec_list = [];
+				for (var i = 0; i < data.length; i++) {
+					self.espec_list.push(data[i]);
+				}
+				if (self.espec_list.length > 0) {
+					self.consumers.sync_prioridade_with_web(self.espec_list);
+				}
+			})
+			.fail(function(data) {
+				console.log("Erro no list especialidade");
 				console.log("Refreshing token...");
 				self.$root.user.firebase.getIdToken().then(function(token) {
 			    console.log("Token refreshed!");
