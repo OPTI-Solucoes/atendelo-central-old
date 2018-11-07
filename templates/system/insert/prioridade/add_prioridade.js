@@ -1,5 +1,9 @@
 Vue.component('add-prioridade', {
-	template: $.readFile('templates/system/insert/prioridade/add_prioridade.html'),
+    template: $.readFile('templates/system/insert/prioridade/add_prioridade.html'),
+    
+    components: {
+        'slider-picker': VueColor.Slider
+    },
 
 	props: {
 		exemplo: {
@@ -20,7 +24,6 @@ Vue.component('add-prioridade', {
         
         const textFieldNome = new mdc.textField.MDCTextField(document.getElementById('nome-text-field'));
         const textFieldIniciais = new mdc.textField.MDCTextField(document.getElementById('iniciais-text-field'));
-        const textFieldcor = new mdc.textField.MDCTextField(document.getElementById('cor-text-field'));
     },
 
     data: function() {
@@ -30,7 +33,7 @@ Vue.component('add-prioridade', {
                 fields: {
                     nome: null,
                     abrev: null,
-                    cor: null,
+                    cor: '#333333',
                 },
             },
 		};
@@ -45,6 +48,9 @@ Vue.component('add-prioridade', {
     },
 
 	methods: {
+        updateValue: function(val) {
+            this.prioridade.fields.cor = val.hex;
+        },
         add_prioridade: function(event) {
             if (event) event.preventDefault();
 

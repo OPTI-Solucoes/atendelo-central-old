@@ -103,12 +103,12 @@ Vue.component('system-painel', {
 		delete_tipo_atendimento: function(tipoAtendimento) {
 			var self = this;
 
-			new daoclient.TipoAtendimento().delete(tipoAtendimento, this.$root.user.token)
+			new daoclient.DaoTipoAtendimento().delete(tipoAtendimento, this.$root.user.token)
 			.done(function(data) {
 				console.log("done");
 				self.$root.mostrar_msg("Deletado");
-				var index = self.espec_list.findIndex(function(obj){return obj == tipoAtendimento});
-				self.espec_list.splice(index, 1);
+				var index = self.tipo_atend_list.findIndex(function(obj){return obj == tipoAtendimento});
+				self.tipo_atend_list.splice(index, 1);
 			})
 			.fail(function(data) {
 				console.log(data.responseText);

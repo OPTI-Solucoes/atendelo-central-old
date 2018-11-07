@@ -30,15 +30,9 @@
 								</div>
 								<div class="mdc-notched-outline__idle"></div>
 							</div>
-							<div id="cor-text-field" class="mdc-text-field mdc-text-field--outlined mdc-text-field--dense">
-								<input type="text" id="cor" class="mdc-text-field__input" @keydown.enter="add_prioridade($event)" v-model="prioridade.fields.cor">
-								<label for="cor" class="mdc-floating-label">Cor</label>
-								<div class="mdc-notched-outline">
-									<svg>
-									<path class="mdc-notched-outline__path"/>
-									</svg>
-								</div>
-								<div class="mdc-notched-outline__idle"></div>
+							<div style="padding-top: 10px">						
+								<h3 class="demo-card__subtitle mdc-typography--subtitle2">Cor</h3>
+								<slider-picker :value="prioridade.fields.cor" @input="updateValue"></slider-picker>
 							</div>
 						</form>
 					</div>					
