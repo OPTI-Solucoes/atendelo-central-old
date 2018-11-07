@@ -23,8 +23,8 @@ var _router = new VueRouter({
       template: '<add-prioridade ref="add-prioridade" />' }
     },
      // Add
-     { name: 'add-especialidade', path: '/add-especialidade', component: {
-      template: '<add-especialidade ref="add-especialidade" />' }
+     { name: 'add-tipo-atendimento', path: '/add-tipo-atendimento', component: {
+      template: '<add-tipo-atendimento ref="add-tipo-atendimento" />' }
     },
 
     // Add

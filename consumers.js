@@ -612,6 +612,15 @@ exports.sync_prioridade_with_web = function (objs) {
   });
 }
 
+exports.sync_tipo_atend_with_web = function (objs) {
+	db.collection("tipo_atendimento").deleteMany({}, function(err, result) {
+    if (err) throw err;
+		db.collection("tipo_atendimento").insertMany(objs, function(err, result_2) {
+			if (err) throw err;
+		});
+  });
+}
+
 exports.sync_box_with_web = function (objs) {
 	db.collection("box").deleteMany({}, function(err, result) {
     if (err) throw err;

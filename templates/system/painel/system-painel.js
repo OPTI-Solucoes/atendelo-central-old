@@ -60,7 +60,7 @@ Vue.component('system-painel', {
 			comprou: false,
 			ja_configurou: false,
 			prio_list: [],
-			espec_list: [],
+			tipo_atend_list: [],
 			box_list: [],
 			box_medico_list: [],
 			monitor_list: [],
@@ -95,19 +95,19 @@ Vue.component('system-painel', {
 			});
 		},
 
-		add_especialidade: function() {
+		add_tipo_atendimento: function() {
 			var self = this;
-			this.$root.$router.push({name:"add-especialidade"});
+			this.$root.$router.push({name:"add-tipo-atendimento"});
 		},
 
-		delete_especialidade: function(especialidade) {
+		delete_tipo_atendimento: function(tipoAtendimento) {
 			var self = this;
 
-			new daoclient.Especialidade().delete(especialidade, this.$root.user.token)
+			new daoclient.TipoAtendimento().delete(tipoAtendimento, this.$root.user.token)
 			.done(function(data) {
 				console.log("done");
 				self.$root.mostrar_msg("Deletado");
-				var index = self.espec_list.findIndex(function(obj){return obj == especialidade});
+				var index = self.espec_list.findIndex(function(obj){return obj == tipoAtendimento});
 				self.espec_list.splice(index, 1);
 			})
 			.fail(function(data) {
@@ -228,19 +228,19 @@ Vue.component('system-painel', {
 			  });
 			});
 
-			new daoclient.Especialidade().list(this.$root.user.token)
+			new daoclient.DaoTipoAtendimento().list(this.$root.user.token)
 			.done(function(data) {
 				// console.log("done list box");
-				self.espec_list = [];
+				self.tipo_atend_list = [];
 				for (var i = 0; i < data.length; i++) {
-					self.espec_list.push(data[i]);
+					self.tipo_atend_list.push(data[i]);
 				}
-				if (self.espec_list.length > 0) {
-					self.consumers.sync_prioridade_with_web(self.espec_list);
+				if (self.tipo_atend_list.length > 0) {
+					self.consumers.sync_tipo_atend_with_web(self.tipo_atend_list);
 				}
 			})
 			.fail(function(data) {
-				console.log("Erro no list especialidade");
+				console.log("Erro no list tipo de atendimento");
 				console.log("Refreshing token...");
 				self.$root.user.firebase.getIdToken().then(function(token) {
 			    console.log("Token refreshed!");
