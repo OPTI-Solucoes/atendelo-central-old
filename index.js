@@ -76,6 +76,20 @@ function createWindow() {
   });
 }
 
+const gotTheLock = app.requestSingleInstanceLock();
+
+app.on('second-instance', (commandLine , workingDirectory )=> {
+   // Alguém tentou executar uma segunda instância, devemos concentrar a nossa janela. 
+  if (win) {
+     if ( win.isMinimized() || !win.isVisible()) win.restore()
+     win.focus()
+  }
+})
+
+if (!gotTheLock) {
+  return app.quit()
+  }
+
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
