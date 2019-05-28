@@ -27,7 +27,7 @@ if (settings.DEBUG) {
     }, 10);
 
 } else {
-    settings.contextPath = "https://inovefila.opti-apps.com/";
+    settings.contextPath = "https://inovefila.atendelo.com/";
 
     settings.websocketPath = null;
     // settings.localContextPath = null;
