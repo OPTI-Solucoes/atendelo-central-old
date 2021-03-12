@@ -127,7 +127,8 @@ var app = new Vue({
             self.$root.user.local_ip = ip_central;
           }
         }
-				self.is_server = self.$root.user.local_ip == ip_central;
+        self.is_server = self.$root.user.local_ip == ip_central;
+        console.log('servidor atualizado', self.$root.user.local_ip);
 				self.mostrar_msg("Servidor atualizado!");
 			})
 			.fail(function(data) {

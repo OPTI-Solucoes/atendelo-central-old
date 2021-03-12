@@ -20,8 +20,7 @@ Vue.component('menu-vertical', {
     console.log(root);    
     self.select = new mdc.select.MDCSelect(root);
     root.addEventListener('change', () => {
-        console.log('entrou');
-        self.$root.atualizar_server();        
+      self.$root.atualizar_server();        
     });
 		document.querySelector('.demo-menu').addEventListener('click', function() {
 			self.$root.drawer.open = true;

@@ -27,7 +27,6 @@ exports.connect_to_database = function() {
 }
 
 function verificar(db) {
-  console.log("Verificando...");
   today_date = new Date();
   today_date.setHours(0,0,0,0);
   verify_today_historico(db, today_date);
@@ -508,10 +507,9 @@ exports.check_totem = function (incoming_json_, client) {
 		if (result) {
 			ws_response_to_totem.body["success_check"] = true;
 			ws_response_to_totem.body["obj"] = result;
-			console.log("check_totem");
+			console.log("clinica", result);
 			db.collection("prioridade").find({}).toArray(function(err_prio, prioridades) {
-				console.log("prioridade");
-				console.log(prioridades);
+				console.log("prioridade", prioridades);
 				if(prioridades){
 					ws_response_to_totem.body["prioridades"] = prioridades;
 				}
