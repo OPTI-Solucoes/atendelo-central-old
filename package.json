@@ -1,6 +1,6 @@
 {
   "name": "line_it_server",
-  "version": "1.1.5",
+  "version": "1.1.6",
   "description": "Projeto do Atendelo",
   "main": "index.js",
   "scripts": {
