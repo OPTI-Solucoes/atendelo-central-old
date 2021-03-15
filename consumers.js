@@ -688,7 +688,7 @@ function init_udp_autodiscover_server(server) {
 
 			console.log(server_json);
 
-		    var message_to_send = new Buffer(server_json);
+		    var message_to_send = Buffer.from(server_json);
 		    server_broadcast.send(message_to_send, 0, message_to_send.length, CLIENT_PORT, rinfo.address, function() {
 		      console.log('Message sended to client ' + rinfo.address + ':' + CLIENT_PORT +'');
 		    });

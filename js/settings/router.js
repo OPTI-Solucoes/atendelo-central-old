@@ -121,6 +121,7 @@ var app = new Vue({
 			.done(function(data) {
         self.user.model = data[0];
         self.is_server = true;
+				self.consumers.init_udp_autodiscover(self.$root.user);
         console.log('servidor atualizado', self.$root.user.local_ip);
 				self.mostrar_msg("Servidor atualizado!");
 			})
